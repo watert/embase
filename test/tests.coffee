@@ -103,15 +103,37 @@ describe "composable template", ->
                 if after = @blocks["body:after"]
                     ret += after
                 return ret
-        # create tmpl
         tmpl = new Blocks({
             index:"<%=a%>hello <%=block('name')%>"
-            })
-        # use tmpl
-        console.log "result:",tmpl
-            a:123
-            blocks:
-                name:"world2"
+        })
+
+        # console.log "result:",tmpl
+        #     a:123
+        #     blocks:
+        #         name:"world2"
+    it "should Templer work", ->
+        # create tmpl
+        templer = (options={})->
+            tmpl = _.template(options.index)
+            ctx = _.extend({}, tmpl, options)
+            # tmpl = _.extend(tmpl, options)
+            tmplMethod = (data,args...)->
+                data = _.extend({}, ctx, data)
+                tmpl.bind(ctx)(data, args...)
+
+            _.extend tmplMethod,
+                context: ctx
+                get:(key)-> ctx[key]
+                extend: (options)->
+                    opt2 = _.extend({}, ctx, options)
+                    return templer(opt2)
+            return tmplMethod
+
+        tmpl = templer(index:"hello <%=name%>", name:"world")
+        newTmpl = tmpl.extend(name:tmpl.get("name")+"2")
+        # console.log "keys:", _.keys(tmpl), tmpl._context.name
+        console.log tmpl(), _.keys(tmpl), tmpl.get("name")
+        console.log newTmpl()
     ### tmpls should like
     //Layout part
     <head></head>

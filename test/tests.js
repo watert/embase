@@ -1,4 +1,5 @@
-var BaseDoc, DBStore, UserDoc, _, assert, ref;
+var BaseDoc, DBStore, UserDoc, _, assert, ref,
+  slice = [].slice;
 
 ref = require("../server/models/db"), BaseDoc = ref.BaseDoc, DBStore = ref.DBStore;
 
@@ -164,15 +165,47 @@ describe("composable template", function() {
       return Blocks;
 
     })();
-    tmpl = new Blocks({
+    return tmpl = new Blocks({
       index: "<%=a%>hello <%=block('name')%>"
     });
-    return console.log("result:", tmpl({
-      a: 123,
-      blocks: {
-        name: "world2"
+  });
+  it("should Templer work", function() {
+    var newTmpl, templer, tmpl;
+    templer = function(options) {
+      var ctx, tmpl, tmplMethod;
+      if (options == null) {
+        options = {};
       }
-    }));
+      tmpl = _.template(options.index);
+      ctx = _.extend({}, tmpl, options);
+      tmplMethod = function() {
+        var args, data;
+        data = arguments[0], args = 2 <= arguments.length ? slice.call(arguments, 1) : [];
+        data = _.extend({}, ctx, data);
+        return tmpl.bind(ctx).apply(null, [data].concat(slice.call(args)));
+      };
+      _.extend(tmplMethod, {
+        context: ctx,
+        get: function(key) {
+          return ctx[key];
+        },
+        extend: function(options) {
+          var opt2;
+          opt2 = _.extend({}, ctx, options);
+          return templer(opt2);
+        }
+      });
+      return tmplMethod;
+    };
+    tmpl = templer({
+      index: "hello <%=name%>",
+      name: "world"
+    });
+    newTmpl = tmpl.extend({
+      name: tmpl.get("name") + "2"
+    });
+    console.log(tmpl(), _.keys(tmpl), tmpl.get("name"));
+    return console.log(newTmpl());
   });
 
   /* tmpls should like
