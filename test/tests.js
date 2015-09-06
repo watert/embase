@@ -1,5 +1,4 @@
-var BaseDoc, DBStore, UserDoc, _, assert, ref,
-  slice = [].slice;
+var BaseDoc, DBStore, UserDoc, _, assert, ref;
 
 ref = require("../server/models/db"), BaseDoc = ref.BaseDoc, DBStore = ref.DBStore;
 
@@ -103,121 +102,30 @@ describe("Main", function() {
   });
 });
 
-describe("composable template", function() {
-  it("should create tmpl", function() {
-    var data, layout, result, tmpl;
-    layout = "hello\n<%= block(\"body\") %>\n[end].";
-    tmpl = _.template(layout);
-    data = {
-      block: function(name, method) {
-        var after, before, ret;
-        ret = this.blocks[name] || "";
-        if (before = this.blocks["body:before"]) {
-          ret = before + ret;
-        }
-        if (after = this.blocks["body:after"]) {
-          ret += after;
-        }
-        return ret;
-      },
-      blocks: {
-        "body": "block body 2",
-        "body:before": "before body,"
-      }
-    };
-    result = tmpl(data);
-    return assert(-1 !== result.indexOf(data.blocks["body:before"] + data.blocks["body"]));
-  });
-  it("should have a Blocks class", function() {
-    var Blocks, tmpl;
-    Blocks = (function() {
-      function Blocks(options) {
-        var tmpl;
-        tmpl = _.template(options.index);
-        return (function(_this) {
-          return function(data) {
-            var config, method;
-            _this.blocks = _.extend(_this.blocks, (data != null ? data.blocks : void 0) || {});
-            data = _.omit(data, "blocks");
-            method = tmpl.bind(_this);
-            config = _.extend(_this, data);
-            return method(config);
-          };
-        })(this);
-      }
-
-      Blocks.prototype.blocks = {
-        name: "world"
-      };
-
-      Blocks.prototype.block = function(name, method) {
-        var after, before, ref1, ret;
-        ret = ((ref1 = this.blocks) != null ? ref1[name] : void 0) || "";
-        if (before = this.blocks["body:before"]) {
-          ret = before + ret;
-        }
-        if (after = this.blocks["body:after"]) {
-          ret += after;
-        }
-        return ret;
-      };
-
-      return Blocks;
-
-    })();
-    return tmpl = new Blocks({
-      index: "<%=a%>hello <%=block('name')%>"
-    });
-  });
-  it("should Templer work", function() {
-    var newTmpl, templer, tmpl;
-    templer = function(options) {
-      var ctx, tmpl, tmplMethod;
-      if (options == null) {
-        options = {};
-      }
-      tmpl = _.template(options.index);
-      ctx = _.extend({}, tmpl, options);
-      tmplMethod = function() {
-        var args, data;
-        data = arguments[0], args = 2 <= arguments.length ? slice.call(arguments, 1) : [];
-        data = _.extend({}, ctx, data);
-        return tmpl.bind(ctx).apply(null, [data].concat(slice.call(args)));
-      };
-      _.extend(tmplMethod, {
-        context: ctx,
-        get: function(key) {
-          return ctx[key];
-        },
-        extend: function(options) {
-          var opt2;
-          opt2 = _.extend({}, ctx, options);
-          return templer(opt2);
-        }
-      });
-      return tmplMethod;
-    };
+describe("extendable template", function() {
+  var templer;
+  templer = require("../app/libs/templer");
+  it("should templer work", function() {
+    var newTmpl, tmpl;
     tmpl = templer({
       index: "hello <%=name%>",
       name: "world"
     });
+    assert.equal(tmpl(), "hello world");
     newTmpl = tmpl.extend({
       name: tmpl.get("name") + "2"
     });
-    console.log(tmpl(), _.keys(tmpl), tmpl.get("name"));
-    return console.log(newTmpl());
+    return assert.equal(newTmpl(), "hello world2");
   });
-
-  /* tmpls should like
-  //Layout part
-  <head></head>
-  <%=body(data)%>
-  <div class="footer">
-      <%=block("footer","%>
-          default footer html
-      <%");%>
-  </div>
-   */
-  it(" `Layout.extend({body:\"body tmpl str\"})` ");
-  return it(" `NewTmpl.exec(data)` ");
+  it("should templer define and require work", function() {
+    var html;
+    templer.define("shit", "shit tmpl");
+    html = templer.require("shit")();
+    return assert.equal(html, "shit tmpl", "check require works");
+  });
+  return it("should inline require work", function() {
+    templer.define("hello", "hello <%=require('world')%>");
+    templer.define("world", "WORLD");
+    return assert.equal(templer.require("hello")(), "hello WORLD", "check inline require");
+  });
 });

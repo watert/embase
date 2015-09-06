@@ -60,91 +60,21 @@ describe "Main", ->
     after "NeDB destroy", ()->
         fs = require("fs")
         fs.unlinkSync(DBStore.storePath("user"))
-describe "composable template", ->
-    it "should create tmpl", ->
-        layout = """
-            hello
-            <%= block("body") %>
-            [end].
-        """
-        tmpl = _.template(layout)
-        data =
-            block:(name, method)->
-                ret = @blocks[name] or ""
-                if before = @blocks["body:before"]
-                    ret = before + ret
-                if after = @blocks["body:after"]
-                    ret += after
-                return ret
-            blocks:
-                "body":"block body 2"
-                "body:before":"before body,"
-
-        result = tmpl(data)
-        assert(-1 isnt result.indexOf(data.blocks["body:before"]+data.blocks["body"]))
-    it "should have a Blocks class", ->
-        class Blocks
-            constructor:(options)->
-                tmpl = _.template(options.index)
-                return (data)=>
-                    @blocks = _.extend(@blocks, data?.blocks or {})
-                    data = _.omit(data, "blocks")
-                    method = tmpl.bind(this)
-                    config = _.extend(@,
-                        data
-                    )
-                    method(config)
-            blocks:
-                name: "world"
-            block:(name, method)->
-                ret = @blocks?[name] or ""
-                if before = @blocks["body:before"]
-                    ret = before + ret
-                if after = @blocks["body:after"]
-                    ret += after
-                return ret
-        tmpl = new Blocks({
-            index:"<%=a%>hello <%=block('name')%>"
-        })
-
-        # console.log "result:",tmpl
-        #     a:123
-        #     blocks:
-        #         name:"world2"
-    it "should Templer work", ->
-        # create tmpl
-        templer = (options={})->
-            tmpl = _.template(options.index)
-            ctx = _.extend({}, tmpl, options)
-            # tmpl = _.extend(tmpl, options)
-            tmplMethod = (data,args...)->
-                data = _.extend({}, ctx, data)
-                tmpl.bind(ctx)(data, args...)
-
-            _.extend tmplMethod,
-                context: ctx
-                get:(key)-> ctx[key]
-                extend: (options)->
-                    opt2 = _.extend({}, ctx, options)
-                    return templer(opt2)
-            return tmplMethod
+describe "extendable template", ->
+    templer = require("../app/libs/templer")
+    it "should templer work", ->
 
         tmpl = templer(index:"hello <%=name%>", name:"world")
+        assert.equal(tmpl(), "hello world")
+
         newTmpl = tmpl.extend(name:tmpl.get("name")+"2")
-        # console.log "keys:", _.keys(tmpl), tmpl._context.name
-        console.log tmpl(), _.keys(tmpl), tmpl.get("name")
-        console.log newTmpl()
-    ### tmpls should like
-    //Layout part
-    <head></head>
-    <%=body(data)%>
-    <div class="footer">
-        <%=block("footer","%>
-            default footer html
-        <%");%>
-    </div>
+        assert.equal(newTmpl(), "hello world2")
+    it "should templer define and require work", ->
+        templer.define("shit", "shit tmpl")
 
-
-    ###
-    it """ `Layout.extend({body:"body tmpl str"})` """
-    it """ `NewTmpl.exec(data)` """
+        html = templer.require("shit")()
+        assert.equal(html,"shit tmpl","check require works")
+    it "should inline require work", ->
+        templer.define("hello", "hello <%=require('world')%>")
+        templer.define("world", "WORLD")
+        assert.equal(templer.require("hello")(), "hello WORLD", "check inline require")
