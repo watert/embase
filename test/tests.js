@@ -129,3 +129,15 @@ describe("extendable template", function() {
     return assert.equal(templer.require("hello")(), "hello WORLD", "check inline require");
   });
 });
+
+describe("action dispatcher", function() {
+  var dispatcher;
+  dispatcher = require("../app/libs/action-dispatcher");
+  return it("should load dispatcher", function() {
+    return dispatcher.addActions({
+      a: function() {
+        return "hello";
+      }
+    });
+  });
+});

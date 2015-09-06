@@ -56,14 +56,13 @@ describe "Main", ->
             .catch (err)->
                 assert.equal(err.code, 400 , "shit")
                 done()
-
     after "NeDB destroy", ()->
         fs = require("fs")
         fs.unlinkSync(DBStore.storePath("user"))
+
 describe "extendable template", ->
     templer = require("../app/libs/templer")
     it "should templer work", ->
-
         tmpl = templer(index:"hello <%=name%>", name:"world")
         assert.equal(tmpl(), "hello world")
 
@@ -71,10 +70,15 @@ describe "extendable template", ->
         assert.equal(newTmpl(), "hello world2")
     it "should templer define and require work", ->
         templer.define("shit", "shit tmpl")
-
         html = templer.require("shit")()
         assert.equal(html,"shit tmpl","check require works")
     it "should inline require work", ->
         templer.define("hello", "hello <%=require('world')%>")
         templer.define("world", "WORLD")
         assert.equal(templer.require("hello")(), "hello WORLD", "check inline require")
+describe "action dispatcher", ->
+    dispatcher = require("../app/libs/action-dispatcher")
+    it "should load dispatcher", ->
+        dispatcher.addActions
+            a: ()-> "hello"
+        # console.log dispatcher.call("a")
