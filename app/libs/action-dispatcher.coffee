@@ -1,8 +1,9 @@
-do ->
+factory = ($, _)->
+    # $ = require("jquery")
     $ = require("jquery")
-
+    console.log "jquery",$
     class ActionDispatcher
-        isFakeData: yes
+        constructor: -> @
         # isShowingRequestDebug: yes
         dfdDebug:(dfd, method, req)->
             alertWithStatus = (status, res)->
@@ -56,3 +57,10 @@ do ->
 
 
     return new ActionDispatcher()
+if define?.amd then define(["jquery","underscore"],factory)
+if exports and module?.exports
+    # jsdom = require("jsdom").jsdom()
+    # _ = require("underscore")
+    # console.log _.methods(jsdom)
+    $ = require("jquery")("<html>")
+    # exports = module.exports = factory($, require("underscore"))

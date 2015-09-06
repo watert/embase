@@ -133,11 +133,15 @@ describe("extendable template", function() {
 describe("action dispatcher", function() {
   var dispatcher;
   dispatcher = require("../app/libs/action-dispatcher");
-  return it("should load dispatcher", function() {
-    return dispatcher.addActions({
+  return it("should dispatcher add action", function() {
+    console.log(_.methods(dispatcher));
+    dispatcher.addActions({
       a: function() {
         return "hello";
       }
+    });
+    return dispatcher.call("a").then(function(val) {
+      return assert.equal(val, "hello", "a action");
     });
   });
 });

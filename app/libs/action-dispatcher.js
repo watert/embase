@@ -1,10 +1,13 @@
-(function() {
-  var $, ActionDispatcher;
-  $ = require("jquery");
-  ActionDispatcher = (function() {
-    function ActionDispatcher() {}
+var $, factory;
 
-    ActionDispatcher.prototype.isFakeData = true;
+factory = function($, _) {
+  var ActionDispatcher;
+  $ = require("jquery");
+  console.log("jquery", $);
+  ActionDispatcher = (function() {
+    function ActionDispatcher() {
+      this;
+    }
 
     ActionDispatcher.prototype.dfdDebug = function(dfd, method, req) {
       var alertWithStatus;
@@ -91,4 +94,12 @@
 
   })();
   return new ActionDispatcher();
-})();
+};
+
+if (typeof define !== "undefined" && define !== null ? define.amd : void 0) {
+  define(["jquery", "underscore"], factory);
+}
+
+if (exports && (typeof module !== "undefined" && module !== null ? module.exports : void 0)) {
+  $ = require("jquery")("<html>");
+}

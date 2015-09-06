@@ -78,7 +78,9 @@ describe "extendable template", ->
         assert.equal(templer.require("hello")(), "hello WORLD", "check inline require")
 describe "action dispatcher", ->
     dispatcher = require("../app/libs/action-dispatcher")
-    it "should load dispatcher", ->
+    it "should dispatcher add action", ->
+        console.log _.methods dispatcher
         dispatcher.addActions
             a: ()-> "hello"
-        # console.log dispatcher.call("a")
+        dispatcher.call("a").then (val)->
+            assert.equal(val, "hello", "a action")
