@@ -76,11 +76,13 @@ describe "extendable template", ->
         templer.define("hello", "hello <%=require('world')%>")
         templer.define("world", "WORLD")
         assert.equal(templer.require("hello")(), "hello WORLD", "check inline require")
+
 describe "action dispatcher", ->
-    dispatcher = require("../app/libs/action-dispatcher")
-    it "should dispatcher add action", ->
-        console.log _.methods dispatcher
+    Dispatcher = require("../app/libs/action-dispatcher")
+    dispatcher = new Dispatcher
+    it "should dispatcher add actions and call", ->
         dispatcher.addActions
             a: ()-> "hello"
         dispatcher.call("a").then (val)->
             assert.equal(val, "hello", "a action")
+    

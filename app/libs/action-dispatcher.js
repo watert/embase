@@ -1,10 +1,10 @@
-var $, factory;
+var exports, factory;
 
 factory = function($, _) {
-  var ActionDispatcher;
-  $ = require("jquery");
-  console.log("jquery", $);
-  ActionDispatcher = (function() {
+  var $when, ActionDispatcher, Deferred;
+  Deferred = $.Deferred || $.defer;
+  $when = $.when;
+  return ActionDispatcher = (function() {
     function ActionDispatcher() {
       this;
     }
@@ -27,17 +27,16 @@ factory = function($, _) {
     ActionDispatcher.prototype.call = function(method, data, callback) {
       var dfd;
       if (this.actions[method]) {
-        dfd = $.when(this.actions[method].bind(this)(data));
+        dfd = $when(this.actions[method].bind(this)(data));
         if (this.isShowingRequestDebug) {
           this.dfdDebug(dfd, method, data);
         }
         if (_.isFunction(callback) && dfd.then) {
           dfd.then(callback);
         }
-        this.trigger("action:call", method, data);
         return dfd.then(function(data) {
           if (data.base_rsp && data.base_rsp.ret < 0) {
-            return (new $.Deferred).reject(data);
+            return (new Deferred).reject(data);
           }
           return data;
         });
@@ -62,7 +61,7 @@ factory = function($, _) {
 
     ActionDispatcher.prototype.fakeRequest = function(path, data) {
       var dfd;
-      dfd = new $.Deferred();
+      dfd = new Deferred();
       require(["models/_fake-data"], function(data) {
         if (data[path]) {
           return dfd.resolve(data[path]);
@@ -93,7 +92,6 @@ factory = function($, _) {
     return ActionDispatcher;
 
   })();
-  return new ActionDispatcher();
 };
 
 if (typeof define !== "undefined" && define !== null ? define.amd : void 0) {
@@ -101,5 +99,5 @@ if (typeof define !== "undefined" && define !== null ? define.amd : void 0) {
 }
 
 if (exports && (typeof module !== "undefined" && module !== null ? module.exports : void 0)) {
-  $ = require("jquery")("<html>");
+  exports = module.exports = factory(require("q"), require("underscore"));
 }

@@ -131,10 +131,10 @@ describe("extendable template", function() {
 });
 
 describe("action dispatcher", function() {
-  var dispatcher;
-  dispatcher = require("../app/libs/action-dispatcher");
-  return it("should dispatcher add action", function() {
-    console.log(_.methods(dispatcher));
+  var Dispatcher, dispatcher;
+  Dispatcher = require("../app/libs/action-dispatcher");
+  dispatcher = new Dispatcher;
+  return it("should dispatcher add actions and call", function() {
     dispatcher.addActions({
       a: function() {
         return "hello";

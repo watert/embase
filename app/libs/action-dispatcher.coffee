@@ -1,7 +1,7 @@
 factory = ($, _)->
     # $ = require("jquery")
-    $ = require("jquery")
-    console.log "jquery",$
+    Deferred = $.Deferred or $.defer
+    $when = $.when
     class ActionDispatcher
         constructor: -> @
         # isShowingRequestDebug: yes
@@ -18,17 +18,14 @@ factory = ($, _)->
 
         call:(method, data, callback)->
             if @actions[method]
-                dfd = $.when @actions[method].bind(this)(data)
+                dfd = $when @actions[method].bind(this)(data)
                 if @isShowingRequestDebug
                     @dfdDebug(dfd, method, data)
                 dfd.then(callback) if _.isFunction(callback) and dfd.then
 
-                # dfd.fail (data)-> throw("[#{data.ret}] #{data.msg}")
-                @trigger("action:call", method, data)
-                # console.debug dfd
                 return dfd.then (data)->
                     if data.base_rsp and data.base_rsp.ret < 0
-                        return (new $.Deferred).reject(data)
+                        return (new Deferred).reject(data)
                     return data
             else
                 throw("Dispatcher Err: Action '#{method}' not exists")
@@ -42,7 +39,7 @@ factory = ($, _)->
                 callback?()
         actions:{}
         fakeRequest:(path, data)-> # 假数据请求
-            dfd = new $.Deferred()
+            dfd = new Deferred()
             require ["models/_fake-data"],(data)->
                 if data[path] then dfd.resolve(data[path])
                 else dfd.reject({ret:-1, msg:"no fake data: #{path}"})
@@ -56,11 +53,7 @@ factory = ($, _)->
                     throw("Action exists: #{name}")
 
 
-    return new ActionDispatcher()
+    # return new ActionDispatcher()
 if define?.amd then define(["jquery","underscore"],factory)
 if exports and module?.exports
-    # jsdom = require("jsdom").jsdom()
-    # _ = require("underscore")
-    # console.log _.methods(jsdom)
-    $ = require("jquery")("<html>")
-    # exports = module.exports = factory($, require("underscore"))
+    exports = module.exports = factory(require("q"), require("underscore"))
