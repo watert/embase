@@ -1,16 +1,18 @@
-var Dispatcher, User, _, actions, api, express, method, router;
+var Dispatcher, User, _, actions, api, app, config, express, method, router;
 
 express = require('express');
 
 _ = require('underscore');
 
-router = express.Router();
-
 User = require("../models/user");
 
 Dispatcher = require("../../public/scripts/libs/action-dispatcher");
 
-api = new Dispatcher();
+config = require("../config");
+
+app = require("../app");
+
+router = express.Router();
 
 actions = (function() {
   var i, len, ref, results;
@@ -23,9 +25,9 @@ actions = (function() {
   return results;
 })();
 
-api = new Dispatcher({
-  actions: _.object(actions)
-});
+console.log(config.appPath("db/user.db"));
+
+api = Dispatcher.createAPI(User, ["find"]);
 
 router.get('/api/:method', function(req, res) {
   method = req.params.method;

@@ -1,5 +1,10 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+
+    base(href="/")
+    script(src="bower_components/requirejs/require.js")
+    script(src="scripts/require-config.js")
+    script(src="scripts/main.js")
+    h1= title
+    p Welcome to #{title}

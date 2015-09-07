@@ -13,6 +13,9 @@ var app = express();
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
+// express.appPath = __dirname
+app.set("appPath",__dirname);
+// console.log("apppath",app.appPath);
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
@@ -66,5 +69,5 @@ if(require.main === module){
   server.listen(port);
   console.log("Server start listening "+port);
 }
-
+// console.log("set exports", app);
 module.exports = app;

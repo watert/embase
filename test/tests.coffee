@@ -9,8 +9,8 @@ UserDoc = require("../app/models/user")
 #     @store: "user"
 
 describe "Main", ->
-    _storePath = DBStore.storePath
-    DBStore.storePath = (name)-> _storePath(name+"_test")
+    # _storePath = DBStore.storePath
+    # DBStore.storePath = (name)-> _storePath(name+"_test")
     getStore = DBStore.getStore
 
     describe "With ODM", ->
@@ -67,9 +67,27 @@ describe "Main", ->
             .catch (err)->
                 assert.equal(err.code, 400 , "shit")
                 done()
+
+    describe "action dispatcher", ->
+        Dispatcher = require("../public/scripts/libs/action-dispatcher")
+        dispatcher = new Dispatcher
+        it "should dispatcher add actions and call", ->
+            dispatcher.addActions
+                a: ()-> "hello"
+            dispatcher.call("a").then (val)->
+                assert.equal(val, "hello", "a action")
+        # it "try find",->
+        #     UserDoc.find({}).then (data)->
+        #         console.log data
+        it "should wrap User as api", ->
+            # api = new Dispatcher()
+            api = Dispatcher.createAPI(UserDoc, ["find"])
+            dfd = api.call("find").then (data)->
+                assert(data.length, "find data")
+
     after "NeDB destroy", ()->
         fs = require("fs")
-        fs.unlinkSync(DBStore.storePath("user"))
+        # fs.unlinkSync(DBStore.storePath("user"))
 
 describe "extendable template", ->
     templer = require("../public/scripts/libs/templer")
@@ -87,16 +105,3 @@ describe "extendable template", ->
         templer.define("hello", "hello <%=require('world')%>")
         templer.define("world", "WORLD")
         assert.equal(templer.require("hello")(), "hello WORLD", "check inline require")
-
-describe "action dispatcher", ->
-    Dispatcher = require("../public/scripts/libs/action-dispatcher")
-    dispatcher = new Dispatcher
-    it "should dispatcher add actions and call", ->
-        dispatcher.addActions
-            a: ()-> "hello"
-        dispatcher.call("a").then (val)->
-            assert.equal(val, "hello", "a action")
-    it "should wrap User as api", ->
-        api = new Dispatcher()
-        api = Dispatcher.createAPI(UserDoc, ["find"])
-        dfd = api.call("find", {})

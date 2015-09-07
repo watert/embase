@@ -1,17 +1,17 @@
 express = require('express')
 _ = require('underscore')
-router = express.Router()
-
-# /* GET users listing. */
 User = require("../models/user")
 Dispatcher = require("../../public/scripts/libs/action-dispatcher")
-api = new Dispatcher()
+config = require("../config")
+
+app = require("../app")
+router = express.Router()
 actions = for method in ["find"]
     [method, User[method]]
-api = new Dispatcher(actions: _.object(actions))
 
-    # api.addActions
-# console.log "what"
+console.log config.appPath("db/user.db")
+api = Dispatcher.createAPI(User, ["find"])
+
 router.get '/api/:method', (req, res)->
     method = req.params.method
     console.log "method", method

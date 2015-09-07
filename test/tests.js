@@ -9,11 +9,7 @@ _ = require("underscore");
 UserDoc = require("../app/models/user");
 
 describe("Main", function() {
-  var _storePath, getStore;
-  _storePath = DBStore.storePath;
-  DBStore.storePath = function(name) {
-    return _storePath(name + "_test");
-  };
+  var getStore;
   getStore = DBStore.getStore;
   describe("With ODM", function() {
     var data;
@@ -102,10 +98,31 @@ describe("Main", function() {
       });
     });
   });
+  describe("action dispatcher", function() {
+    var Dispatcher, dispatcher;
+    Dispatcher = require("../public/scripts/libs/action-dispatcher");
+    dispatcher = new Dispatcher;
+    it("should dispatcher add actions and call", function() {
+      dispatcher.addActions({
+        a: function() {
+          return "hello";
+        }
+      });
+      return dispatcher.call("a").then(function(val) {
+        return assert.equal(val, "hello", "a action");
+      });
+    });
+    return it("should wrap User as api", function() {
+      var api, dfd;
+      api = Dispatcher.createAPI(UserDoc, ["find"]);
+      return dfd = api.call("find").then(function(data) {
+        return assert(data.length, "find data");
+      });
+    });
+  });
   return after("NeDB destroy", function() {
     var fs;
-    fs = require("fs");
-    return fs.unlinkSync(DBStore.storePath("user"));
+    return fs = require("fs");
   });
 });
 
@@ -134,27 +151,5 @@ describe("extendable template", function() {
     templer.define("hello", "hello <%=require('world')%>");
     templer.define("world", "WORLD");
     return assert.equal(templer.require("hello")(), "hello WORLD", "check inline require");
-  });
-});
-
-describe("action dispatcher", function() {
-  var Dispatcher, dispatcher;
-  Dispatcher = require("../public/scripts/libs/action-dispatcher");
-  dispatcher = new Dispatcher;
-  it("should dispatcher add actions and call", function() {
-    dispatcher.addActions({
-      a: function() {
-        return "hello";
-      }
-    });
-    return dispatcher.call("a").then(function(val) {
-      return assert.equal(val, "hello", "a action");
-    });
-  });
-  return it("should wrap User as api", function() {
-    var api, dfd;
-    api = new Dispatcher();
-    api = Dispatcher.createAPI(UserDoc, ["find"]);
-    return dfd = api.call("find", {});
   });
 });

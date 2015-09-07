@@ -1,5 +1,6 @@
 _ = require("underscore")
 DBStore = require("nedb")
+config = require("../config")
 
 wrapMethods = (obj,methods)->
     generateNewMethod = (oldMethod)-> (args...)->
@@ -15,7 +16,7 @@ wrapMethods = (obj,methods)->
     return obj
 
 DBStore.storePath = (name)->
-    "./server/db/#{name}.db"
+    config.appPath("db/#{name}.db")
 DBStore.storeConfig = (name)->
     ret = filename: DBStore.storePath(name)
     return ret
@@ -77,8 +78,8 @@ class BaseDoc
         DocClass = this
         @getStore().then (store)->
             store.findOne(args...).then (data)-> new DocClass(data)
-    @find:(args...)->
+    @find:(where={}, args...)->
         @getStore().then (store)->
-            return store.find(args...)
+            return store.find(where, args...)
 
 module.exports = {BaseDoc, DBStore}

@@ -1,9 +1,11 @@
-var BaseDoc, DBStore, _, wrapMethods,
+var BaseDoc, DBStore, _, config, wrapMethods,
   slice = [].slice;
 
 _ = require("underscore");
 
 DBStore = require("nedb");
+
+config = require("../config");
 
 wrapMethods = function(obj, methods) {
   var fn, generateNewMethod, i, len, m;
@@ -41,7 +43,7 @@ wrapMethods = function(obj, methods) {
 };
 
 DBStore.storePath = function(name) {
-  return "./server/db/" + name + ".db";
+  return config.appPath("db/" + name + ".db");
 };
 
 DBStore.storeConfig = function(name) {
@@ -175,10 +177,13 @@ BaseDoc = (function() {
   };
 
   BaseDoc.find = function() {
-    var args;
-    args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+    var args, where;
+    where = arguments[0], args = 2 <= arguments.length ? slice.call(arguments, 1) : [];
+    if (where == null) {
+      where = {};
+    }
     return this.getStore().then(function(store) {
-      return store.find.apply(store, args);
+      return store.find.apply(store, [where].concat(slice.call(args)));
     });
   };
 
