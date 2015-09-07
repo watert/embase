@@ -19,15 +19,26 @@ describe "Main", ->
             user = new UserDoc(data)
             user.save().then (doc)->
                 assert.equal(doc.name,data.name,"should insert right name")
+
         it "should update user", ->
+            # data.name += "1"
             (user = new UserDoc(data)).save()
             .then -> user.save({"name": "testing2"})
-            .then -> assert.equal(user._data.name, "testing2", "check update value setted")
+            .then ->
+                assert.equal(user._data.name, "testing2", "check update value setted")
+                UserDoc.find({})
+            .then (data)->
         it "should delete user", ->
             (user = new UserDoc(data)).save()
-            .then (doc)-> user.remove()
+            .then (doc)->
+                user.remove()
             .then (data)->
                 assert(data, "check delete after save")
+                UserDoc.find({})
+            .then (data)->
+        it "UserDoc.find({})", ->
+            UserDoc.find({}).then (data)->
+                return data
         it "findByID", ->
             (user = new UserDoc(data)).save().then ->
                 assert(id = user._data._id, "has id")
@@ -84,14 +95,8 @@ describe "action dispatcher", ->
         dispatcher.addActions
             a: ()-> "hello"
         dispatcher.call("a").then (val)->
-            # console.log "then"
             assert.equal(val, "hello", "a action")
     it "should wrap User as api", ->
         api = new Dispatcher()
-        actions = for method in ["find"]
-            [method, UserDoc[method]]
-        api = new Dispatcher(actions: _.object(actions))
+        api = Dispatcher.createAPI(UserDoc, ["find"])
         dfd = api.call("find", {})
-        console.log dfd
-        dfd.then (data)->
-            console.log "then", data

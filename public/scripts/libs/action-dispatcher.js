@@ -18,6 +18,23 @@ factory = function($, _) {
     return dfd.promise;
   };
   return ActionDispatcher = (function() {
+    ActionDispatcher.createAPI = function(Model, methods) {
+      var actions, api, method, name;
+      actions = (function() {
+        var i, len, results;
+        results = [];
+        for (i = 0, len = methods.length; i < len; i++) {
+          name = methods[i];
+          method = Model[name].bind(Model);
+          results.push([name, method]);
+        }
+        return results;
+      })();
+      return api = new this({
+        actions: _.object(actions)
+      });
+    };
+
     function ActionDispatcher(options) {
       if (options == null) {
         options = {};

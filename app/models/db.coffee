@@ -31,7 +31,7 @@ DBStore.getStore = (name)->
 class BaseDoc
     @store: "test"
     constructor: (data)->
-        @_data = data
+        @_data = _.extend({},data)
         @changed = yes
         @id = data._id
         _.extend(@, _.pick(@constructor,["store","getStore"]))
@@ -62,7 +62,7 @@ class BaseDoc
             id = @_data._id
             delete @_data._id
             @isDeleted = yes
-            return id
+            return num
     @findByID:(id)->
         DocClass = this
         @getStore().then (store)->
@@ -77,7 +77,8 @@ class BaseDoc
         DocClass = this
         @getStore().then (store)->
             store.findOne(args...).then (data)-> new DocClass(data)
-    @find:(args...)-> @getStore().then (store)->
-        return store.find(args...)
+    @find:(args...)->
+        @getStore().then (store)->
+            return store.find(args...)
 
 module.exports = {BaseDoc, DBStore}

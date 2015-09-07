@@ -72,7 +72,7 @@ BaseDoc = (function() {
   BaseDoc.store = "test";
 
   function BaseDoc(data) {
-    this._data = data;
+    this._data = _.extend({}, data);
     this.changed = true;
     this.id = data._id;
     _.extend(this, _.pick(this.constructor, ["store", "getStore"]));
@@ -134,7 +134,7 @@ BaseDoc = (function() {
         id = _this._data._id;
         delete _this._data._id;
         _this.isDeleted = true;
-        return id;
+        return num;
       };
     })(this));
   };

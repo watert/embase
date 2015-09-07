@@ -15,6 +15,13 @@ factory = ($, _)->
         return dfd.promise
 
     class ActionDispatcher
+
+        @createAPI = (Model, methods)->
+            actions = for name in methods
+                method = Model[name].bind(Model)
+                [name, method]
+            api = new this(actions: _.object(actions))
+
         constructor: (options={})->
             @addActions(options.actions or {})
             return this

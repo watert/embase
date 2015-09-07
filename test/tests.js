@@ -35,15 +35,22 @@ describe("Main", function() {
           "name": "testing2"
         });
       }).then(function() {
-        return assert.equal(user._data.name, "testing2", "check update value setted");
-      });
+        assert.equal(user._data.name, "testing2", "check update value setted");
+        return UserDoc.find({});
+      }).then(function(data) {});
     });
     it("should delete user", function() {
       var user;
       return (user = new UserDoc(data)).save().then(function(doc) {
         return user.remove();
       }).then(function(data) {
-        return assert(data, "check delete after save");
+        assert(data, "check delete after save");
+        return UserDoc.find({});
+      }).then(function(data) {});
+    });
+    it("UserDoc.find({})", function() {
+      return UserDoc.find({}).then(function(data) {
+        return data;
       });
     });
     it("findByID", function() {
@@ -145,25 +152,9 @@ describe("action dispatcher", function() {
     });
   });
   return it("should wrap User as api", function() {
-    var actions, api, dfd, method;
+    var api, dfd;
     api = new Dispatcher();
-    actions = (function() {
-      var i, len, ref1, results;
-      ref1 = ["find"];
-      results = [];
-      for (i = 0, len = ref1.length; i < len; i++) {
-        method = ref1[i];
-        results.push([method, UserDoc[method]]);
-      }
-      return results;
-    })();
-    api = new Dispatcher({
-      actions: _.object(actions)
-    });
-    dfd = api.call("find", {});
-    console.log(dfd);
-    return dfd.then(function(data) {
-      return console.log("then", data);
-    });
+    api = Dispatcher.createAPI(UserDoc, ["find"]);
+    return dfd = api.call("find", {});
   });
 });
