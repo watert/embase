@@ -1,10 +1,10 @@
 # DBStore = require("nedb")
 
-{BaseDoc, DBStore} = require("../server/models/db")
+{BaseDoc, DBStore} = require("../app/models/db")
 {assert} = require("chai")
 _ = require("underscore")
 
-UserDoc = require("../server/models/user")
+UserDoc = require("../app/models/user")
 # class UserDoc extends BaseDoc
 #     @store: "user"
 
@@ -61,7 +61,7 @@ describe "Main", ->
         fs.unlinkSync(DBStore.storePath("user"))
 
 describe "extendable template", ->
-    templer = require("../app/libs/templer")
+    templer = require("../public/scripts/libs/templer")
     it "should templer work", ->
         tmpl = templer(index:"hello <%=name%>", name:"world")
         assert.equal(tmpl(), "hello world")
@@ -78,11 +78,10 @@ describe "extendable template", ->
         assert.equal(templer.require("hello")(), "hello WORLD", "check inline require")
 
 describe "action dispatcher", ->
-    Dispatcher = require("../app/libs/action-dispatcher")
+    Dispatcher = require("../public/scripts/libs/action-dispatcher")
     dispatcher = new Dispatcher
     it "should dispatcher add actions and call", ->
         dispatcher.addActions
             a: ()-> "hello"
         dispatcher.call("a").then (val)->
             assert.equal(val, "hello", "a action")
-    
