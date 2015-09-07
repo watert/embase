@@ -29,10 +29,12 @@ api = new Dispatcher({
 
 router.get('/api/:method', function(req, res) {
   method = req.params.method;
+  console.log("method", method);
   return api.call(method).then(function(data) {
     console.log("method " + method + " then");
     return res.json(data);
   }).fail(function(err) {
+    console.log("method " + method + " fail");
     return res.status(400).json(err);
   });
 });

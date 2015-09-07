@@ -8,6 +8,11 @@ factory = ($, _)->
     # compatible for Q promise library for node usage
     Deferred = $.Deferred or $.defer
     $when = $.when
+    $reject = ->
+        dfd = new Deferred()
+        setTimeout ->
+            dfd.reject(arguments...)
+        return dfd.promise
 
     class ActionDispatcher
         constructor: (options={})->
@@ -33,11 +38,11 @@ factory = ($, _)->
                 dfd.then(callback) if _.isFunction(callback) and dfd.then
 
                 return dfd.then (data)->
-                    if data.base_rsp and data.base_rsp.ret < 0
+                    if data.error?
                         return (new Deferred).reject(data)
                     return data
             else
-                throw("Dispatcher Err: Action '#{method}' not exists")
+                return $reject("Dispatcher Err: Action '#{method}' not exists")
                 # $.when(yes).reject("not exists")
 
         requireActions:(paths, callback)->

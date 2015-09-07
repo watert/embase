@@ -84,4 +84,14 @@ describe "action dispatcher", ->
         dispatcher.addActions
             a: ()-> "hello"
         dispatcher.call("a").then (val)->
+            # console.log "then"
             assert.equal(val, "hello", "a action")
+    it "should wrap User as api", ->
+        api = new Dispatcher()
+        actions = for method in ["find"]
+            [method, UserDoc[method]]
+        api = new Dispatcher(actions: _.object(actions))
+        dfd = api.call("find", {})
+        console.log dfd
+        dfd.then (data)->
+            console.log "then", data

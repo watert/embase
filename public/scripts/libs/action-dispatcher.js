@@ -6,9 +6,17 @@ use it like basic client side jssdk for apis
 var exports, factory;
 
 factory = function($, _) {
-  var $when, ActionDispatcher, Deferred;
+  var $reject, $when, ActionDispatcher, Deferred;
   Deferred = $.Deferred || $.defer;
   $when = $.when;
+  $reject = function() {
+    var dfd;
+    dfd = new Deferred();
+    setTimeout(function() {
+      return dfd.reject.apply(dfd, arguments);
+    });
+    return dfd.promise;
+  };
   return ActionDispatcher = (function() {
     function ActionDispatcher(options) {
       if (options == null) {
@@ -44,13 +52,13 @@ factory = function($, _) {
           dfd.then(callback);
         }
         return dfd.then(function(data) {
-          if (data.base_rsp && data.base_rsp.ret < 0) {
+          if (data.error != null) {
             return (new Deferred).reject(data);
           }
           return data;
         });
       } else {
-        throw "Dispatcher Err: Action '" + method + "' not exists";
+        return $reject("Dispatcher Err: Action '" + method + "' not exists");
       }
     };
 

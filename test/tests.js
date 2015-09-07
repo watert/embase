@@ -134,7 +134,7 @@ describe("action dispatcher", function() {
   var Dispatcher, dispatcher;
   Dispatcher = require("../public/scripts/libs/action-dispatcher");
   dispatcher = new Dispatcher;
-  return it("should dispatcher add actions and call", function() {
+  it("should dispatcher add actions and call", function() {
     dispatcher.addActions({
       a: function() {
         return "hello";
@@ -142,6 +142,28 @@ describe("action dispatcher", function() {
     });
     return dispatcher.call("a").then(function(val) {
       return assert.equal(val, "hello", "a action");
+    });
+  });
+  return it("should wrap User as api", function() {
+    var actions, api, dfd, method;
+    api = new Dispatcher();
+    actions = (function() {
+      var i, len, ref1, results;
+      ref1 = ["find"];
+      results = [];
+      for (i = 0, len = ref1.length; i < len; i++) {
+        method = ref1[i];
+        results.push([method, UserDoc[method]]);
+      }
+      return results;
+    })();
+    api = new Dispatcher({
+      actions: _.object(actions)
+    });
+    dfd = api.call("find", {});
+    console.log(dfd);
+    return dfd.then(function(data) {
+      return console.log("then", data);
     });
   });
 });
