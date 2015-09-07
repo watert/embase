@@ -10,8 +10,12 @@ factory = function($, _) {
   Deferred = $.Deferred || $.defer;
   $when = $.when;
   return ActionDispatcher = (function() {
-    function ActionDispatcher() {
-      this;
+    function ActionDispatcher(options) {
+      if (options == null) {
+        options = {};
+      }
+      this.addActions(options.actions || {});
+      return this;
     }
 
     ActionDispatcher.prototype.dfdDebug = function(dfd, method, req) {

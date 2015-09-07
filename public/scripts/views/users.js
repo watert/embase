@@ -4,21 +4,23 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
 define(["backbone", "libs/templer"], function(Backbone, templer) {
   var List;
   return List = (function(superClass) {
-    var temper;
-
     extend(List, superClass);
 
     function List() {
       return List.__super__.constructor.apply(this, arguments);
     }
 
-    temper = require("../libs/temper");
-
     List.prototype.tagName = "div";
 
-    List.prototype.tmpl = temper({
+    List.prototype.render = function() {
+      return this.$el.html(this.tmpl({
+        data: [1, 2, 3]
+      }));
+    };
+
+    List.prototype.tmpl = templer({
       listItemBody: "            ",
-      listItem: "<li class=\"item\"> Item </li>",
+      listItem: templer("<li class=\"item\"> Item </li>"),
       index: "<ul class=\"list\">\n    <%_.each(data, function(item){%>\n        <%=listItem(item)%>\n    <%})%>\n</ul>"
     });
 

@@ -1,11 +1,12 @@
 define ["backbone","libs/templer"],(Backbone, templer)->
     class List extends Backbone.View
-        temper = require("../libs/temper")
         tagName:"div"
-        tmpl: temper
+        render:()->
+            @$el.html(@tmpl(data:[1,2,3]))
+        tmpl: templer
             listItemBody: """
             """
-            listItem: """
+            listItem: templer """
                 <li class="item"> Item </li>
             """
             index: """

@@ -1,6 +1,8 @@
 {BaseDoc, DBStore} = require("./db")
 crypto = require('crypto')
 _ = require('underscore')
+# Dispatcher = require("../../public/scripts/libs/action-dispatcher")
+
 _hasKeys = (obj, keys)->
     for k in keys
         if not obj[k] then return no
@@ -25,5 +27,12 @@ class UserDoc extends BaseDoc
             Promise.reject({code:406, msg: "no password",data:data})
         data.password = @hash(data.password)
         @findOne(data).then (user)-> user
+    # @api: ()-> new Dispatcher
+    #     actions:
+    #         register:(data)=> @register.bind(@)
+    #         login:(data)=> @login.bind(@)
+    #         find:(data)=> @find.bind(@)
+
+
 
 module.exports = UserDoc

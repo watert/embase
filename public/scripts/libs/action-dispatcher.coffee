@@ -10,7 +10,9 @@ factory = ($, _)->
     $when = $.when
 
     class ActionDispatcher
-        constructor: -> @
+        constructor: (options={})->
+            @addActions(options.actions or {})
+            return this
         # isShowingRequestDebug: yes
         dfdDebug:(dfd, method, req)->
             alertWithStatus = (status, res)->
