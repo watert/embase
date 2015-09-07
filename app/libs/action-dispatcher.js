@@ -1,3 +1,8 @@
+
+/*
+promise based action dispatcher center,
+use it like basic client side jssdk for apis
+ */
 var exports, factory;
 
 factory = function($, _) {

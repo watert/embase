@@ -1,7 +1,14 @@
+###
+promise based action dispatcher center,
+use it like basic client side jssdk for apis
+###
+
 factory = ($, _)->
-    # $ = require("jquery")
+
+    # compatible for Q promise library for node usage
     Deferred = $.Deferred or $.defer
     $when = $.when
+
     class ActionDispatcher
         constructor: -> @
         # isShowingRequestDebug: yes
@@ -32,6 +39,7 @@ factory = ($, _)->
                 # $.when(yes).reject("not exists")
 
         requireActions:(paths, callback)->
+            # for amd loading actions
             paths = [paths] if _.isString(paths)
             require paths,()->
                 _.each arguments, (ActionsHandler)->
