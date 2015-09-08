@@ -1,10 +1,10 @@
 # DBStore = require("nedb")
 
-{BaseDoc, DBStore} = require("../server/models/db")
+{BaseDoc, DBStore} = require("../app/models/db")
 {assert} = require("chai")
 _ = require("underscore")
 
-UserDoc = require("../server/models/user")
+UserDoc = require("../app/models/user")
 # class UserDoc extends BaseDoc
 #     @store: "user"
 
@@ -19,15 +19,26 @@ describe "Main", ->
             user = new UserDoc(data)
             user.save().then (doc)->
                 assert.equal(doc.name,data.name,"should insert right name")
+
         it "should update user", ->
+            # data.name += "1"
             (user = new UserDoc(data)).save()
             .then -> user.save({"name": "testing2"})
-            .then -> assert.equal(user._data.name, "testing2", "check update value setted")
+            .then ->
+                assert.equal(user._data.name, "testing2", "check update value setted")
+                UserDoc.find({})
+            .then (data)->
         it "should delete user", ->
             (user = new UserDoc(data)).save()
-            .then (doc)-> user.remove()
+            .then (doc)->
+                user.remove()
             .then (data)->
                 assert(data, "check delete after save")
+                UserDoc.find({})
+            .then (data)->
+        it "UserDoc.find({})", ->
+            UserDoc.find({}).then (data)->
+                return data
         it "findByID", ->
             (user = new UserDoc(data)).save().then ->
                 assert(id = user._data._id, "has id")
@@ -56,33 +67,43 @@ describe "Main", ->
             .catch (err)->
                 assert.equal(err.code, 400 , "shit")
                 done()
+
+    describe "action dispatcher", ->
+        Dispatcher = require("../public/scripts/libs/action-dispatcher")
+        dispatcher = new Dispatcher
+        it "should dispatcher add actions and call", ->
+            dispatcher.addActions
+                a: ()-> "hello"
+            dispatcher.call("a").then (val)->
+                assert.equal(val, "hello", "a action")
+        # it "try find",->
+        #     UserDoc.find({}).then (data)->
+        #         console.log data
+        it "should wrap User as api", ->
+            # api = new Dispatcher()
+            api = Dispatcher.createAPI(UserDoc, ["find"])
+            dfd = api.call("find").then (data)->
+                assert(data.length, "find data")
+
     after "NeDB destroy", ()->
         fs = require("fs")
         fs.unlinkSync(DBStore.storePath("user"))
 
 describe "extendable template", ->
-    templer = require("../app/libs/templer")
+    templer = require("../public/scripts/libs/templer")
     it "should templer work", ->
-        tmpl = templer(index:"hello <%=name%>", name:"world")
+        tmpl = templer(index:"hello <%=world%>", world:"world")
         assert.equal(tmpl(), "hello world")
-
-        newTmpl = tmpl.extend(name:tmpl.get("name")+"2")
+        newTmpl = tmpl.extend(world:tmpl.world+"2")
         assert.equal(newTmpl(), "hello world2")
-    it "should templer define and require work", ->
-        templer.define("shit", "shit tmpl")
-        html = templer.require("shit")()
-        assert.equal(html,"shit tmpl","check require works")
-    it "should inline require work", ->
-        templer.define("hello", "hello <%=require('world')%>")
-        templer.define("world", "WORLD")
-        assert.equal(templer.require("hello")(), "hello WORLD", "check inline require")
-
-describe "action dispatcher", ->
-    Dispatcher = require("../app/libs/action-dispatcher")
-    dispatcher = new Dispatcher
-    it "should dispatcher add actions and call", ->
-        dispatcher.addActions
-            a: ()-> "hello"
-        dispatcher.call("a").then (val)->
-            assert.equal(val, "hello", "a action")
-    
+    it "should context deliver to sub templer", ->
+        # console.log "====="
+        tmpl = templer
+            outsider: " [Outsider] "
+            useInIndex: templer " <%=outsider%> "
+            index:" <%=useInIndex()%> "
+        assert(tmpl().indexOf("[Outsider]"), "should pass ctx to sub tmpl")
+    it "should extend with super method", ->
+        tmpl = templer({index: "hello world"}).extend
+            index: -> "before #{@_super.index} after"
+        assert.equal(tmpl(), "before hello world after", "should wrap with super")

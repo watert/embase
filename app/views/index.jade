@@ -1,0 +1,11 @@
+extends layout
+block append head
+    base(href="/")
+    link(rel='stylesheet', href='/bower_components/font-awesome/css/font-awesome.min.css')
+    script(src="bower_components/requirejs/require.js")
+    script(src="scripts/require-config.js")
+    script(src="scripts/main.js")
+block content
+
+    h1= title
+    p Welcome to #{title}
