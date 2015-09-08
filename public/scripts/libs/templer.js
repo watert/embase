@@ -1,9 +1,26 @@
+
+/*
+
+ * sample with
+
+ * sample with sub templer
+tmpl = templer
+    outsider: " world "
+    useInIndex: templer "hello <%=outsider%> "
+    index:" <%=useInIndex()%> "
+assert tmpl() == "hello world"
+
+ * sample with this._super
+tmpl = templer({index: "hello world"}).extend
+    index: -> "before #{@_super.index} after"
+tmpl() == "before hello world after"
+ */
 var exports, factory,
   slice = [].slice;
 
 factory = function(_) {
   var templer;
-  templer = function(options) {
+  return templer = function(options) {
     var ctx, tmpl, tmplMethod;
     if (!options) {
       throw "Empty tmpl";
@@ -13,23 +30,25 @@ factory = function(_) {
         index: options
       };
     }
-    tmpl = _.template(options.index);
+    if (_.isString(tmpl = options.index)) {
+      tmpl = _.template(options.index);
+    }
     ctx = _.extend({}, tmpl, options);
     tmplMethod = function() {
       var args, data;
       data = arguments[0], args = 2 <= arguments.length ? slice.call(arguments, 1) : [];
       data = _.extend({}, ctx, data);
+      _.each(ctx, function(_tmpl, key) {
+        if (_tmpl.type === "templer") {
+          data[key] = _tmpl;
+          _.defaults(_tmpl.context, ctx);
+          return _.defaults(_tmpl.context, data);
+        }
+      });
       return tmpl.bind(ctx).apply(null, [data].concat(slice.call(args)));
     };
-    _.extend(ctx, {
-      require: function() {
-        var args, mod, name;
-        name = arguments[0], args = 2 <= arguments.length ? slice.call(arguments, 1) : [];
-        mod = templer.require(name);
-        return typeof mod === "function" ? mod.apply(null, args) : void 0;
-      }
-    });
     _.extend(tmplMethod, {
+      type: "templer",
       context: ctx,
       get: function(key) {
         return ctx[key];
@@ -37,28 +56,12 @@ factory = function(_) {
       extend: function(options) {
         var opt2;
         opt2 = _.extend({}, ctx, options);
+        opt2._super = ctx;
         return templer(opt2);
       }
     });
     return tmplMethod;
   };
-  return _.extend(templer, {
-    modules: {},
-    require: function(name) {
-      var mod;
-      mod = this.modules[name];
-      if (!mod) {
-        throw "mod " + name + " not defined";
-      }
-      return mod;
-    },
-    define: function(name, tmpl) {
-      if (!_.isFunction(tmpl)) {
-        tmpl = templer(tmpl);
-      }
-      return this.modules[name] = tmpl;
-    }
-  });
 };
 
 if (typeof define !== "undefined" && define !== null ? define.amd : void 0) {

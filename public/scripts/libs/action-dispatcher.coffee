@@ -10,8 +10,7 @@ factory = ($, _)->
     $when = $.when
     $reject = ->
         dfd = new Deferred()
-        setTimeout ->
-            dfd.reject(arguments...)
+        dfd.reject(arguments...)
         return dfd.promise
 
     class ActionDispatcher
@@ -49,7 +48,9 @@ factory = ($, _)->
                         return (new Deferred).reject(data)
                     return data
             else
-                return $reject("Dispatcher Err: Action '#{method}' not exists")
+                msg = "Dispatcher Err: Action '#{method}' not exists"
+                console.log "reject msg",msg
+                return $reject(msg)
                 # $.when(yes).reject("not exists")
 
         requireActions:(paths, callback)->
@@ -60,12 +61,6 @@ factory = ($, _)->
                     ActionsHandler.initialize()
                 callback?()
         actions:{}
-        fakeRequest:(path, data)-> # 假数据请求
-            dfd = new Deferred()
-            require ["models/_fake-data"],(data)->
-                if data[path] then dfd.resolve(data[path])
-                else dfd.reject({ret:-1, msg:"no fake data: #{path}"})
-            return dfd
         addActions:(map)->
             _(map).each (actionMethod,name)=>
                 oldMethod = @actions[name]

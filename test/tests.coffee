@@ -9,8 +9,8 @@ UserDoc = require("../app/models/user")
 #     @store: "user"
 
 describe "Main", ->
-    # _storePath = DBStore.storePath
-    # DBStore.storePath = (name)-> _storePath(name+"_test")
+    _storePath = DBStore.storePath
+    DBStore.storePath = (name)-> _storePath(name+"_test")
     getStore = DBStore.getStore
 
     describe "With ODM", ->
@@ -87,21 +87,23 @@ describe "Main", ->
 
     after "NeDB destroy", ()->
         fs = require("fs")
-        # fs.unlinkSync(DBStore.storePath("user"))
+        fs.unlinkSync(DBStore.storePath("user"))
 
 describe "extendable template", ->
     templer = require("../public/scripts/libs/templer")
     it "should templer work", ->
         tmpl = templer(index:"hello <%=name%>", name:"world")
         assert.equal(tmpl(), "hello world")
-
         newTmpl = tmpl.extend(name:tmpl.get("name")+"2")
         assert.equal(newTmpl(), "hello world2")
-    it "should templer define and require work", ->
-        templer.define("shit", "shit tmpl")
-        html = templer.require("shit")()
-        assert.equal(html,"shit tmpl","check require works")
-    it "should inline require work", ->
-        templer.define("hello", "hello <%=require('world')%>")
-        templer.define("world", "WORLD")
-        assert.equal(templer.require("hello")(), "hello WORLD", "check inline require")
+    it "should context deliver to sub templer", ->
+        # console.log "====="
+        tmpl = templer
+            outsider: " [Outsider] "
+            useInIndex: templer " <%=outsider%> "
+            index:" <%=useInIndex()%> "
+        assert(tmpl().indexOf("[Outsider]"), "should pass ctx to sub tmpl")
+    it "should extend with super method", ->
+        tmpl = templer({index: "hello world"}).extend
+            index: -> "before #{@_super.index} after"
+        assert.equal(tmpl(), "before hello world after", "should wrap with super")

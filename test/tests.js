@@ -9,7 +9,11 @@ _ = require("underscore");
 UserDoc = require("../app/models/user");
 
 describe("Main", function() {
-  var getStore;
+  var _storePath, getStore;
+  _storePath = DBStore.storePath;
+  DBStore.storePath = function(name) {
+    return _storePath(name + "_test");
+  };
   getStore = DBStore.getStore;
   describe("With ODM", function() {
     var data;
@@ -122,7 +126,8 @@ describe("Main", function() {
   });
   return after("NeDB destroy", function() {
     var fs;
-    return fs = require("fs");
+    fs = require("fs");
+    return fs.unlinkSync(DBStore.storePath("user"));
   });
 });
 
@@ -141,15 +146,24 @@ describe("extendable template", function() {
     });
     return assert.equal(newTmpl(), "hello world2");
   });
-  it("should templer define and require work", function() {
-    var html;
-    templer.define("shit", "shit tmpl");
-    html = templer.require("shit")();
-    return assert.equal(html, "shit tmpl", "check require works");
+  it("should context deliver to sub templer", function() {
+    var tmpl;
+    tmpl = templer({
+      outsider: " [Outsider] ",
+      useInIndex: templer(" <%=outsider%> "),
+      index: " <%=useInIndex()%> "
+    });
+    return assert(tmpl().indexOf("[Outsider]"), "should pass ctx to sub tmpl");
   });
-  return it("should inline require work", function() {
-    templer.define("hello", "hello <%=require('world')%>");
-    templer.define("world", "WORLD");
-    return assert.equal(templer.require("hello")(), "hello WORLD", "check inline require");
+  return it("should extend with super method", function() {
+    var tmpl;
+    tmpl = templer({
+      index: "hello world"
+    }).extend({
+      index: function() {
+        return "before " + this._super.index + " after";
+      }
+    });
+    return assert.equal(tmpl(), "before hello world after", "should wrap with super");
   });
 });

@@ -36,7 +36,7 @@ router.get('/api/:method', function(req, res) {
     console.log("method " + method + " then");
     return res.json(data);
   }).fail(function(err) {
-    console.log("method " + method + " fail");
+    console.log("method " + method + " fail", err);
     return res.status(400).json(err);
   });
 });

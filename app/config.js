@@ -7,5 +7,4 @@ config = {
 
 
 }
-console.log("__dirname",__dirname);
 module.exports = config;

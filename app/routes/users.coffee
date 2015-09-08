@@ -19,8 +19,7 @@ router.get '/api/:method', (req, res)->
         console.log "method #{method} then"
         res.json(data)
     .fail (err)->
-        console.log "method #{method} fail"
-
+        console.log "method #{method} fail",err
         res.status(400).json(err)
 router.get '/', (req, res, next)->
     res.render('index', { title: 'Express' })

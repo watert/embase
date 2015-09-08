@@ -5,5 +5,8 @@ require.config({
         underscore:"../bower_components/underscore/underscore-min",
         backbone:"../bower_components/backbone/backbone-min",
         fastclick:"../bower_components/fastclick/lib/fastclick"
+    },
+    shim:{
+        backbone: ["underscore","jquery"]
     }
 });

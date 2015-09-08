@@ -12,9 +12,7 @@ factory = function($, _) {
   $reject = function() {
     var dfd;
     dfd = new Deferred();
-    setTimeout(function() {
-      return dfd.reject.apply(dfd, arguments);
-    });
+    dfd.reject.apply(dfd, arguments);
     return dfd.promise;
   };
   return ActionDispatcher = (function() {
@@ -59,7 +57,7 @@ factory = function($, _) {
     };
 
     ActionDispatcher.prototype.call = function(method, data, callback) {
-      var dfd;
+      var dfd, msg;
       if (this.actions[method]) {
         dfd = $when(this.actions[method].bind(this)(data));
         if (this.isShowingRequestDebug) {
@@ -75,7 +73,9 @@ factory = function($, _) {
           return data;
         });
       } else {
-        return $reject("Dispatcher Err: Action '" + method + "' not exists");
+        msg = "Dispatcher Err: Action '" + method + "' not exists";
+        console.log("reject msg", msg);
+        return $reject(msg);
       }
     };
 
@@ -92,22 +92,6 @@ factory = function($, _) {
     };
 
     ActionDispatcher.prototype.actions = {};
-
-    ActionDispatcher.prototype.fakeRequest = function(path, data) {
-      var dfd;
-      dfd = new Deferred();
-      require(["models/_fake-data"], function(data) {
-        if (data[path]) {
-          return dfd.resolve(data[path]);
-        } else {
-          return dfd.reject({
-            ret: -1,
-            msg: "no fake data: " + path
-          });
-        }
-      });
-      return dfd;
-    };
 
     ActionDispatcher.prototype.addActions = function(map) {
       return _(map).each((function(_this) {

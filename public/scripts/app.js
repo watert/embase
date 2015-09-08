@@ -12,6 +12,10 @@ define(["jquery", "backbone", "libs/action-dispatcher", "libs/templer"], functio
 
     Router.prototype.routes = {
       "*path": function(path) {
+        if (path == null) {
+          path = "users";
+        }
+        console.log(path);
         return this.trigger("route-path", path);
       }
     };
@@ -38,19 +42,19 @@ define(["jquery", "backbone", "libs/action-dispatcher", "libs/templer"], functio
     };
 
     App.prototype.render = function() {
-      console.log("app render");
-      console.log(this.$el);
       return this.$el.html(this.tmpl());
     };
 
-    App.prototype.tmpl = templer("<div class=\"app\">\n    <div class=\"app-body\">\n    </div>\n</div>");
+    App.prototype.tmpl = templer("<div class=\"app\">\n    <div class=\"app-body\">\n    Hello\n    </div>\n</div>");
 
     App.prototype.loadViewPath = function(path) {
       var dfd;
+      console.log("loadViewPath", path);
       dfd = $.Deferred();
       if (path.slice(-1) === "/") {
         path = path.slice(0, -1);
       }
+      console.log("views/" + path);
       require(["views/" + path], (function(_this) {
         return function(View) {
           var $body, view;
@@ -58,7 +62,8 @@ define(["jquery", "backbone", "libs/action-dispatcher", "libs/templer"], functio
           _this.view = view = new View({
             el: $body[0]
           });
-          return view.render();
+          view.render();
+          return dfd.resolve(view);
         };
       })(this));
       return dfd;

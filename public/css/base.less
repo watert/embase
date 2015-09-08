@@ -1,0 +1,47 @@
+// out: base.css, sourcemap:true
+@import "flexbox.less";
+
+@brand-primary:         #10d066; //WeChat Color
+@brand-success:         #5cb85c;
+@brand-info:            #5bc0de;
+@brand-warning:         #f0ad4e;
+@brand-danger:          #d9534f;
+@text-color:            #434343;
+@gray-base:             #555;
+@gray-light:            lighten(@gray-base, 46.7%); // #777
+@gray-lighter:          #ebebeb;
+@bg-light:              #f5f6f7;
+@gray-border:           #dbdbdb;
+@coupon-color:          #ffa247;
+@coupon-shadow-color:   rgba(199, 199, 199, .21);
+
+
+body { font-family: "Helvetica"; margin:0; font-size:16px; }
+small {font-size:12px; opacity:.75; font-weight:lighter;}
+
+.list {
+    list-style:none; margin:0; padding:0;
+    .list-item {
+        .flexbox(); .justify-content(space-between);.align-items(center);
+        height:44px; border-bottom: 1px solid @gray-lighter; padding:0 10px;
+        margin-left: 10px;
+    }
+    .item-body {
+        .flex-grow(2);
+    }
+    .list-check {display: none;}
+    &.editing {
+        .list-check {display: inline-block;}
+    }
+
+}
+
+.navbar { height:54px; }
+.navbar-inner {
+    position: fixed; width:100%; top:0; z-index: 10; box-sizing: border-box;
+    height:54px; padding:0 10px; background: @bg-light;
+    .flexbox(); .justify-content(space-between);.align-items(center);
+    border-bottom: 1px solid darken(@bg-light, 6.6%);
+    .navbar-title {font-weight:bold; font-size:18px;}
+    .btn { color:@brand-primary; }
+}
