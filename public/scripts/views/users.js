@@ -2,8 +2,8 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
   hasProp = {}.hasOwnProperty;
 
 define(["views/modelview", "tmpls/base"], function(ModelView, baseTmpls) {
-  var List, navbar, templer;
-  navbar = baseTmpls.navbar, templer = baseTmpls.templer;
+  var List, navbar, templer, toolbar;
+  navbar = baseTmpls.navbar, toolbar = baseTmpls.toolbar, templer = baseTmpls.templer;
   return List = (function(superClass) {
     extend(List, superClass);
 
@@ -30,15 +30,16 @@ define(["views/modelview", "tmpls/base"], function(ModelView, baseTmpls) {
           _this.setModel({
             users: data
           });
-          console.log(_this.template.context.onRender);
+          console.log(_this.template._context.onRender);
           return List.__super__.render.call(_this);
         };
       })(this));
     };
 
     List.prototype.template = templer({
-      index: "<%=navbar()%>\n<ul class=\"list\">\n    <%_.each(users, function(item){%>\n        <%=listItem({data:item})%>\n    <%})%>\n</ul>",
+      index: "<%=navbar()%>\n<ul class=\"list\">\n    <%_.each(users, function(item){%>\n        <%=listItem({data:item})%>\n    <%})%>\n</ul>\n<%=toolbar()%>",
       onRender: function() {},
+      toolbar: toolbar,
       navbar: navbar.extend({
         title: "Users",
         right: "<div class=\"btn btn-edit\">Edit</div>"

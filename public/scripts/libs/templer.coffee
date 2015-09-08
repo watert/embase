@@ -7,12 +7,12 @@ tmpl = templer
     outsider: " world "
     useInIndex: templer "hello <%=outsider%> "
     index:" <%=useInIndex()%> "
-assert tmpl() == "hello world"
+console.assert tmpl() == "hello world"
 
 # sample with this._super
 tmpl = templer({index: "hello world"}).extend
     index: -> "before #{@_super.index} after"
-tmpl() == "before hello world after"
+console.assert tmpl() == "before hello world after"
 ###
 
 factory = (_)->
@@ -21,6 +21,8 @@ factory = (_)->
         options = {index:options} if _.isString(options)
         if _.isString(tmpl = options.index)
             tmpl = _.template(options.index)
+
+        #main part: return a generated tmpl method
         ctx = _.extend({}, tmpl, options)
         tmplMethod = (data,args...)->
             data = _.extend({}, ctx, data)
@@ -29,13 +31,15 @@ factory = (_)->
                 # sub templer should have parent's context and data as default
                 if _tmpl.type is "templer"
                     data[key] = _tmpl
-                    _.defaults(_tmpl.context, ctx)
-                    _.defaults(_tmpl.context, data)
+                    _.defaults(_tmpl._context, ctx)
+                    _.defaults(_tmpl._context, data)
             tmpl.bind(ctx)(data, args...)
-        _.extend tmplMethod,
+
+        # add extend feature
+        _.extend tmplMethod, ctx,
             type:"templer"
-            context: ctx
-            get:(key)-> ctx[key]
+            _context: ctx
+            # get:(key)-> ctx[key]
             extend: (options)->
                 # console.log "extending", ctx.index, options.index
                 opt2 = _.extend({}, ctx, options)
@@ -44,8 +48,9 @@ factory = (_)->
 
         return tmplMethod
 
+# bind to module loaders
 if define?.amd
-    # console.log "define"
     define(["underscore"],factory)
-if exports and module?.exports
+else if exports and module?.exports
     exports = module.exports = factory(require("underscore"))
+else _.templer = factory(_)

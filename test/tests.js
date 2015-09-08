@@ -137,12 +137,12 @@ describe("extendable template", function() {
   it("should templer work", function() {
     var newTmpl, tmpl;
     tmpl = templer({
-      index: "hello <%=name%>",
-      name: "world"
+      index: "hello <%=world%>",
+      world: "world"
     });
     assert.equal(tmpl(), "hello world");
     newTmpl = tmpl.extend({
-      name: tmpl.get("name") + "2"
+      world: tmpl.world + "2"
     });
     return assert.equal(newTmpl(), "hello world2");
   });

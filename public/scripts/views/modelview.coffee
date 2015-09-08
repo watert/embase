@@ -64,10 +64,11 @@ Factory = ($, Backbone)-> # Initializer
 
 			html = @template?(data) or @template
 			@$el.html(html)
-			if tmplRenderer = @template.context?.onRender
+			if tmplRenderer = @template._context?.onRender
 				tmplRenderer.bind(@)()
 			@trigger("render")
 			@onRender?()
+			return $.when()
 		renderError:(message)->
 			code = null
 			if res = message.base_rsp

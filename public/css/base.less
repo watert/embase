@@ -45,3 +45,12 @@ small {font-size:12px; opacity:.75; font-weight:lighter;}
     .navbar-title {font-weight:bold; font-size:18px;}
     .btn { color:@brand-primary; }
 }
+.toolbar {height:44px;}
+.toolbar-inner {
+    height:44px; width:100%; position: fixed; bottom:0; background: @bg-light;
+    padding:0 10px; box-sizing: border-box;
+    .flexbox(); .justify-content(space-between);.align-items(center);
+    border-top: 1px solid darken(@bg-light, 6.6%);
+
+    .btn { color:@brand-primary; }
+}

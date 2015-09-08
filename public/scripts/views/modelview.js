@@ -101,11 +101,14 @@ Factory = function($, Backbone) {
       data = _.extend(data, this.templateHelpers);
       html = (typeof this.template === "function" ? this.template(data) : void 0) || this.template;
       this.$el.html(html);
-      if (tmplRenderer = (ref1 = this.template.context) != null ? ref1.onRender : void 0) {
+      if (tmplRenderer = (ref1 = this.template._context) != null ? ref1.onRender : void 0) {
         tmplRenderer.bind(this)();
       }
       this.trigger("render");
-      return typeof this.onRender === "function" ? this.onRender() : void 0;
+      if (typeof this.onRender === "function") {
+        this.onRender();
+      }
+      return $.when();
     };
 
     ModelView.prototype.renderError = function(message) {

@@ -1,7 +1,12 @@
 define(["libs/templer"], function(templer) {
-  var baseTemplates;
-  return baseTemplates = {
+  var base;
+  return base = {
     templer: templer,
+    toolbar: templer({
+      items: ["Delete", "Mark"],
+      itemTmpl: templer("<div class=\"toolbar-item\">\n    <div class=\"btn\"><%=name%></div>\n</div>"),
+      index: "<div class=\"toolbar\">\n    <div class=\"toolbar-inner\">\n    <% _.each(items, function(item){ %>\n        <%=itemTmpl({name:item})%>\n    <% });%>\n    </div>\n</div>"
+    }),
     navbar: templer({
       left: "",
       right: "Right",

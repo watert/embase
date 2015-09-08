@@ -1,7 +1,7 @@
 var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
-define(["jquery", "backbone", "libs/action-dispatcher", "libs/templer"], function($, Backbone, Dispatcher, templer) {
+define(["jquery", "backbone", "libs/action-dispatcher", "libs/templer", "iscroll"], function($, Backbone, Dispatcher, templer, IScroll) {
   var App, Router;
   Router = (function(superClass) {
     extend(Router, superClass);
@@ -45,7 +45,7 @@ define(["jquery", "backbone", "libs/action-dispatcher", "libs/templer"], functio
       return this.$el.html(this.tmpl());
     };
 
-    App.prototype.tmpl = templer("<div class=\"app\">\n    <div class=\"app-body\">\n    Hello\n    </div>\n</div>");
+    App.prototype.tmpl = templer("<div class=\"app\">\n    <div class=\"app-body\">\n        <div class=\"view-container\">\n        </div>\n    </div>\n</div>");
 
     App.prototype.loadViewPath = function(path) {
       var dfd;
@@ -58,11 +58,11 @@ define(["jquery", "backbone", "libs/action-dispatcher", "libs/templer"], functio
       require(["views/" + path], (function(_this) {
         return function(View) {
           var $body, view;
-          $body = _this.$(".app-body").empty();
+          $body = _this.$(".view-container").empty();
           _this.view = view = new View({
-            el: $body[0]
+            el: $body.parent()[0]
           });
-          view.render();
+          view.render().then(function() {});
           return dfd.resolve(view);
         };
       })(this));

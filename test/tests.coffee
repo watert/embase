@@ -92,9 +92,9 @@ describe "Main", ->
 describe "extendable template", ->
     templer = require("../public/scripts/libs/templer")
     it "should templer work", ->
-        tmpl = templer(index:"hello <%=name%>", name:"world")
+        tmpl = templer(index:"hello <%=world%>", world:"world")
         assert.equal(tmpl(), "hello world")
-        newTmpl = tmpl.extend(name:tmpl.get("name")+"2")
+        newTmpl = tmpl.extend(world:tmpl.world+"2")
         assert.equal(newTmpl(), "hello world2")
     it "should context deliver to sub templer", ->
         # console.log "====="

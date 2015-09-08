@@ -8,12 +8,12 @@ tmpl = templer
     outsider: " world "
     useInIndex: templer "hello <%=outsider%> "
     index:" <%=useInIndex()%> "
-assert tmpl() == "hello world"
+console.assert tmpl() == "hello world"
 
  * sample with this._super
 tmpl = templer({index: "hello world"}).extend
     index: -> "before #{@_super.index} after"
-tmpl() == "before hello world after"
+console.assert tmpl() == "before hello world after"
  */
 var exports, factory,
   slice = [].slice;
@@ -41,18 +41,15 @@ factory = function(_) {
       _.each(ctx, function(_tmpl, key) {
         if (_tmpl.type === "templer") {
           data[key] = _tmpl;
-          _.defaults(_tmpl.context, ctx);
-          return _.defaults(_tmpl.context, data);
+          _.defaults(_tmpl._context, ctx);
+          return _.defaults(_tmpl._context, data);
         }
       });
       return tmpl.bind(ctx).apply(null, [data].concat(slice.call(args)));
     };
-    _.extend(tmplMethod, {
+    _.extend(tmplMethod, ctx, {
       type: "templer",
-      context: ctx,
-      get: function(key) {
-        return ctx[key];
-      },
+      _context: ctx,
       extend: function(options) {
         var opt2;
         opt2 = _.extend({}, ctx, options);
@@ -66,8 +63,8 @@ factory = function(_) {
 
 if (typeof define !== "undefined" && define !== null ? define.amd : void 0) {
   define(["underscore"], factory);
-}
-
-if (exports && (typeof module !== "undefined" && module !== null ? module.exports : void 0)) {
+} else if (exports && (typeof module !== "undefined" && module !== null ? module.exports : void 0)) {
   exports = module.exports = factory(require("underscore"));
+} else {
+  _.templer = factory(_);
 }

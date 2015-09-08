@@ -1,5 +1,5 @@
 define ["views/modelview","tmpls/base"],(ModelView, baseTmpls)->
-    {navbar, templer} = baseTmpls
+    {navbar, toolbar, templer} = baseTmpls
     class List extends ModelView
         tagName:"div"
         events:
@@ -12,7 +12,7 @@ define ["views/modelview","tmpls/base"],(ModelView, baseTmpls)->
         render:()->
             $.get("/users/api/find").then (data)=>
                 @setModel(users:data)
-                console.log @template.context.onRender
+                console.log @template._context.onRender
                 super()
         #     @$el.html(@tmpl(data:[1,2,3]))
         template: templer
@@ -23,8 +23,10 @@ define ["views/modelview","tmpls/base"],(ModelView, baseTmpls)->
                         <%=listItem({data:item})%>
                     <%})%>
                 </ul>
+                <%=toolbar()%>
             """
             onRender:()->
+            toolbar: toolbar
             navbar: navbar.extend
                 title:"Users"
                 right:"""

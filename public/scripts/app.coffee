@@ -3,8 +3,8 @@
 # _ = require("underscore")
 # Backbone = require("backbone")
 define [
-    "jquery","backbone","libs/action-dispatcher","libs/templer"
-],($, Backbone,Dispatcher,templer)->
+    "jquery","backbone","libs/action-dispatcher","libs/templer", "iscroll"
+],($, Backbone,Dispatcher,templer, IScroll)->
     class Router extends Backbone.Router
         routes:
             "*path":(path="users")->
@@ -25,7 +25,8 @@ define [
         tmpl: templer """
             <div class="app">
                 <div class="app-body">
-                Hello
+                    <div class="view-container">
+                    </div>
                 </div>
             </div>
         """
@@ -36,9 +37,10 @@ define [
             console.log "views/#{path}"
             require ["views/#{path}"],(View)=>
                 # console.log "View",View
-                $body = @$(".app-body").empty()
-                @view = view = new View(el: $body[0])
-                view.render()
+                $body = @$(".view-container").empty()
+                @view = view = new View(el: $body.parent()[0])
+                view.render().then =>
+                    # new IScroll(view.el)
                 dfd.resolve(view)
 
             return dfd
