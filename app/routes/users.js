@@ -1,4 +1,4 @@
-var Dispatcher, User, _, actions, api, app, config, express, method, router;
+var Dispatcher, User, _, api, app, config, express, getRequesetData, retWithResponse, router;
 
 express = require('express');
 
@@ -14,27 +14,75 @@ app = require("../app");
 
 router = express.Router();
 
-actions = (function() {
-  var i, len, ref, results;
-  ref = ["find"];
-  results = [];
-  for (i = 0, len = ref.length; i < len; i++) {
-    method = ref[i];
-    results.push([method, User[method]]);
+retWithResponse = function(res) {
+  return function(data) {
+    var id, ret;
+    ret = data._data || data;
+    id = data.id || data._id || _.map(data, function(item) {
+      return item.id || item._id;
+    });
+    return res.json({
+      result: ret,
+      id: id
+    });
+  };
+};
+
+getRequesetData = function(req) {
+  var method;
+  method = req.method;
+  if (method === "GET") {
+    return req.query;
+  } else {
+    return req.body;
   }
-  return results;
-})();
+};
 
-console.log(config.appPath("db/user.db"));
+router.all("/api/restful/:id?", function(req, res) {
+  var data, id, method, ret;
+  method = req.method;
+  id = req.params.id;
+  data = getRequesetData(req);
+  ret = retWithResponse(res);
+  if (!id) {
+    if (method === "GET") {
+      User.find().then(ret);
+    }
+    if (method === "POST") {
+      return (new User(data)).save().then(ret);
+    }
+  } else {
+    return User.findOne({
+      _id: id
+    }).then(function(user) {
+      if (method === "GET") {
+        return user;
+      }
+      if (method === "PUT") {
+        return user.save(data);
+      }
+      if (method === "DELETE") {
+        return user.remove().then(function(num) {
+          return {
+            _id: id,
+            deleted: true
+          };
+        });
+      }
+    }).then(ret);
+  }
+});
 
-api = Dispatcher.createAPI(User, ["find"]);
+api = Dispatcher.createAPI(User, ["find", "findOne", "register"]);
 
-router.get('/api/:method', function(req, res) {
+router.all('/api/:method', function(req, res) {
+  var data, method, ret;
   method = req.params.method;
-  console.log("method", method);
-  return api.call(method).then(function(data) {
+  ret = retWithResponse(res);
+  data = getRequesetData(req) || {};
+  return api.call(method, data).then(function(data) {
     console.log("method " + method + " then");
-    return res.json(data);
+    return ret(data);
   }).fail(function(err) {
     console.log("method " + method + " fail", err);
     return res.status(400).json(err);

@@ -4,14 +4,14 @@ Factory = ($, Backbone)-> # Initializer
 			# 将必要属性放到this中
 			attrs = ["path", "query", "model", "collection", "templateHelpers"]
 			_.extend(this, _.pick(options, attrs))
-			appMethods = ["call", "deparamQuery", "appLinkWithQuery", "getState"]
-			_(appMethods).each (method)=>
-				@[method] = -> app[method](arguments...)
+			# appMethods = ["call", "deparamQuery", "appLinkWithQuery", "getState"]
+			# _(appMethods).each (method)=>
+			# 	@[method] = -> app[method](arguments...)
 
 
 			# 预处理tmpl,query
 			@initTemplates()
-			@query = @deparamQuery(@query) if @query
+			# @query = @deparamQuery(@query) if @query
 
 			@renderError = @renderError.bind(@)
 			@renderLoading = @renderLoading.bind(@)
@@ -35,13 +35,6 @@ Factory = ($, Backbone)-> # Initializer
 			@template = invokeTmpl(@template)
 			_.each @templateHelpers, (helper, key)=>
 				@templateHelpers[key] = invokeTmpl(helper)
-		navigateWithQuery:(link, query)->
-			if -1 is link.indexOf("?") then link += "?"
-			else link += "&"
-			link = link + $.param(query)
-			app.router.navigate(link, {trigger:yes})
-		navigate: (link)->
-			app.router.navigate(link, {trigger:yes})
 		# linkWithState: ->
 		# 	app.linkWithState(arguments...)
 		# getState: ->
@@ -68,12 +61,12 @@ Factory = ($, Backbone)-> # Initializer
 				tmplRenderer.bind(@)()
 			@trigger("render")
 			@onRender?()
-			return $.when()
+			return $.when(@)
 		renderError:(message)->
 			code = null
-			if res = message.base_rsp
-				code = res.ret
-				msg = res.msg
+			if res = message.err
+				code = res.code
+				msg = res.message
 			# console.debug code,msg
 			@$el.html("""
 				<br />
@@ -89,5 +82,5 @@ Factory = ($, Backbone)-> # Initializer
 			""")
 if window.require&&require.defined
 	# console.debug "try define"
-	define(["jquery","backbone", "app"], Factory)
-else window.ModelView = Factory($, Backbone, App)
+	define(["jquery","backbone"], Factory)
+else window.ModelView = Factory($, Backbone)

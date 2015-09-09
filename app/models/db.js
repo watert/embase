@@ -106,19 +106,23 @@ BaseDoc = (function() {
     return this.getStore().then((function(_this) {
       return function(store) {
         if (data._id) {
-          return store.update(where, data, {});
+          return store.update(where, data, {}).then(function() {
+            return _this.constructor.findOne({
+              _id: data._id
+            });
+          });
         } else {
           return store.insert(data).then(function(data) {
             _this._data = data;
             _this.id = data._id;
-            return data;
+            return new _this.constructor(data);
           });
         }
       };
     })(this)).then((function(_this) {
-      return function() {
+      return function(data) {
         _this.changed = false;
-        return _this._data;
+        return data;
       };
     })(this));
   };

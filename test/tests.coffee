@@ -18,7 +18,7 @@ describe "Main", ->
         it "should create user", ->
             user = new UserDoc(data)
             user.save().then (doc)->
-                assert.equal(doc.name,data.name,"should insert right name")
+                assert.equal(doc._data.name,data.name,"should insert right name")
 
         it "should update user", ->
             # data.name += "1"

@@ -1,7 +1,7 @@
 var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
-define(["jquery", "backbone", "libs/action-dispatcher", "libs/templer", "iscroll"], function($, Backbone, Dispatcher, templer, IScroll) {
+define(["jquery", "backbone", "libs/action-dispatcher", "libs/templer", "libs/util"], function($, Backbone, Dispatcher, templer, util) {
   var App, Router;
   Router = (function(superClass) {
     extend(Router, superClass);
@@ -57,10 +57,12 @@ define(["jquery", "backbone", "libs/action-dispatcher", "libs/templer", "iscroll
       console.log("views/" + path);
       require(["views/" + path], (function(_this) {
         return function(View) {
-          var $body, view;
+          var $body, query, view;
           $body = _this.$(".view-container").empty();
+          query = util.deparamQuery();
           _this.view = view = new View({
-            el: $body.parent()[0]
+            el: $body.parent()[0],
+            query: query
           });
           view.render().then(function() {});
           return dfd.resolve(view);

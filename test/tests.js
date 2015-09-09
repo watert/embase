@@ -25,7 +25,7 @@ describe("Main", function() {
       var user;
       user = new UserDoc(data);
       return user.save().then(function(doc) {
-        return assert.equal(doc.name, data.name, "should insert right name");
+        return assert.equal(doc._data.name, data.name, "should insert right name");
       });
     });
     it("should update user", function() {

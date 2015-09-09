@@ -47,14 +47,16 @@ class BaseDoc
         data = @_data
         where = _.pick(data, "_id")
         @getStore().then (store)=>
-            if data._id then store.update(where, data, {})
+            if data._id
+                return store.update(where, data, {}).then =>
+                    @constructor.findOne(_id:data._id)
             else store.insert(data).then (data)=>
                 @_data = data
                 @id = data._id
-                return data
-        .then =>
+                return new @constructor(data)
+        .then (data)=>
             @changed = no
-            return @_data
+            return data
     remove: ()->
         @getStore().then (store)=>
             where = _.pick(@_data, "_id")

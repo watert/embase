@@ -8,21 +8,10 @@ Factory = function($, Backbone) {
     extend(ModelView, superClass);
 
     function ModelView(options) {
-      var appMethods, attrs;
+      var attrs;
       attrs = ["path", "query", "model", "collection", "templateHelpers"];
       _.extend(this, _.pick(options, attrs));
-      appMethods = ["call", "deparamQuery", "appLinkWithQuery", "getState"];
-      _(appMethods).each((function(_this) {
-        return function(method) {
-          return _this[method] = function() {
-            return app[method].apply(app, arguments);
-          };
-        };
-      })(this));
       this.initTemplates();
-      if (this.query) {
-        this.query = this.deparamQuery(this.query);
-      }
       this.renderError = this.renderError.bind(this);
       this.renderLoading = this.renderLoading.bind(this);
       ModelView.__super__.constructor.call(this, options);
@@ -65,24 +54,6 @@ Factory = function($, Backbone) {
       })(this));
     };
 
-    ModelView.prototype.navigateWithQuery = function(link, query) {
-      if (-1 === link.indexOf("?")) {
-        link += "?";
-      } else {
-        link += "&";
-      }
-      link = link + $.param(query);
-      return app.router.navigate(link, {
-        trigger: true
-      });
-    };
-
-    ModelView.prototype.navigate = function(link) {
-      return app.router.navigate(link, {
-        trigger: true
-      });
-    };
-
     ModelView.prototype.tagName = "div";
 
     ModelView.prototype.template = _.template("Empty ModelView");
@@ -108,15 +79,15 @@ Factory = function($, Backbone) {
       if (typeof this.onRender === "function") {
         this.onRender();
       }
-      return $.when();
+      return $.when(this);
     };
 
     ModelView.prototype.renderError = function(message) {
       var code, msg, res;
       code = null;
-      if (res = message.base_rsp) {
-        code = res.ret;
-        msg = res.msg;
+      if (res = message.err) {
+        code = res.code;
+        msg = res.message;
       }
       return this.$el.html("<br />\n<div class=\"text-center text-danger\">\n	<h3 class=\"\"> ERROR " + (code || "") + "</h3>\n	<p class=\"\">" + (msg || message) + "</p>\n</div>");
     };
@@ -134,7 +105,7 @@ Factory = function($, Backbone) {
 };
 
 if (window.require && require.defined) {
-  define(["jquery", "backbone", "app"], Factory);
+  define(["jquery", "backbone"], Factory);
 } else {
-  window.ModelView = Factory($, Backbone, App);
+  window.ModelView = Factory($, Backbone);
 }

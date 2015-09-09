@@ -3,8 +3,8 @@
 # _ = require("underscore")
 # Backbone = require("backbone")
 define [
-    "jquery","backbone","libs/action-dispatcher","libs/templer", "iscroll"
-],($, Backbone,Dispatcher,templer, IScroll)->
+    "jquery","backbone","libs/action-dispatcher","libs/templer", "libs/util"
+],($, Backbone,Dispatcher,templer, util)->
     class Router extends Backbone.Router
         routes:
             "*path":(path="users")->
@@ -38,7 +38,8 @@ define [
             require ["views/#{path}"],(View)=>
                 # console.log "View",View
                 $body = @$(".view-container").empty()
-                @view = view = new View(el: $body.parent()[0])
+                query = util.deparamQuery()
+                @view = view = new View(el: $body.parent()[0], query:query)
                 view.render().then =>
                     # new IScroll(view.el)
                 dfd.resolve(view)

@@ -5,6 +5,8 @@ require(["app", "jquery"], function(App, $) {
     window.app = app = new App({
       el: $("body")[0]
     });
-    return console.log('Application is loaded!!');
+    App.instance = app;
+    console.log('Application is loaded!!');
+    return app;
   });
 });

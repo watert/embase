@@ -59,7 +59,7 @@ small {
 .list .list-check {
   display: none;
 }
-.list.editing .list-check {
+.editing .list-check {
   display: inline-block;
 }
 .navbar {

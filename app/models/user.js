@@ -41,8 +41,10 @@ UserDoc = (function(superClass) {
   UserDoc.register = function(data) {
     if (!_hasKeys(data, ["email", "name", "password"])) {
       return Promise.reject({
-        code: 406,
-        msg: "needed more info to register",
+        error: {
+          code: 406,
+          message: "needed more info to register"
+        },
         data: data
       });
     }
@@ -58,8 +60,10 @@ UserDoc = (function(superClass) {
         var user;
         if (ret.length) {
           return Promise.reject({
-            code: 400,
-            msg: "name or email already exists"
+            error: {
+              code: 400,
+              message: "name or email already exists"
+            }
           });
         } else {
           data = _.extend({}, data, {
@@ -77,8 +81,10 @@ UserDoc = (function(superClass) {
   UserDoc.login = function(data) {
     if (!data.password) {
       Promise.reject({
-        code: 406,
-        msg: "no password",
+        error: {
+          code: 406,
+          message: "no password"
+        },
         data: data
       });
     }
