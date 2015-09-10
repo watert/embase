@@ -8,7 +8,8 @@ require.config({
         fastclick:"../bower_components/fastclick/lib/fastclick",
         "iscroll":"../bower_components/iscroll/build/iscroll",
         "iscroll-lite":"../bower_components/iscroll/build/iscroll-lite",
-        "highlightjs":"libs/highlight.pack"
+        "highlightjs":"libs/highlight.pack",
+        "marked":"../bower_components/marked/marked.min"
     },
     shim:{
         backbone: ["underscore","jquery"],

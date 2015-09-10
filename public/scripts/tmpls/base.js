@@ -17,7 +17,7 @@ define(["libs/templer"], function(templer) {
       cells: ["Empty Cell Item"],
       cellItem: "<div class=\"tableview-cell\">\n    <%=invoke(html)%>\n</div>",
       header: "",
-      index: "<div class=\"tableview\">\n    <%if(header){ %>\n        <div class=\"tableview-header\">\n        <%=invoke(header)%></div>\n    <% }%>\n    <%_.each(cells, function(cell){ print(invoke(cellItem,{html:cell})); })%>\n</div>"
+      index: "<div class=\"tableview\">\n    <%if(header){ %>\n        <div class=\"tableview-header\">\n        <%=invoke(header)%></div>\n    <% }%>\n    <%_.each(cells, function(cell){\n        print(invoke(cellItem,{html:cell}));\n    })%>\n</div>"
     }),
     toolbar: templer({
       items: ["Delete", "Mark"],

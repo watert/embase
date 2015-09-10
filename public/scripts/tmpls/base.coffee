@@ -18,8 +18,6 @@ define ["libs/templer"],(templer)->
 
         # components
         tableview: templer
-            # events:
-            #     prepare: ()-> console.log "tableview", @
             cells: ["Empty Cell Item"]
             cellItem: """
                 <div class="tableview-cell">
@@ -33,7 +31,9 @@ define ["libs/templer"],(templer)->
                         <div class="tableview-header">
                         <%=invoke(header)%></div>
                     <% }%>
-                    <%_.each(cells, function(cell){ print(invoke(cellItem,{html:cell})); })%>
+                    <%_.each(cells, function(cell){
+                        print(invoke(cellItem,{html:cell}));
+                    })%>
                 </div>
             """
         # list:

@@ -13,6 +13,9 @@ small {
   opacity: .75;
   font-weight: lighter;
 }
+p {
+  margin: .4em 0;
+}
 input {
   outline: none;
   font-size: 16px;
@@ -22,6 +25,92 @@ input {
 }
 .text-primary {
   color: #10d066;
+}
+.clearfix.after {
+  content: " ";
+  /* Older browser do not support empty content */
+  visibility: hidden;
+  display: block;
+  height: 0;
+  clear: both;
+}
+.card {
+  padding: 4px;
+  margin: 10px;
+  background: #FFF;
+  border-radius: 4px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  box-sizing: border-box;
+}
+.card.after {
+  content: " ";
+  /* Older browser do not support empty content */
+  visibility: hidden;
+  display: block;
+  height: 0;
+  clear: both;
+}
+.card.after {
+  content: " ";
+  /* Older browser do not support empty content */
+  visibility: hidden;
+  display: block;
+  height: 0;
+  clear: both;
+}
+.card > :last-child {
+  border-radius: 0 0 4px 4px;
+}
+.card h1 {
+  font-size: 24px;
+}
+.card h2 {
+  font-size: 21px;
+}
+.card h3 {
+  font-size: 18px;
+}
+.card h4,
+.card h5,
+.card h6 {
+  font-size: 16px;
+}
+@media (min-width: 415px) {
+  .cards {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-box;
+    display: -o-box;
+    display: box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: -moz-flex;
+    display: -ms-flex;
+    display: -o-flex;
+    display: flex;
+    -webkit-lines: multiple;
+    -webkit-box-lines: multiple;
+    -moz-box-lines: multiple;
+    -ms-box-lines: multiple;
+    -o-box-lines: multiple;
+    box-lines: multiple;
+    -webkit-flex-wrap: wrap;
+    -moz-flex-wrap: wrap;
+    -ms-flex-wrap: wrap;
+    -o-flex-wrap: wrap;
+    flex-wrap: wrap;
+    -webkit-box-pack: center;
+    -moz-box-pack: center;
+    -ms-flex-pack: center;
+    -webkit-justify-content: center;
+    -moz-justify-content: center;
+    -ms-justify-content: center;
+    -o-justify-content: center;
+    justify-content: center;
+  }
+  .card {
+    max-width: 26em;
+  }
 }
 .list {
   list-style: none;
@@ -237,6 +326,64 @@ input {
 .toolbar-inner .btn {
   color: #10d066;
 }
-.view-codes-index code {
+.view-codes-index pre {
   font-size: 12px;
+  margin: 10px 0 0;
+}
+.view-codes-index .cards-title {
+  text-align: center;
+  border-bottom: 1px solid #CCC;
+  font-family: "times", serif;
+  font-size: 20px;
+  line-height: 1.4em;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-box;
+  display: -o-box;
+  display: box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flex;
+  display: -o-flex;
+  display: flex;
+  -webkit-box-pack: center;
+  -moz-box-pack: center;
+  -ms-flex-pack: center;
+  -webkit-justify-content: center;
+  -moz-justify-content: center;
+  -ms-justify-content: center;
+  -o-justify-content: center;
+  justify-content: center;
+  background: #FFF;
+}
+.view-codes-index .cards-title h1,
+.view-codes-index .cards-title h2,
+.view-codes-index .cards-title h3 {
+  margin-bottom: .5em;
+}
+.view-codes-index .cards-title .title-body {
+  max-width: 46em;
+}
+.view-codes-index .cards {
+  padding: 4px;
+}
+.view-codes-index .card code {
+  background: #fbfbfb;
+  border: 1px solid #EEE;
+  border-width: 1px 0;
+  margin: 0 -4px;
+}
+.view-codes-index .card h1,
+.view-codes-index .card h2,
+.view-codes-index .card h3 {
+  margin: .4em 0 0;
+}
+.view-codes-index .card h2 {
+  font-size: 18px;
+}
+.view-codes-index .card h3,
+.view-codes-index .card h4,
+.view-codes-index .card h5 {
+  font-size: 15px;
 }

@@ -29,7 +29,6 @@ factory = (_)->
         events.prepare?.bind(ctx)?(ctx)
         tmplMethod = (data,args...)->
             data = _.extend({}, ctx, data)
-            # console.log "method",data.require
             _.each ctx, (_tmpl, key)->
                 # sub templer should have parent's context and data as default
                 if _tmpl.type is "templer"
