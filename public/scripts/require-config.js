@@ -7,7 +7,8 @@ require.config({
         chai:"../bower_components/chai/chai",
         fastclick:"../bower_components/fastclick/lib/fastclick",
         "iscroll":"../bower_components/iscroll/build/iscroll",
-        "iscroll-lite":"../bower_components/iscroll/build/iscroll-lite"
+        "iscroll-lite":"../bower_components/iscroll/build/iscroll-lite",
+        "highlightjs":"../bower_components/highlightjs/highlight.pack.min"
     },
     shim:{
         backbone: ["underscore","jquery"],

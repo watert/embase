@@ -48,7 +48,10 @@ define(["jquery", "backbone", "libs/action-dispatcher", "libs/templer", "libs/ut
     App.prototype.tmpl = templer("<div class=\"app\">\n    <div class=\"app-body\">\n        <div class=\"view-container\">\n        </div>\n    </div>\n</div>");
 
     App.prototype.loadViewPath = function(path) {
-      var dfd;
+      var dfd, ref;
+      if ((ref = this.view) != null) {
+        ref.trigger("destroy").destroy();
+      }
       console.log("loadViewPath", path);
       dfd = $.Deferred();
       if (path.slice(-1) === "/") {
@@ -59,13 +62,13 @@ define(["jquery", "backbone", "libs/action-dispatcher", "libs/templer", "libs/ut
         return function(View) {
           var $body, query, view;
           console.log("View", View);
-          $body = _this.$(".view-container").empty();
+          $body = _this.$(".view-container").empty().removeClass().addClass("view-container view-" + (path.replace("/", "-")));
           query = util.deparamQuery();
           _this.view = view = new View({
             el: $body,
             query: query
           });
-          view.render().then(function() {});
+          $.when(view.render()).then(function() {});
           return dfd.resolve(view);
         };
       })(this));

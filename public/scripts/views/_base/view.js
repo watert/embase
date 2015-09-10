@@ -10,6 +10,17 @@ define(["libs/modelview", "libs/util"], function(ModelView, util) {
       return BaseView.__super__.constructor.apply(this, arguments);
     }
 
+    BaseView.prototype.loadCSS = function(url) {
+      var $dom;
+      $dom = $("<link>", {
+        href: url,
+        rel: "stylesheet"
+      }).appendTo($("head"));
+      return this.on("destroy", function() {
+        return $dom.remove();
+      });
+    };
+
     BaseView.prototype.initialize = function(options) {
       if (options == null) {
         options = {};

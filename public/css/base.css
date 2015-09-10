@@ -237,3 +237,6 @@ input {
 .toolbar-inner .btn {
   color: #10d066;
 }
+.view-codes-index code {
+  font-size: 12px;
+}

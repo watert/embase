@@ -36,6 +36,7 @@ define [
             </div>
         """
         loadViewPath:(path)->
+            @view?.trigger("destroy").destroy()
             console.log "loadViewPath",path
             dfd = $.Deferred()
             path = path.slice(0,-1) if path.slice(-1) == "/"
@@ -43,9 +44,10 @@ define [
             require ["views/#{path}"],(View)=>
                 console.log "View",View
                 $body = @$(".view-container").empty()
+                    .removeClass().addClass("view-container view-#{path.replace("/","-")}")
                 query = util.deparamQuery()
                 @view = view = new View(el: $body, query:query)
-                view.render().then =>
+                $.when(view.render()).then =>
                     # new IScroll(view.el)
                 dfd.resolve(view)
 
