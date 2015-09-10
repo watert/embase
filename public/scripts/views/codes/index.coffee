@@ -13,6 +13,14 @@ define ["views/_base/view","tmpls/base","marked","highlightjs"
 
             Things about frontend coding
             ---
+            ## References
+            ### W3C
+            - [CORS: Cross-site HTTP request](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Access_control_CORS)
+
+            ### Library Doc
+            - [**jQuery** Quick API Reference](http://oscarotero.com/jquery/)
+            - [**jQuery 的 Deferred 对象详解 by ruanyifeng](http://www.ruanyifeng.com/blog/2011/08/a_detailed_explanation_of_jquery_deferred_object.html)
+            ---
             ## Responsive Web
             ### HTML5 Viewport
             ```html

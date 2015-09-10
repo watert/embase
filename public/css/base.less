@@ -2,6 +2,8 @@
 @import "flexbox.less";
 
 @brand-primary:         #10d066; //WeChat Color
+
+@link-color:            #4078c0;
 @brand-success:         #5cb85c;
 @brand-info:            #5bc0de;
 @brand-warning:         #f0ad4e;
@@ -30,7 +32,10 @@ p {margin:.4em 0;}
 input {outline: none; font-size:16px;}
 .text-danger {color:@brand-danger;}
 .text-primary {color:@brand-primary;}
-.app {}
+.app {
+    a {color:@link-color;
+        &:hover {color:#07f; }}
+}
 .clearfix { .clearfix(); }
 .card {
     .clearfix(); padding: 4px;
@@ -110,6 +115,10 @@ input {outline: none; font-size:16px;}
     }
     .cards { padding: 4px; }
     .card {
+        ul { margin-left: 0; padding-left: .2em; list-style: none; margin: .5em 0; }
+        li {line-height: 1.6em;
+            &:before { content:"- "; }
+        }
         font-size:14px;
         h2:first-child {margin-top: 0; opacity:.5; font-size:22px;}
         code {background: #fbfbfb; border:1px solid #EEE;

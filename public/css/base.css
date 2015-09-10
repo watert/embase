@@ -26,6 +26,12 @@ input {
 .text-primary {
   color: #10d066;
 }
+.app a {
+  color: #4078c0;
+}
+.app a:hover {
+  color: #07f;
+}
 .clearfix.after {
   content: " ";
   /* Older browser do not support empty content */
@@ -377,6 +383,18 @@ input {
 }
 .view-codes-index .card {
   font-size: 14px;
+}
+.view-codes-index .card ul {
+  margin-left: 0;
+  padding-left: .2em;
+  list-style: none;
+  margin: .5em 0;
+}
+.view-codes-index .card li {
+  line-height: 1.6em;
+}
+.view-codes-index .card li:before {
+  content: "- ";
 }
 .view-codes-index .card h2:first-child {
   margin-top: 0;
