@@ -7,9 +7,14 @@ define [
 ],($, Backbone,Dispatcher,templer, util)->
     class Router extends Backbone.Router
         routes:
-            "*path":(path="users")->
-                console.log path
+            ":section/*path":(section, path)->
+                path ?= "index"
+                path = section+"/"+path
                 @trigger("route-path",path)
+
+            # "*path":(path="users")->
+            #     console.log path
+            #     @trigger("route-path",path)
     class App extends Backbone.View
         initialize: ->
             # super()

@@ -1,19 +1,42 @@
 var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
-define(["views/baseview", "tmpls/base"], function(BaseView, baseTmpls) {
-  var List, navbar, templer, toolbar;
-  navbar = baseTmpls.navbar, toolbar = baseTmpls.toolbar, templer = baseTmpls.templer;
-  return List = (function(superClass) {
-    extend(List, superClass);
+define(["views/_base/view", "tmpls/base"], function(BaseView, baseTmpls) {
+  var UserIndexView, Users, navbar, templer, toolbar;
+  Users = (function(superClass) {
+    extend(Users, superClass);
 
-    function List() {
-      return List.__super__.constructor.apply(this, arguments);
+    function Users() {
+      return Users.__super__.constructor.apply(this, arguments);
     }
 
-    List.prototype.tagName = "div";
+    Users.prototype.model = Backbone.Model.extend({
+      defaults: {
+        email: "",
+        name: ""
+      }
+    });
 
-    List.prototype.events = {
+    Users.prototype.url = "/users/api/restful";
+
+    Users.prototype.parse = function(data) {
+      return data.result;
+    };
+
+    return Users;
+
+  })(Backbone.Collection);
+  navbar = baseTmpls.navbar, toolbar = baseTmpls.toolbar, templer = baseTmpls.templer;
+  return UserIndexView = (function(superClass) {
+    extend(UserIndexView, superClass);
+
+    function UserIndexView() {
+      return UserIndexView.__super__.constructor.apply(this, arguments);
+    }
+
+    UserIndexView.prototype.tagName = "div";
+
+    UserIndexView.prototype.events = {
       "click .btn-edit": function() {
         return this.$el.toggleClass("editing");
       },
@@ -27,27 +50,30 @@ define(["views/baseview", "tmpls/base"], function(BaseView, baseTmpls) {
         } else {
           id = $item.attr("data-id");
           console.log("click", id);
-          return this.navigate("users/?id=" + id);
+          return this.navigate("users/detail?id=" + id);
         }
       }
     };
 
-    List.prototype.render = function() {
+    UserIndexView.prototype.render = function() {
+      var users;
       console.debug("render", this);
-      return $.get("/users/api/find").then((function(_this) {
+      users = new Users;
+      return users.fetch().then((function(_this) {
         return function(data) {
+          console.log(data);
           _this.setModel({
-            users: data,
+            users: users.toJSON(),
             query: _this.query
           });
-          return List.__super__.render.call(_this);
+          return UserIndexView.__super__.render.call(_this);
         };
       })(this));
     };
 
-    List.prototype.template = templer({
-      detail: "                ",
-      index: "<%=navbar()%>\n<% if(query.id) {%>\n    with id\n<%}else {%>\n    <ul class=\"list\">\n        <%_.each(users, function(item){%>\n            <%=listItem({data:item})%>\n        <%})%>\n    </ul>\n<%}%>\n<%=toolbar()%>",
+    UserIndexView.prototype.template = templer({
+      detail: "",
+      index: "<%=navbar()%>\n<ul class=\"list\">\n    <%_.each(users, function(item){%>\n        <%=listItem({data:item})%>\n    <%})%>\n</ul>\n<%=toolbar()%>",
       onRender: function() {
         return console.debug("tmpl onRender");
       },
@@ -60,7 +86,7 @@ define(["views/baseview", "tmpls/base"], function(BaseView, baseTmpls) {
       listItem: templer("<li class=\"list-item\" data-id=\"<%=data._id%>\">\n    <div class=\"list-check\">\n        <input type=\"checkbox\" name=\"check[<%=data._id%>]\" id=\"\" />\n    </div>\n    <%=listItemBody(data)%>\n    <div class=\"arrow\"> <i class=\"fa fa-angle-right\"></i> </div>\n</li>")
     });
 
-    return List;
+    return UserIndexView;
 
   })(BaseView);
 });

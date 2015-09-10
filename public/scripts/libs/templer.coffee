@@ -19,6 +19,7 @@ factory = (_)->
     templer = (options)->
         throw("Empty tmpl") unless options
         options = {index:options} if _.isString(options)
+        events = options.events ?= {}
         if _.isString(tmpl = options.index)
             tmpl = _.template(options.index)
 
@@ -36,6 +37,7 @@ factory = (_)->
             tmpl.bind(ctx)(data, args...)
 
         # add extend feature
+        events.extend?(ctx)
         _.extend tmplMethod, ctx,
             type:"templer"
             _context: ctx

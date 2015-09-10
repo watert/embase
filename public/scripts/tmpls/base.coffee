@@ -1,7 +1,45 @@
 define ["libs/templer"],(templer)->
 
-    base =
+    base = templer
+        # for more usage
+        events:
+            extend:(ctx)->
+                console.log "extend",ctx
         templer: templer
+        invoke: (method, data)->
+            tmpl = method
+            tmpl = templer(method) if _.isString(method)
+            data = _.extend({},this,data)
+            return tmpl.bind(this)(data)
+
+        # base layout
+        index:" <%=navbar()+invoke(indexBody)+toolbar()%> "
+        indexBody:"Hello World"
+
+        # list:
+        #     index: templer """
+        #         <ul class="list">
+        #             <%_.each(data, function(item){%>
+        #                 <%=listItem({data:item})%>
+        #             <%})%>
+        #         </ul>
+        #     """
+        #     body:""
+        #     listItemBody: templer """
+        #     <div class="item-body">
+        #     <%=name%> <small> (<%=email%>) </small>
+        #     </div>
+        #     """
+        #     listItem: templer """
+        #     <li class="list-item" data-id="<%=data._id%>">
+        #         <div class="list-check">
+        #             <input type="checkbox" name="check[<%=data._id%>]" id="" />
+        #         </div>
+        #         <%=listItemBody(data)%>
+        #         <div class="arrow"> <i class="fa fa-angle-right"></i> </div>
+        #     </li>
+        #     """
+        # base styles
         toolbar: templer
             items: ["Delete","Mark"]
             itemTmpl: templer """

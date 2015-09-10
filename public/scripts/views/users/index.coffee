@@ -1,6 +1,11 @@
-define ["views/baseview","tmpls/base"],(BaseView, baseTmpls)->
+define ["views/_base/view","tmpls/base"],(BaseView, baseTmpls)->
+    class Users extends Backbone.Collection
+        model: Backbone.Model.extend
+            defaults: {email:"",name:""}
+        url: "/users/api/restful"
+        parse: (data)-> data.result
     {navbar, toolbar, templer} = baseTmpls
-    class List extends BaseView
+    class UserIndexView extends BaseView
         tagName:"div"
         events: 
             "click .btn-edit":()->
@@ -14,29 +19,29 @@ define ["views/baseview","tmpls/base"],(BaseView, baseTmpls)->
                 else
                     id = $item.attr("data-id")
                     console.log "click",id
-                    @navigate("users/?id=#{id}")
+                    @navigate("users/detail?id=#{id}")
                 # e.stopPropagation()
                 # console.log $check.prop("checked")
         render:()->
             console.debug "render", @
-            $.get("/users/api/find").then (data)=>
-                @setModel(users:data,query:@query)
+            users = new Users
+            users.fetch().then (data)=>
+                console.log data
+                @setModel(users:users.toJSON(),query:@query)
                 super()
+                # console.log "coll",users
+            # $.get("/users/api/find").then (data)=>
         template: templer
             detail: """
-                
+
             """
             index: """
                 <%=navbar()%>
-                <% if(query.id) {%>
-                    with id
-                <%}else {%>
-                    <ul class="list">
-                        <%_.each(users, function(item){%>
-                            <%=listItem({data:item})%>
-                        <%})%>
-                    </ul>
-                <%}%>
+                <ul class="list">
+                    <%_.each(users, function(item){%>
+                        <%=listItem({data:item})%>
+                    <%})%>
+                </ul>
                 <%=toolbar()%>
             """
             onRender:()->

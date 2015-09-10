@@ -11,11 +11,11 @@ define(["jquery", "backbone", "libs/action-dispatcher", "libs/templer", "libs/ut
     }
 
     Router.prototype.routes = {
-      "*path": function(path) {
+      ":section/*path": function(section, path) {
         if (path == null) {
-          path = "users";
+          path = "index";
         }
-        console.log(path);
+        path = section + "/" + path;
         return this.trigger("route-path", path);
       }
     };

@@ -52,7 +52,7 @@ router.all '/api/:method', (req, res)->
     .fail (err)->
         console.log "method #{method} fail",err
         res.status(400).json(err)
-router.get '/', (req, res, next)->
+router.get '/*', (req, res, next)->
     res.render('index', { title: 'Express' })
 
 module.exports = router

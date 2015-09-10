@@ -64,8 +64,11 @@ describe "Main", ->
             # assert.ok(no, "msg")
             UserDoc.register(data).then ->
                 UserDoc.register(data)
+            .then ->
+                # console.log "then", arguments
             .catch (err)->
-                assert.equal(err.code, 400 , "shit")
+                # console.log err
+                assert.equal(err.error.code, 400 , "shit")
                 done()
 
     describe "action dispatcher", ->

@@ -96,8 +96,11 @@ describe("Main", function() {
       };
       return UserDoc.register(data).then(function() {
         return UserDoc.register(data);
+      }).then(function() {
+        return console.log("then", arguments);
       })["catch"](function(err) {
-        assert.equal(err.code, 400, "shit");
+        console.log(err);
+        assert.equal(err.error.code, 400, "shit");
         return done();
       });
     });
