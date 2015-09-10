@@ -21,7 +21,7 @@ factory = (_)->
         options = {index:options} if _.isString(options)
         events = options.events ?= {}
         if _.isString(tmpl = options.index)
-            tmpl = _.template(options.index)
+            tmpl = _.template(tmpl)
 
         #main part: return a generated tmpl method
         ctx = _.extend({}, tmpl, options)

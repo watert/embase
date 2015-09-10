@@ -20,18 +20,20 @@ define(["views/_base/view", "tmpls/base", "marked", "highlightjs"], function(Bas
       return console.log("init", this.model);
     };
 
-    CodesIndexView.prototype.markdown = "<h1> Frontend Cheatsheet</h1>\n\nThings about frontend coding\n---\n### HTML5 Viewport\n```html\n<meta name=\"viewport\" content=\"width=device-width,\n    user-scalable=no, initial-scale=1.0,\n    maximum-scale=1.0, minimum-scale=1.0\" />\n```\n---\n### CSS3 Media\n```css\n// print version\n@media print {}\n// screen and size\n// comment: iphone 6p width 414px, iphone 6 375px\n@media only screen and (max-width: 414px){}\n@media only screen and (min-width: 421px)\n    and (max-width: 800px){}\n// orientation\n@media only screen and (orientation: portrait){}\n@media only screen and (orientation: landscape){}\n```";
+    CodesIndexView.prototype.markdown = "<h1> Frontend Cheatsheet</h1>\n\nThings about frontend coding\n---\n## Responsive Web\n### HTML5 Viewport\n```html\n<meta name=\"viewport\" content=\"width=device-width,\n    user-scalable=no, initial-scale=1.0,\n    maximum-scale=1.0, minimum-scale=1.0\" />\n```\n### CSS3 Media\n```css\n// print version\n@media print {}\n// screen and size\n// comment: iphone 6p width 414px, iphone 6 375px\n@media only screen and (max-width: 414px){}\n@media only screen and (min-width: 421px)\n    and (max-width: 800px){}\n// orientation\n@media only screen and (orientation: portrait){}\n@media only screen and (orientation: landscape){}\n```\n---\n## Flexbox\ntools: [flexbox.less](https://github.com/ProLoser/Flexbox.less), [Guide](https://css-tricks.com/snippets/css/a-guide-to-flexbox/)\n### For the Parent\n```css\ndisplay:flex;\njustify-content: flex-start | flex-end | center |\n    space-between | space-around;\nalign-items: flex-start | flex-end | center |\n    baseline | stretch;\nalign-content: flex-start | flex-end | center |\n    space-between | space-around | stretch;\n\nflex-direction: row | row-reverse |\n    column | column-reverse;\nflex-wrap: nowrap | wrap | wrap-reverse;\nflex-flow: <‘flex-direction’> || <‘flex-wrap’>\n```\n### For the Children\n```css\norder: <integer>;\nflex-grow: <number>; /* default 0 */\nflex-shrink: <number>; /* default 1 */\nflex-basis: <length> | auto; /* default auto */\nflex: none | [ <'flex-grow'> <'flex-shrink'>? ||\n    <'flex-basis'> ]; /* short hand for above */\nalign-self: auto | flex-start | flex-end |\n    center | baseline | stretch;\n\n\n```";
 
     CodesIndexView.prototype.template = tmpls.extend({
       parse: function(content) {
-        var arr;
+        var arr, ret;
         arr = content.split("---");
-        return _.map(arr, function(text) {
+        ret = _.map(arr, function(text) {
           return marked(text);
         });
+        console.log(ret);
+        return ret;
       },
       index: " <%=invoke(indexBody)%> ",
-      indexBody: "<div class=\"cards-title\">\n    <div class=\"title-body\"></div>\n</div>\n<div class=\"cards\">\n    <% _.each(parse(markdown),(html)=>{ %>\n        <div class=\"card\">\n            <%=html%>\n        </div>\n    <% });%>\n</div>",
+      indexBody: "<div class=\"cards-title\">\n    <div class=\"title-body\"></div>\n</div>\n<div class=\"cards\">\n    <% _.each(parse(markdown),function(html){ %>\n        <div class=\"card\">\n            <%=html%>\n        </div>\n    <% });%>\n</div>",
       marked: marked
     });
 

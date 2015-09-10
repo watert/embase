@@ -16,6 +16,13 @@
 @coupon-color:          #ffa247;
 @coupon-shadow-color:   rgba(199, 199, 199, .21);
 
+
+.clearfix() { &.after{
+    content: " "; /* Older browser do not support empty content */
+    visibility: hidden; display: block; height: 0; clear: both;
+}}
+.ffs() {font-weight: Georgia,Cambria,"Times New Roman",Times,serif;}
+
 html, body {height:100%;}
 body { font-family: "Helvetica"; margin:0; font-size:16px;background: @bg-light; }
 small {font-size:12px; opacity:.75; font-weight:lighter;}
@@ -24,10 +31,6 @@ input {outline: none; font-size:16px;}
 .text-danger {color:@brand-danger;}
 .text-primary {color:@brand-primary;}
 .app {}
-.clearfix() { &.after{
-    content: " "; /* Older browser do not support empty content */
-    visibility: hidden; display: block; height: 0; clear: both;
-}}
 .clearfix { .clearfix(); }
 .card {
     .clearfix(); padding: 4px;
@@ -41,7 +44,7 @@ input {outline: none; font-size:16px;}
 }
 @media (min-width:415px){
     .cards { .flexbox(); .flex-wrap(wrap); .justify-content(center); }
-    .card {max-width: 26em; }
+    .card {max-width: 26em; min-width:16em; }
 }
 .list {
     list-style:none; margin: 10px 0; padding:0; background: #FFF;
@@ -96,18 +99,22 @@ input {outline: none; font-size:16px;}
 
 // Views
 .view-codes-index {
-    pre {font-size:12px; margin:10px 0 0;}
+    pre {font-size:12px; margin:5px 0 0;}
     .cards-title { text-align: center;border-bottom: 1px solid #CCC;
         font-family: "times",serif; font-size:20px;
-        line-height:1.4em;
+        line-height:1.4em; padding-bottom: 10px;
         h1,h2,h3 {margin-bottom: .5em;}
+        h1 { .ffs(); font-weight:normal; margin-bottom: .25em;}
         .flexbox(); .justify-content(center); background: #FFF;
         .title-body {max-width:46em; ;}
     }
     .cards { padding: 4px; }
     .card {
-        code {background: #fbfbfb; border:1px solid #EEE; border-width: 1px 0; margin:0 -4px;}
-        h1,h2,h3 {margin:.4em 0 0; }
+        font-size:14px;
+        h2:first-child {margin-top: 0; opacity:.5; font-size:22px;}
+        code {background: #fbfbfb; border:1px solid #EEE;
+            border-width: 1px 0; margin:0 -4px;}
+        h1,h2,h3 {margin:10px 0 0; }
         h2 {font-size:18px; }
         h3,h4,h5 {font-size:15px; }
     }

@@ -32,7 +32,7 @@ factory = function(_) {
     }
     events = options.events != null ? options.events : options.events = {};
     if (_.isString(tmpl = options.index)) {
-      tmpl = _.template(options.index);
+      tmpl = _.template(tmpl);
     }
     ctx = _.extend({}, tmpl, options);
     if ((ref = events.prepare) != null) {

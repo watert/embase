@@ -110,6 +110,7 @@ input {
   }
   .card {
     max-width: 26em;
+    min-width: 16em;
   }
 }
 .list {
@@ -328,7 +329,7 @@ input {
 }
 .view-codes-index pre {
   font-size: 12px;
-  margin: 10px 0 0;
+  margin: 5px 0 0;
 }
 .view-codes-index .cards-title {
   text-align: center;
@@ -336,6 +337,7 @@ input {
   font-family: "times", serif;
   font-size: 20px;
   line-height: 1.4em;
+  padding-bottom: 10px;
   display: -webkit-box;
   display: -moz-box;
   display: -ms-box;
@@ -362,11 +364,24 @@ input {
 .view-codes-index .cards-title h3 {
   margin-bottom: .5em;
 }
+.view-codes-index .cards-title h1 {
+  font-weight: Georgia, Cambria, "Times New Roman", Times, serif;
+  font-weight: normal;
+  margin-bottom: .25em;
+}
 .view-codes-index .cards-title .title-body {
   max-width: 46em;
 }
 .view-codes-index .cards {
   padding: 4px;
+}
+.view-codes-index .card {
+  font-size: 14px;
+}
+.view-codes-index .card h2:first-child {
+  margin-top: 0;
+  opacity: .5;
+  font-size: 22px;
 }
 .view-codes-index .card code {
   background: #fbfbfb;
@@ -377,7 +392,7 @@ input {
 .view-codes-index .card h1,
 .view-codes-index .card h2,
 .view-codes-index .card h3 {
-  margin: .4em 0 0;
+  margin: 10px 0 0;
 }
 .view-codes-index .card h2 {
   font-size: 18px;

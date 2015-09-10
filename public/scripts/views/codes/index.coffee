@@ -13,13 +13,13 @@ define ["views/_base/view","tmpls/base","marked","highlightjs"
 
             Things about frontend coding
             ---
+            ## Responsive Web
             ### HTML5 Viewport
             ```html
             <meta name="viewport" content="width=device-width,
                 user-scalable=no, initial-scale=1.0,
                 maximum-scale=1.0, minimum-scale=1.0" />
             ```
-            ---
             ### CSS3 Media
             ```css
             // print version
@@ -33,20 +33,52 @@ define ["views/_base/view","tmpls/base","marked","highlightjs"
             @media only screen and (orientation: portrait){}
             @media only screen and (orientation: landscape){}
             ```
+            ---
+            ## Flexbox
+            tools: [flexbox.less](https://github.com/ProLoser/Flexbox.less), [Guide](https://css-tricks.com/snippets/css/a-guide-to-flexbox/)
+            ### For the Parent
+            ```css
+            display:flex;
+            justify-content: flex-start | flex-end | center |
+                space-between | space-around;
+            align-items: flex-start | flex-end | center |
+                baseline | stretch;
+            align-content: flex-start | flex-end | center |
+                space-between | space-around | stretch;
+
+            flex-direction: row | row-reverse |
+                column | column-reverse;
+            flex-wrap: nowrap | wrap | wrap-reverse;
+            flex-flow: <‘flex-direction’> || <‘flex-wrap’>
+            ```
+            ### For the Children
+            ```css
+            order: <integer>;
+            flex-grow: <number>; /* default 0 */
+            flex-shrink: <number>; /* default 1 */
+            flex-basis: <length> | auto; /* default auto */
+            flex: none | [ <'flex-grow'> <'flex-shrink'>? ||
+                <'flex-basis'> ]; /* short hand for above */
+            align-self: auto | flex-start | flex-end |
+                center | baseline | stretch;
+
+
+            ```
         """
         template: tmpls.extend
             parse: (content)->
                 arr = content.split("---")
-                _.map(arr, (text)-> marked(text))
+                ret = _.map(arr, (text)-> marked(text))
+                console.log ret
+                return ret
                 # arr.join("---")
-            index:" <%=invoke(indexBody)%> "
-
-            indexBody:"""
+            index: " <%=invoke(indexBody)%> "
+            indexBody: """
                 <div class="cards-title">
                     <div class="title-body"></div>
                 </div>
                 <div class="cards">
-                    <% _.each(parse(markdown),(html)=>{ %>
+                    <% _.each(parse(markdown),function(html){ %>
                         <div class="card">
                             <%=html%>
                         </div>
