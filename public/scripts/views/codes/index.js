@@ -16,7 +16,7 @@ define(["views/_base/view", "tmpls/base", "highlightjs"], function(BaseView, tmp
     };
 
     CodesIndexView.prototype.template = tmpls.extend({
-      indexBody: "<pre><code class=\"javascript\">\nvar a = 123;\n</code></pre>"
+      indexBody: "<pre><code class=\"coffeescript\">\na = -> 123\n</code></pre>"
     });
 
     CodesIndexView.prototype.render = function() {

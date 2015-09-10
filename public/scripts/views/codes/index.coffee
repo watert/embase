@@ -5,8 +5,8 @@ define ["views/_base/view","tmpls/base","highlightjs"],(BaseView, tmpls)->
             @loadCSS("../bower_components/highlightjs/styles/default.css")
         template: tmpls.extend
             indexBody:"""
-                <pre><code class="javascript">
-                var a = 123;
+                <pre><code class="coffeescript">
+                a = -> 123
                 </code></pre>
             """
         render: ->

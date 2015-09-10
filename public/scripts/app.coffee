@@ -37,12 +37,12 @@ define [
         """
         loadViewPath:(path)->
             @view?.trigger("destroy").destroy()
-            console.log "loadViewPath",path
+            console.log "App loadViewPath",path
             dfd = $.Deferred()
             path = path.slice(0,-1) if path.slice(-1) == "/"
-            console.log "views/#{path}"
+            # console.log "views/#{path}"
             require ["views/#{path}"],(View)=>
-                console.log "View",View
+                # console.log "View",View
                 $body = @$(".view-container").empty()
                     .removeClass().addClass("view-container view-#{path.replace("/","-")}")
                 query = util.deparamQuery()

@@ -52,16 +52,14 @@ define(["jquery", "backbone", "libs/action-dispatcher", "libs/templer", "libs/ut
       if ((ref = this.view) != null) {
         ref.trigger("destroy").destroy();
       }
-      console.log("loadViewPath", path);
+      console.log("App loadViewPath", path);
       dfd = $.Deferred();
       if (path.slice(-1) === "/") {
         path = path.slice(0, -1);
       }
-      console.log("views/" + path);
       require(["views/" + path], (function(_this) {
         return function(View) {
           var $body, query, view;
-          console.log("View", View);
           $body = _this.$(".view-container").empty().removeClass().addClass("view-container view-" + (path.replace("/", "-")));
           query = util.deparamQuery();
           _this.view = view = new View({
