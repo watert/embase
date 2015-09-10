@@ -10,4 +10,8 @@ router.get('/', function(req, res, next) {
   });
 });
 
+router.get('/codes/*', function(req, res) {
+  return res.render("index");
+});
+
 module.exports = router;
