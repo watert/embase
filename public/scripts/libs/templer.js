@@ -21,7 +21,7 @@ var exports, factory,
 factory = function(_) {
   var templer;
   return templer = function(options) {
-    var ctx, events, tmpl, tmplMethod;
+    var base, ctx, events, ref, tmpl, tmplMethod;
     if (!options) {
       throw "Empty tmpl";
     }
@@ -35,6 +35,11 @@ factory = function(_) {
       tmpl = _.template(options.index);
     }
     ctx = _.extend({}, tmpl, options);
+    if ((ref = events.prepare) != null) {
+      if (typeof (base = ref.bind(ctx)) === "function") {
+        base(ctx);
+      }
+    }
     tmplMethod = function() {
       var args, data;
       data = arguments[0], args = 2 <= arguments.length ? slice.call(arguments, 1) : [];
@@ -48,9 +53,6 @@ factory = function(_) {
       });
       return tmpl.bind(ctx).apply(null, [data].concat(slice.call(args)));
     };
-    if (typeof events.extend === "function") {
-      events.extend(ctx);
-    }
     _.extend(tmplMethod, ctx, {
       type: "templer",
       _context: ctx,

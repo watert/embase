@@ -25,6 +25,8 @@ factory = (_)->
 
         #main part: return a generated tmpl method
         ctx = _.extend({}, tmpl, options)
+
+        events.prepare?.bind(ctx)?(ctx)
         tmplMethod = (data,args...)->
             data = _.extend({}, ctx, data)
             # console.log "method",data.require
@@ -37,7 +39,7 @@ factory = (_)->
             tmpl.bind(ctx)(data, args...)
 
         # add extend feature
-        events.extend?(ctx)
+        # events.extend?(ctx)
         _.extend tmplMethod, ctx,
             type:"templer"
             _context: ctx

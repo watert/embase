@@ -11,9 +11,7 @@ define ["views/_base/view","tmpls/base"],(BaseView, tmpls)->
                         Base Info
                     </div>
                     <div>
-                        <%invoke(function(){%>
-                            Invoked content
-                        <%});%>
+                        <%= invoke(tableview) %>
                     </div>
                 </div>
             """

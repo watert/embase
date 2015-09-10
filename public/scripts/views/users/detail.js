@@ -28,7 +28,7 @@ define(["views/_base/view", "tmpls/base"], function(BaseView, tmpls) {
     }
 
     UserDetail.prototype.template = tmpls.extend({
-      indexBody: "<div class=\"tableview\">\n    <div class=\"tableview-header\">\n        Base Info\n    </div>\n    <div>\n        <%invoke(function(){%>\n            Invoked content\n        <%});%>\n    </div>\n</div>"
+      indexBody: "<div class=\"tableview\">\n    <div class=\"tableview-header\">\n        Base Info\n    </div>\n    <div>\n        <%= invoke(tableview) %>\n    </div>\n</div>"
     });
 
     return UserDetail;

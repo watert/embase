@@ -2,9 +2,9 @@ define ["libs/templer"],(templer)->
 
     base = templer
         # for more usage
-        events:
-            extend:(ctx)->
-                console.log "extend",ctx
+        # events:
+        #     extend:(ctx)->
+        #         console.log "extend",ctx
         templer: templer
         invoke: (method, data)->
             tmpl = method
@@ -16,6 +16,23 @@ define ["libs/templer"],(templer)->
         index:" <%=navbar()+invoke(indexBody)+toolbar()%> "
         indexBody:"Hello World"
 
+        # components
+        tableview: templer
+            # events:
+            #     prepare: ()-> console.log "tableview", @
+            cells: ["Empty Cell Item"]
+            cellItem: """
+                <div class="tableview-cell">
+                    <%=invoke(html)%>
+                </div>
+            """
+            header: ""
+            index: """
+                <div class="tableview">
+                    <%if(header){ print(invoke(header)) }%>
+                    <%_.each(cells, function(cell){ print(invoke(cellItem,{html:cell})); })%>
+                </div>
+            """
         # list:
         #     index: templer """
         #         <ul class="list">
@@ -39,7 +56,6 @@ define ["libs/templer"],(templer)->
         #         <div class="arrow"> <i class="fa fa-angle-right"></i> </div>
         #     </li>
         #     """
-        # base styles
         toolbar: templer
             items: ["Delete","Mark"]
             itemTmpl: templer """

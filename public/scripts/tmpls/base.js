@@ -1,11 +1,6 @@
 define(["libs/templer"], function(templer) {
   var base;
   return base = templer({
-    events: {
-      extend: function(ctx) {
-        return console.log("extend", ctx);
-      }
-    },
     templer: templer,
     invoke: function(method, data) {
       var tmpl;
@@ -18,6 +13,12 @@ define(["libs/templer"], function(templer) {
     },
     index: " <%=navbar()+invoke(indexBody)+toolbar()%> ",
     indexBody: "Hello World",
+    tableview: templer({
+      cells: ["Empty Cell Item"],
+      cellItem: "<div class=\"tableview-cell\">\n    <%=invoke(html)%>\n</div>",
+      header: "",
+      index: "<div class=\"tableview\">\n    <%if(header){ print(invoke(header)) }%>\n    <%_.each(cells, function(cell){ print(invoke(cellItem,{html:cell})); })%>\n</div>"
+    }),
     toolbar: templer({
       items: ["Delete", "Mark"],
       itemTmpl: templer("<div class=\"toolbar-item\">\n    <div class=\"btn\"><%=name%></div>\n</div>"),
