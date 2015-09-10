@@ -8,9 +8,12 @@ define ["views/_base/view","tmpls/base"],(BaseView, baseTmpls)->
     class UserIndexView extends BaseView
         tagName:"div"
         events: 
+            "click .btn-add":()->
+                @navigate("users/detail")
+
             "click .btn-edit":()->
                 @$el.toggleClass("editing")
-            "click .list-item": (e)->
+            "click .users .list-item": (e)->
                 console.log "click item", e.currentTarget
                 $item = $(e.currentTarget)
                 if @$el.hasClass("editing")
@@ -26,7 +29,7 @@ define ["views/_base/view","tmpls/base"],(BaseView, baseTmpls)->
             console.debug "render", @
             users = new Users
             users.fetch().then (data)=>
-                console.log data
+                console.log "try render",data
                 @setModel(users:users.toJSON(),query:@query)
                 super()
                 # console.log "coll",users
@@ -38,6 +41,11 @@ define ["views/_base/view","tmpls/base"],(BaseView, baseTmpls)->
             index: """
                 <%=navbar()%>
                 <ul class="list">
+                    <li class="list-item btn-add">
+                        Add
+                    </li>
+                </ul>
+                <ul class="list users">
                     <%_.each(users, function(item){%>
                         <%=listItem({data:item})%>
                     <%})%>

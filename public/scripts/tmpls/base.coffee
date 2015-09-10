@@ -29,7 +29,10 @@ define ["libs/templer"],(templer)->
             header: ""
             index: """
                 <div class="tableview">
-                    <%if(header){ print(invoke(header)) }%>
+                    <%if(header){ %>
+                        <div class="tableview-header">
+                        <%=invoke(header)%></div>
+                    <% }%>
                     <%_.each(cells, function(cell){ print(invoke(cellItem,{html:cell})); })%>
                 </div>
             """

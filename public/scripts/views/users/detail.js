@@ -15,7 +15,11 @@ define(["views/_base/view", "tmpls/base"], function(BaseView, tmpls) {
       name: ""
     };
 
-    User.prototype.url = "/users/api/restful";
+    User.prototype.urlRoot = "/users/api/restful";
+
+    User.prototype.parse = function(data) {
+      return data.result;
+    };
 
     return User;
 
@@ -27,8 +31,35 @@ define(["views/_base/view", "tmpls/base"], function(BaseView, tmpls) {
       return UserDetail.__super__.constructor.apply(this, arguments);
     }
 
+    UserDetail.prototype.render = function() {
+      var id, user;
+      if (id = this.query.id) {
+        user = this.user = new User({
+          id: id
+        });
+        return user.fetch().then((function(_this) {
+          return function() {
+            console.log(user.toJSON());
+            _this.setModel({
+              user: user.toJSON()
+            });
+            return UserDetail.__super__.render.call(_this);
+          };
+        })(this));
+      } else {
+        user = this.user = new User();
+        this.setModel({
+          user: user.toJSON()
+        });
+        return UserDetail.__super__.render.call(this);
+      }
+    };
+
     UserDetail.prototype.template = tmpls.extend({
-      indexBody: "<div class=\"tableview\">\n    <div class=\"tableview-header\">\n        Base Info\n    </div>\n    <div>\n        <%= invoke(tableview) %>\n    </div>\n</div>"
+      userCells: ["<div class=\"key\"> Name </div>\n<input type=\"text\" value=\"<%=user.name%>\"/>", "<div class=\"key\"> Email </div>\n<input type=\"email\" value=\"<%=user.email%>\"/>"],
+      actions: ['<div class="btn-save">Save</div>', '<div class="btn-remove text-danger">Remove</div>'],
+      h1: "<h1>Hello</h1>",
+      indexBody: "<div class=\"tableview\">\n    <%= invoke(tableview, {header:\"Base Info\", cells:userCells}) %>\n    <%= invoke(tableview, {header:\"Actions\", cells:actions}) %>\n</div>"
     });
 
     return UserDetail;

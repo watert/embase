@@ -41,10 +41,10 @@ define [
             path = path.slice(0,-1) if path.slice(-1) == "/"
             console.log "views/#{path}"
             require ["views/#{path}"],(View)=>
-                # console.log "View",View
+                console.log "View",View
                 $body = @$(".view-container").empty()
                 query = util.deparamQuery()
-                @view = view = new View(el: $body.parent()[0], query:query)
+                @view = view = new View(el: $body, query:query)
                 view.render().then =>
                     # new IScroll(view.el)
                 dfd.resolve(view)

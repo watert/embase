@@ -50,6 +50,9 @@ describe "Main", ->
                 UserDoc.removeByID(user.id)
             .then (num)-> assert(num, "check remove item count")
 
+        after ->
+            UserDoc.remove({name:"testing"}).then (ret)->
+                UserDoc.remove({name:"testing2"})
     describe "User Basic Actions", ->
         it "hash", ->
             assert.equal UserDoc.hash("braitsch"),"9b74c9897bac770ffc029102a200c5de",
@@ -64,8 +67,6 @@ describe "Main", ->
             # assert.ok(no, "msg")
             UserDoc.register(data).then ->
                 UserDoc.register(data)
-            .then ->
-                # console.log "then", arguments
             .catch (err)->
                 # console.log err
                 assert.equal(err.error.code, 400 , "shit")

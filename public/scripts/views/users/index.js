@@ -37,10 +37,13 @@ define(["views/_base/view", "tmpls/base"], function(BaseView, baseTmpls) {
     UserIndexView.prototype.tagName = "div";
 
     UserIndexView.prototype.events = {
+      "click .btn-add": function() {
+        return this.navigate("users/detail");
+      },
       "click .btn-edit": function() {
         return this.$el.toggleClass("editing");
       },
-      "click .list-item": function(e) {
+      "click .users .list-item": function(e) {
         var $check, $item, id;
         console.log("click item", e.currentTarget);
         $item = $(e.currentTarget);
@@ -61,7 +64,7 @@ define(["views/_base/view", "tmpls/base"], function(BaseView, baseTmpls) {
       users = new Users;
       return users.fetch().then((function(_this) {
         return function(data) {
-          console.log(data);
+          console.log("try render", data);
           _this.setModel({
             users: users.toJSON(),
             query: _this.query
@@ -73,7 +76,7 @@ define(["views/_base/view", "tmpls/base"], function(BaseView, baseTmpls) {
 
     UserIndexView.prototype.template = templer({
       detail: "",
-      index: "<%=navbar()%>\n<ul class=\"list\">\n    <%_.each(users, function(item){%>\n        <%=listItem({data:item})%>\n    <%})%>\n</ul>\n<%=toolbar()%>",
+      index: "<%=navbar()%>\n<ul class=\"list\">\n    <li class=\"list-item btn-add\">\n        Add\n    </li>\n</ul>\n<ul class=\"list users\">\n    <%_.each(users, function(item){%>\n        <%=listItem({data:item})%>\n    <%})%>\n</ul>\n<%=toolbar()%>",
       onRender: function() {
         return console.debug("tmpl onRender");
       },

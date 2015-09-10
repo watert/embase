@@ -1,17 +1,33 @@
+html,
+body {
+  height: 100%;
+}
 body {
   font-family: "Helvetica";
   margin: 0;
   font-size: 16px;
+  background: #f5f6f7;
 }
 small {
   font-size: 12px;
   opacity: .75;
   font-weight: lighter;
 }
+input {
+  outline: none;
+  font-size: 16px;
+}
+.text-danger {
+  color: #d9534f;
+}
+.text-primary {
+  color: #10d066;
+}
 .list {
   list-style: none;
-  margin: 0;
+  margin: 10px 0;
   padding: 0;
+  background: #FFF;
 }
 .list .list-item {
   display: -webkit-box;
@@ -49,6 +65,13 @@ small {
   padding: 0 10px;
   margin-left: 10px;
 }
+.list .list-item:first-child {
+  border-top: 1px solid #ebebeb;
+}
+.list .list-item:last-child {
+  margin-left: 0;
+  padding-left: 20px;
+}
 .list .item-body {
   -webkit-box-flex: 2;
   -webkit-flex-grow: 2;
@@ -62,6 +85,61 @@ small {
 .editing .list-check {
   display: inline-block;
 }
+.tableview {
+  margin: 10px 0;
+}
+.tableview .tableview-header {
+  color: #999999;
+  padding: 0 10px;
+  line-height: 22px;
+  font-weight: bold;
+  font-size: 14px;
+}
+.tableview .tableview-cell {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-box;
+  display: -o-box;
+  display: box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flex;
+  display: -o-flex;
+  display: flex;
+  -webkit-box-align: center;
+  -moz-box-align: center;
+  -ms-box-align: center;
+  -o-box-align: center;
+  box-align: center;
+  -ms-flex-align: center;
+  -webkit-align-items: center;
+  -moz-align-items: center;
+  -ms-align-items: center;
+  -o-align-items: center;
+  align-items: center;
+  background: #FFF;
+  height: 44px;
+  border-bottom: 1px solid #ebebeb;
+  padding: 0 10px;
+}
+.tableview .tableview-cell:first-child {
+  border-top: 1px solid #ebebeb;
+}
+.tableview .key {
+  width: 100px;
+  margin-right: 10px;
+}
+.tableview input {
+  -webkit-box-flex: 2;
+  -webkit-flex-grow: 2;
+  -moz-box-flex: 2;
+  -ms-flex: 2 1 auto;
+  flex-grow: 2;
+  height: 100%;
+  box-sizing: border-box;
+  border: none;
+}
 .navbar {
   height: 54px;
 }
@@ -73,7 +151,7 @@ small {
   box-sizing: border-box;
   height: 54px;
   padding: 0 10px;
-  background: #f5f6f7;
+  background: rgba(255, 255, 255, 0.8);
   display: -webkit-box;
   display: -moz-box;
   display: -ms-box;
@@ -121,7 +199,7 @@ small {
   width: 100%;
   position: fixed;
   bottom: 0;
-  background: #f5f6f7;
+  background: rgba(255, 255, 255, 0.8);
   padding: 0 10px;
   box-sizing: border-box;
   display: -webkit-box;

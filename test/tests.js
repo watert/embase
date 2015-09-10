@@ -63,12 +63,21 @@ describe("Main", function() {
         return assert(newUser._data, "check find by id");
       });
     });
-    return it("removeByID", function() {
+    it("removeByID", function() {
       var user;
       return (user = new UserDoc(data)).save().then(function() {
         return UserDoc.removeByID(user.id);
       }).then(function(num) {
         return assert(num, "check remove item count");
+      });
+    });
+    return after(function() {
+      return UserDoc.remove({
+        name: "testing"
+      }).then(function(ret) {
+        return UserDoc.remove({
+          name: "testing2"
+        });
       });
     });
   });
@@ -96,10 +105,7 @@ describe("Main", function() {
       };
       return UserDoc.register(data).then(function() {
         return UserDoc.register(data);
-      }).then(function() {
-        return console.log("then", arguments);
       })["catch"](function(err) {
-        console.log(err);
         assert.equal(err.error.code, 400, "shit");
         return done();
       });

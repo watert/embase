@@ -157,6 +157,14 @@ BaseDoc = (function() {
     });
   };
 
+  BaseDoc.remove = function(where) {
+    return this.getStore().then(function(store) {
+      return store.remove(where, {
+        multi: true
+      });
+    });
+  };
+
   BaseDoc.removeByID = function(id) {
     return this.getStore().then(function(store) {
       return store.remove({

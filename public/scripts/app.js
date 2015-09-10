@@ -58,10 +58,11 @@ define(["jquery", "backbone", "libs/action-dispatcher", "libs/templer", "libs/ut
       require(["views/" + path], (function(_this) {
         return function(View) {
           var $body, query, view;
+          console.log("View", View);
           $body = _this.$(".view-container").empty();
           query = util.deparamQuery();
           _this.view = view = new View({
-            el: $body.parent()[0],
+            el: $body,
             query: query
           });
           view.render().then(function() {});

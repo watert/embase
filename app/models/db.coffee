@@ -71,6 +71,9 @@ class BaseDoc
         @getStore().then (store)->
             store.find({_id:id}).then (data)->
                 new DocClass(data[0])
+    @remove: (where)->
+        @getStore().then (store)->
+            store.remove(where, {multi:yes})
     @removeByID:(id)->
         @getStore().then (store)->
             store.remove({_id:id}, {})
