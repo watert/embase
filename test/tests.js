@@ -1,20 +1,8 @@
-var BaseDoc, DBStore, UserDoc, _, assert, ref;
+var DBStore, User, UserDoc, _, assert, ref;
 
-ref = require("../app/models/db"), BaseDoc = ref.BaseDoc, DBStore = ref.DBStore;
-
-assert = require("chai").assert;
-
-_ = require("underscore");
-
-UserDoc = require("../app/models/user");
+ref = require("./base"), DBStore = ref.DBStore, assert = ref.assert, _ = ref._, User = ref.User, UserDoc = ref.UserDoc;
 
 describe("Main", function() {
-  var _storePath, getStore;
-  _storePath = DBStore.storePath;
-  DBStore.storePath = function(name) {
-    return _storePath(name + "_test");
-  };
-  getStore = DBStore.getStore;
   describe("With ODM", function() {
     var data;
     data = {
@@ -23,59 +11,59 @@ describe("Main", function() {
     };
     it("should create user", function() {
       var user;
-      user = new UserDoc(data);
+      user = new User(data);
       return user.save().then(function(doc) {
         return assert.equal(doc._data.name, data.name, "should insert right name");
       });
     });
     it("should update user", function() {
       var user;
-      return (user = new UserDoc(data)).save().then(function() {
+      return (user = new User(data)).save().then(function() {
         return user.save({
           "name": "testing2"
         });
       }).then(function() {
         assert.equal(user._data.name, "testing2", "check update value setted");
-        return UserDoc.find({});
+        return User.find({});
       }).then(function(data) {});
     });
     it("should delete user", function() {
       var user;
-      return (user = new UserDoc(data)).save().then(function(doc) {
+      return (user = new User(data)).save().then(function(doc) {
         return user.remove();
       }).then(function(data) {
         assert(data, "check delete after save");
-        return UserDoc.find({});
+        return User.find({});
       }).then(function(data) {});
     });
-    it("UserDoc.find({})", function() {
-      return UserDoc.find({}).then(function(data) {
+    it("User.find({})", function() {
+      return User.find({}).then(function(data) {
         return data;
       });
     });
     it("findByID", function() {
       var user;
-      return (user = new UserDoc(data)).save().then(function() {
+      return (user = new User(data)).save().then(function() {
         var id;
         assert(id = user._data._id, "has id");
-        return UserDoc.findByID(id);
+        return User.findByID(id);
       }).then(function(newUser) {
         return assert(newUser._data, "check find by id");
       });
     });
     it("removeByID", function() {
       var user;
-      return (user = new UserDoc(data)).save().then(function() {
-        return UserDoc.removeByID(user.id);
+      return (user = new User(data)).save().then(function() {
+        return User.removeByID(user.id);
       }).then(function(num) {
         return assert(num, "check remove item count");
       });
     });
     return after(function() {
-      return UserDoc.remove({
+      return User.remove({
         name: "testing"
       }).then(function(ret) {
-        return UserDoc.remove({
+        return User.remove({
           name: "testing2"
         });
       });
@@ -83,7 +71,7 @@ describe("Main", function() {
   });
   describe("User Basic Actions", function() {
     it("hash", function() {
-      return assert.equal(UserDoc.hash("braitsch"), "9b74c9897bac770ffc029102a200c5de", "check password hash algorithm");
+      return assert.equal(User.hash("braitsch"), "9b74c9897bac770ffc029102a200c5de", "check password hash algorithm");
     });
     it("register and login", function() {
       var data;
@@ -92,8 +80,8 @@ describe("Main", function() {
         email: "x@x1.com",
         password: "braitsch"
       };
-      return UserDoc.register(data).then(function(user) {
-        return UserDoc.login(data);
+      return User.register(data).then(function(user) {
+        return User.login(data);
       }).then(function(user) {});
     });
     return it("register with same name", function(done) {
@@ -103,8 +91,8 @@ describe("Main", function() {
         email: "xx@xx.com",
         password: "braitsch"
       };
-      return UserDoc.register(data).then(function() {
-        return UserDoc.register(data);
+      return User.register(data).then(function() {
+        return User.register(data);
       })["catch"](function(err) {
         assert.equal(err.error.code, 400, "shit");
         return done();
@@ -127,7 +115,7 @@ describe("Main", function() {
     });
     return it("should wrap User as api", function() {
       var api, dfd;
-      api = Dispatcher.createAPI(UserDoc, ["find"]);
+      api = Dispatcher.createAPI(User, ["find"]);
       return dfd = api.call("find").then(function(data) {
         return assert(data.length, "find data");
       });

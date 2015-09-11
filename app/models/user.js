@@ -1,4 +1,4 @@
-var BaseDoc, DBStore, UserDoc, _, _hasKeys, crypto, ref,
+var BaseDoc, DBStore, User, UserDoc, _, _hasKeys, crypto, ref,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
@@ -20,25 +20,62 @@ _hasKeys = function(obj, keys) {
 };
 
 UserDoc = (function(superClass) {
-  var md5;
-
   extend(UserDoc, superClass);
 
-  function UserDoc() {
-    return UserDoc.__super__.constructor.apply(this, arguments);
+  UserDoc.store = "userdoc";
+
+  function UserDoc(data) {
+    UserDoc.__super__.constructor.call(this, data);
   }
+
+  UserDoc.prototype.checkData = function(data) {
+    var user;
+    if (data == null) {
+      data = this._data;
+    }
+    if (user = data.user) {
+      data.user_id = user.id || user._id;
+      delete data.user;
+    }
+    if (!data.user_id) {
+      throw "UserDoc " + this.store + " must have user data or user_id";
+    }
+  };
+
+  UserDoc.prototype.save = function(data) {
+    if (data == null) {
+      data = null;
+    }
+    this.checkData(data);
+    return UserDoc.__super__.save.call(this, data);
+  };
+
+  return UserDoc;
+
+})(BaseDoc);
+
+User = (function(superClass) {
+  var md5;
+
+  extend(User, superClass);
+
+  function User() {
+    return User.__super__.constructor.apply(this, arguments);
+  }
+
+  User.UserDoc = UserDoc;
 
   md5 = function(_str) {
     return crypto.createHash('md5').update(_str).digest('hex');
   };
 
-  UserDoc.hash = function(str) {
+  User.hash = function(str) {
     return md5(str);
   };
 
-  UserDoc.store = "user";
+  User.store = "user";
 
-  UserDoc.register = function(data) {
+  User.register = function(data) {
     if (!_hasKeys(data, ["email", "name", "password"])) {
       return Promise.reject({
         error: {
@@ -78,7 +115,7 @@ UserDoc = (function(superClass) {
     })(this));
   };
 
-  UserDoc.login = function(data) {
+  User.login = function(data) {
     if (!data.password) {
       Promise.reject({
         error: {
@@ -94,8 +131,10 @@ UserDoc = (function(superClass) {
     });
   };
 
-  return UserDoc;
+  return User;
 
 })(BaseDoc);
 
-module.exports = UserDoc;
+console.log("log userdoc", User.UserDoc);
+
+module.exports = User;

@@ -58,7 +58,7 @@ define(["views/_base/view", "tmpls/base"], function(BaseView, baseTmpls) {
       }
     };
 
-    UserIndexView.prototype.render = function() {
+    UserIndexView.prototype.render = function(name) {
       var users;
       console.debug("render", this);
       users = new Users;
@@ -69,7 +69,7 @@ define(["views/_base/view", "tmpls/base"], function(BaseView, baseTmpls) {
             users: users.toJSON(),
             query: _this.query
           });
-          return UserIndexView.__super__.render.call(_this);
+          return UserIndexView.__super__.render.call(_this, name);
         };
       })(this));
     };

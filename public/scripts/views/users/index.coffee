@@ -25,13 +25,13 @@ define ["views/_base/view","tmpls/base"],(BaseView, baseTmpls)->
                     @navigate("users/detail?id=#{id}")
                 # e.stopPropagation()
                 # console.log $check.prop("checked")
-        render:()->
+        render:(name)->
             console.debug "render", @
             users = new Users
             users.fetch().then (data)=>
                 console.log "try render",data
                 @setModel(users:users.toJSON(),query:@query)
-                super()
+                super(name)
                 # console.log "coll",users
             # $.get("/users/api/find").then (data)=>
         template: templer

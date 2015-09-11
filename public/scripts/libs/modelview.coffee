@@ -49,13 +49,15 @@ Factory = ($, Backbone)-> # Initializer
 			# console.debug "modelview show", @$el.parents()
 			@trigger("show")
 			@onShow?()
-		render:()->
+		render:(name="index")->
 			data = @model?.toJSON?() || @model || {}
 			if @collection
 				data.collection = @collection.toJSON?() || @collection
 			data = _.extend(data, @templateHelpers)
 
-			html = @template?(data) or @template
+			console.log @template?[name]
+			tmpl = @template?[name] or @template
+			html = tmpl?() or @template.invoke?(tmpl) or tmpl
 			@$el.html(html)
 			if tmplRenderer = @template._context?.onRender
 				tmplRenderer.bind(@)()

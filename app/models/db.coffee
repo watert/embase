@@ -46,6 +46,7 @@ class BaseDoc
         if object then @set(object)
         data = @_data
         where = _.pick(data, "_id")
+        # @beforeSave?(data)
         @getStore().then (store)=>
             if data._id
                 return store.update(where, data, {}).then =>

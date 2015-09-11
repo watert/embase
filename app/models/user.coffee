@@ -7,7 +7,23 @@ _hasKeys = (obj, keys)->
     for k in keys
         if not obj[k] then return no
     return yes
+
 class UserDoc extends BaseDoc
+    @store: "userdoc"
+    constructor:(data)->
+        super(data)
+    checkData:(data)->
+        data ?= @_data
+        if user = data.user
+            data.user_id = user.id or user._id
+            delete(data.user)
+        if not data.user_id
+            throw "UserDoc #{@store} must have user data or user_id"
+    save:(data=null)->
+        @checkData(data)
+        super(data)
+class User extends BaseDoc
+    @UserDoc: UserDoc
     md5 = (_str)->
         crypto.createHash('md5').update(_str).digest('hex')
     @hash: (str)-> md5(str)
@@ -33,6 +49,6 @@ class UserDoc extends BaseDoc
     #         login:(data)=> @login.bind(@)
     #         find:(data)=> @find.bind(@)
 
+console.log "log userdoc",User.UserDoc
 
-
-module.exports = UserDoc
+module.exports = User
