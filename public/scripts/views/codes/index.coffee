@@ -8,6 +8,11 @@ define ["views/_base/view","tmpls/base","marked","highlightjs"
             @setModel(markdown:@markdown)
 
             console.log "init", @model
+        events:
+            "click .btn-expand-all": (e)->
+                @$(".needs-readmore .btn-readmore").click()
+            "click .btn-readmore": (e)->
+                $(e.target).closest(".card").addClass("expand");
         markdown: """
             <h1> Frontend Cheatsheet</h1>
 
@@ -84,11 +89,15 @@ define ["views/_base/view","tmpls/base","marked","highlightjs"
             indexBody: """
                 <div class="cards-title">
                     <div class="title-body"></div>
+                    <div class="actions">
+                        <div class="btn-expand-all"> Expand all <i class="fa fa-angle-down"></i> </div>
+                    </div>
                 </div>
                 <div class="cards">
                     <% _.each(parse(markdown),function(html){ %>
                         <div class="card">
-                            <%=html%>
+                            <div class="content"><%=html%></div>
+                            <div class="btn-readmore"> Readmore </div>
                         </div>
                     <% });%>
                 </div>
@@ -97,4 +106,15 @@ define ["views/_base/view","tmpls/base","marked","highlightjs"
         render: ->
             super()
             @$("code").each -> hljs.highlightBlock(@)
-            @$(".card").first().appendTo(@$(".cards-title .title-body")).removeClass("card")
+            $title = @$(".card").first().appendTo(@$(".cards-title .title-body"))
+            $title.removeClass("card").find(".btn-readmore").remove()
+            @renderCards()
+        renderCards:()->
+            @$(".card").each (i)->
+                $card = $(@)
+                console.log i,$card.html()
+                $last = $card.children(":last");
+                lastPosBottom = $last.height()+$last.position().top-$card.position().top
+                console.log "check needs readmore",lastPosBottom , $card.height()
+                if lastPosBottom > $card.height()
+                    $card.addClass("needs-readmore")
