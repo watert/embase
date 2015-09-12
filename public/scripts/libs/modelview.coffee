@@ -54,10 +54,9 @@ Factory = ($, Backbone)-> # Initializer
 			if @collection
 				data.collection = @collection.toJSON?() || @collection
 			data = _.extend(data, @templateHelpers)
-
-			console.log @template?[name]
+			console.log @template?[name], data
 			tmpl = @template?[name] or @template
-			html = tmpl?() or @template.invoke?(tmpl) or tmpl
+			html = tmpl?() or @template.invoke?(tmpl, data) or tmpl
 			@$el.html(html)
 			if tmplRenderer = @template._context?.onRender
 				tmplRenderer.bind(@)()

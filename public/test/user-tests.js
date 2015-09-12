@@ -15,10 +15,17 @@ define(["./base.js"], function(testBase) {
 
       User.prototype.idAttribute = "_id";
 
-      User.prototype.urlRoot = "/user/api";
+      User.prototype.urlRoot = "/user/api/";
+
+      User.get = function() {
+        var user;
+        return (user = new User).fetch().then(function() {
+          return user;
+        });
+      };
 
       User.urlApi = function(method) {
-        return this.prototype.urlRoot + "/" + method;
+        return "" + this.prototype.urlRoot + method;
       };
 
       User.call = function(method, data) {
@@ -28,7 +35,7 @@ define(["./base.js"], function(testBase) {
         }
         url = this.urlApi(method);
         return $.post(url, data).then(function(data) {
-          return new User(data);
+          return new User(data.result);
         });
       };
 
@@ -52,13 +59,20 @@ define(["./base.js"], function(testBase) {
       });
     });
     it("should call login", function() {
-      return User.call("login", userData).then(function(ret) {
-        user = ret;
-        return console.log(ret);
+      return User.call("login", userData).then(function() {
+        return (user = new User).fetch();
+      }).then(function(ret) {
+        return console.log("fetched", user);
+      });
+    });
+    it("should get Profile", function() {
+      return User.get().then(function(u) {
+        console.log("User.get()", u);
+        return assert.equal(u.get("email"), userData.email, "user get info");
       });
     });
     return after("delete user", function() {
-      console.log(user);
+      console.log("delete", user);
       return user.destroy();
     });
   });

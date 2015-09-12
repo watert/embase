@@ -6,7 +6,7 @@ define ["views/_base/view","tmpls/base","marked","highlightjs"
             super()
             @loadCSS("../bower_components/highlightjs/styles/default.css")
             @setModel(markdown:@markdown)
-
+            # console.log "render markdown", @markdown
             console.log "init", @model
         events:
             "click .btn-expand-all": (e)->
