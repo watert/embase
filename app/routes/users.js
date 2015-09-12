@@ -1,4 +1,4 @@
-var Dispatcher, User, _, api, app, config, express, getRequesetData, retWithResponse, router;
+var Dispatcher, User, _, api, app, config, express, getRequesetData, restful, retWithResponse, router;
 
 express = require('express');
 
@@ -38,18 +38,63 @@ getRequesetData = function(req) {
   }
 };
 
+restful = function(Doc, options) {
+  _.defaults(options, {
+    "GET": function(id) {
+      if (!id) {
+        return Doc.find(data).then(ret);
+      } else {
+        return Doc.findOne({
+          _id: id
+        });
+      }
+    },
+    "POST": function(id, data) {
+      return (new User(data)).save().then(res.ret);
+    },
+    "PUT": function(id, data) {
+      return User.findOne({
+        _id: id
+      }).then(function(user) {
+        return user.save(data);
+      });
+    },
+    "DELETE": function(id) {
+      return User.findOne({
+        _id: id
+      }).then(function(user) {
+        return user.remove().then(function(num) {
+          return {
+            _id: id,
+            deleted: true
+          };
+        });
+      });
+    }
+  });
+  return function(req, res, next) {
+    var data, id, method;
+    method = req.method;
+    id = req.params.id;
+    data = getRequesetData(req);
+    options[method](id, data);
+    return next();
+  };
+};
+
+router.use('/api/*', require("../middlewares/jsonrpc"));
+
 router.all("/api/restful/:id?", function(req, res) {
-  var data, id, method, ret;
+  var data, id, method;
   method = req.method;
   id = req.params.id;
   data = getRequesetData(req);
-  ret = retWithResponse(res);
   if (!id) {
     if (method === "GET") {
-      User.find(data).then(ret);
+      User.find(data).then(res.ret);
     }
     if (method === "POST") {
-      return (new User(data)).save().then(ret);
+      return (new User(data)).save().then(res.ret);
     }
   } else {
     return User.findOne({
@@ -69,23 +114,22 @@ router.all("/api/restful/:id?", function(req, res) {
           };
         });
       }
-    }).then(ret);
+    }).then(res.ret);
   }
 });
 
 api = Dispatcher.createAPI(User, ["find", "findOne", "register"]);
 
 router.all('/api/:method', function(req, res) {
-  var data, method, ret;
+  var data, method;
   method = req.params.method;
-  ret = retWithResponse(res);
   data = getRequesetData(req) || {};
   return api.call(method, data).then(function(data) {
     console.log("method " + method + " then");
-    return ret(data);
+    return res.ret(data);
   }).fail(function(err) {
     console.log("method " + method + " fail", err);
-    return res.status(400).json(err);
+    return res.status(400).retError(err);
   });
 });
 

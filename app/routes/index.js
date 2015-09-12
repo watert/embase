@@ -18,43 +18,13 @@ router.get('/codes/*', function(req, res) {
   return res.render("index");
 });
 
+router.get('/user/', function(req, res, next) {
+  return res.render("index");
+});
+
 User = require("../models/user");
 
-router.all('/user/api/*', function(req, res, next) {
-  res.ret = function(data) {
-    var id, result;
-    result = data._data || data;
-    id = data.id || data._id || _.map(data, function(item) {
-      return item.id || item._id;
-    });
-    result = _.omit(result, "password");
-    res.json({
-      result: result,
-      id: id
-    });
-    return res;
-  };
-  res.retError = function(code, msg, result) {
-    var error;
-    if (result == null) {
-      result = null;
-    }
-    if (msg.error) {
-      error = msg.error, result = msg.result;
-    } else {
-      error = {
-        code: code,
-        message: msg
-      };
-    }
-    res.status(code).json({
-      result: result,
-      error: error
-    });
-    return res;
-  };
-  return next();
-});
+router.use('/user/api/*', require("../middlewares/jsonrpc"));
 
 router["delete"]('/user/api/:_id', function(req, res) {
   var _id, ref;
@@ -87,10 +57,6 @@ router.post('/user/api/:action', function(req, res) {
   }).fail(function(data) {
     return res.retError(400, data);
   });
-});
-
-router.get('/user/', function(req, res, next) {
-  return res.render("index");
 });
 
 module.exports = router;

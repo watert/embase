@@ -2,78 +2,133 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
   hasProp = {}.hasOwnProperty;
 
 define(["./base.js"], function(testBase) {
-  var assert, chai, retFail;
+  var User, UserDocs, assert, chai, retFail;
   assert = testBase.assert, retFail = testBase.retFail, chai = testBase.chai;
-  describe("User Actions", function() {
-    var User, user, userData;
-    User = (function(superClass) {
-      extend(User, superClass);
+  UserDocs = (function(superClass) {
+    var UserDocModel;
 
-      function User() {
-        return User.__super__.constructor.apply(this, arguments);
+    extend(UserDocs, superClass);
+
+    function UserDocs() {
+      return UserDocs.__super__.constructor.apply(this, arguments);
+    }
+
+    UserDocs.storeName = "article";
+
+    UserDocs.prototype.url = function() {
+      return "/user/docs/" + (this.storeName || this.constructor.storeName) + "/";
+    };
+
+    UserDocs.prototype.model = UserDocModel = (function(superClass1) {
+      extend(UserDocModel, superClass1);
+
+      function UserDocModel() {
+        return UserDocModel.__super__.constructor.apply(this, arguments);
       }
 
-      User.prototype.idAttribute = "_id";
-
-      User.prototype.urlRoot = "/user/api/";
-
-      User.get = function() {
-        var user;
-        return (user = new User).fetch().then(function() {
-          return user;
-        });
+      UserDocModel.prototype.parse = function(data) {
+        return data.result || data;
       };
 
-      User.urlApi = function(method) {
-        return "" + this.prototype.urlRoot + method;
-      };
-
-      User.call = function(method, data) {
-        var url;
-        if (data == null) {
-          data = {};
-        }
-        url = this.urlApi(method);
-        return $.post(url, data).then(function(data) {
-          return new User(data.result);
-        });
-      };
-
-      User.prototype.parse = function(data) {
-        return data.result;
-      };
-
-      return User;
+      return UserDocModel;
 
     })(Backbone.Model);
-    userData = {
-      name: "xxxx1",
-      email: "xx@asd.com",
-      password: "xxx"
+
+    UserDocs.prototype.parse = function(data) {
+      return data.result || data;
     };
-    user = null;
-    it("should call register", function() {
-      return User.call("register", userData).then(function(ret) {
-        user = ret;
-        return console.log(user);
+
+    UserDocs.create = function(data) {
+      var docs;
+      (docs = new this).add(data);
+      return docs.at(0);
+    };
+
+    return UserDocs;
+
+  })(Backbone.Collection);
+  User = (function(superClass) {
+    extend(User, superClass);
+
+    function User() {
+      return User.__super__.constructor.apply(this, arguments);
+    }
+
+    User.prototype.idAttribute = "_id";
+
+    User.prototype.urlRoot = "/user/api/";
+
+    User.get = function() {
+      var user;
+      return (user = new User).fetch().then(function() {
+        return user;
+      });
+    };
+
+    User.urlApi = function(method) {
+      return "" + this.prototype.urlRoot + method;
+    };
+
+    User.call = function(method, data) {
+      var url;
+      if (data == null) {
+        data = {};
+      }
+      url = this.urlApi(method);
+      return $.post(url, data).then(function(data) {
+        return new User(data.result);
+      });
+    };
+
+    User.prototype.parse = function(data) {
+      return data.result;
+    };
+
+    return User;
+
+  })(Backbone.Model);
+  describe("User and UserDocs", function() {
+    describe("User Base", function() {
+      var user, userData;
+      userData = {
+        name: "xxxx1",
+        email: "xx@asd.com",
+        password: "xxx"
+      };
+      user = null;
+      it("should call register", function() {
+        return User.call("register", userData).then(function(ret) {
+          return user = ret;
+        });
+      });
+      it("should call login", function() {
+        return User.call("login", userData).then(function() {
+          return (user = new User).fetch();
+        }).then(function(ret) {});
+      });
+      it("should get Profile", function() {
+        return User.get().then(function(u) {
+          return assert.equal(u.get("email"), userData.email, "user get info");
+        });
+      });
+      return after("delete user", function() {
+        return user.destroy();
       });
     });
-    it("should call login", function() {
-      return User.call("login", userData).then(function() {
-        return (user = new User).fetch();
-      }).then(function(ret) {
-        return console.log("fetched", user);
+    return describe("User Doc", function() {
+      var doc, docData;
+      docData = {
+        title: "hello world",
+        content: "content"
+      };
+      doc = null;
+      return it("should create a doc", function() {
+        doc = UserDocs.create(docData);
+        console.log("created doc", doc);
+        return doc.save().then(function(data) {
+          return console.log("userdoc data", data);
+        });
       });
-    });
-    it("should get Profile", function() {
-      return User.get().then(function(u) {
-        console.log("User.get()", u);
-        return assert.equal(u.get("email"), userData.email, "user get info");
-      });
-    });
-    return after("delete user", function() {
-      console.log("delete", user);
-      return user.destroy();
     });
   });
   return $.when(1);
