@@ -45,7 +45,10 @@ app.use(function(req, res, next) {
 
 // development error handler
 // will print stacktrace
+// app.set("env", "development");
+// console.log("env", app.get('env'));
 if (app.get('env') === 'development') {
+    console.log("is dev");
   app.locals.pretty = true;
   app.use(function(err, req, res, next) {
     res.status(err.status || 500);

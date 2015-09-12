@@ -27,7 +27,7 @@ router.all "/api/restful/:id?", (req, res)->
     ret = retWithResponse(res)
 
     if not id # collection op
-        if method is "GET" then User.find().then(ret)
+        if method is "GET" then User.find(data).then(ret)
         if method is "POST" # Create
             (new User(data)).save().then(ret)
     else

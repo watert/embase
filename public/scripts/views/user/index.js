@@ -2,7 +2,24 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
   hasProp = {}.hasOwnProperty;
 
 define(["views/_base/view", "tmpls/base"], function(BaseView, baseTmpls) {
-  var UserIndex;
+  var User, UserIndex;
+  User = (function(superClass) {
+    extend(User, superClass);
+
+    function User() {
+      return User.__super__.constructor.apply(this, arguments);
+    }
+
+    User.prototype.defaults = {
+      email: "",
+      name: ""
+    };
+
+    User.prototype.url = "/user/api/";
+
+    return User;
+
+  })(Backbone.Model);
   return UserIndex = (function(superClass) {
     extend(UserIndex, superClass);
 
@@ -10,16 +27,12 @@ define(["views/_base/view", "tmpls/base"], function(BaseView, baseTmpls) {
       return UserIndex.__super__.constructor.apply(this, arguments);
     }
 
-    UserIndex.prototype.model = Backbone.Model.extend({
-      defaults: {
-        email: "",
-        name: ""
-      }
-    });
-
-    UserIndex.prototype.url = "/user/info/";
-
     UserIndex.prototype.render = function() {
+      var user;
+      user = new User();
+      user.fetch().then(function(data) {
+        return console.log(data);
+      });
       console.log(_.methods(this.template));
       return UserIndex.__super__.render.call(this, "login");
     };

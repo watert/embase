@@ -1,9 +1,10 @@
-define ["chai","jquery","backbone"], (chai)->
-    {assert} = chai
-    dfd = $.Deferred()
-    retFail = (xhr)->
-        {code, message} = xhr.responseJSON.error
-        assert(false, "#{code}: #{message}")
+define ["./base.js"], (testBase)->
+    {assert, retFail, chai} = testBase
+    # {assert} = chai
+    # dfd = $.Deferred()
+    # retFail = (xhr)->
+    #     {code, message} = xhr.responseJSON.error
+    #     assert(false, "#{code}: #{message}")
 
     class User extends Backbone.Model
         idAttribute: "_id"
@@ -14,14 +15,14 @@ define ["chai","jquery","backbone"], (chai)->
             $.post(url, data).then (data)->
                 console.log data.length
                 return data
-        parse:(data)-> return data.result
+        parse:(data)-> return data.result or data
     class Users extends Backbone.Collection
         url: "/users/api/restful"
         model:User
         idAttribute: "_id"
         parse:(data)-> return data.result
 
-    describe "User Restful API",->
+    describe "User Admin Restful API",->
         it "should CREATE", ->
             user = new User({"name":"hello"})
             user.save().then (data)-> assert(user.id)
@@ -39,6 +40,7 @@ define ["chai","jquery","backbone"], (chai)->
             user.save().then ->
                 user.destroy()
             .then (ret)->
+
                 console.log user
                 assert(ret.result,"check remove row count")
         it "should Read Item", ->
@@ -51,8 +53,4 @@ define ["chai","jquery","backbone"], (chai)->
         it "should call find", ->
             User.call("find").then ->
                 console.log "find",arguments
-        it "should call register", ->
-            info = {name:"xxxx", email:"xx@asd.com", password:"xxx"}
-            User.call("register", info).fail(retFail)
-    dfd.resolve()
-    return dfd
+    return $.when(1)

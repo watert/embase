@@ -46,7 +46,7 @@ router.all("/api/restful/:id?", function(req, res) {
   ret = retWithResponse(res);
   if (!id) {
     if (method === "GET") {
-      User.find().then(ret);
+      User.find(data).then(ret);
     }
     if (method === "POST") {
       return (new User(data)).save().then(ret);
