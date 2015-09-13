@@ -39,10 +39,13 @@ getRequesetData = function(req) {
 };
 
 restful = function(Doc, options) {
+  if (options == null) {
+    options = {};
+  }
   _.defaults(options, {
-    "GET": function(id) {
+    "GET": function(id, data) {
       if (!id) {
-        return Doc.find(data).then(ret);
+        return Doc.find(data);
       } else {
         return Doc.findOne({
           _id: id
@@ -50,7 +53,7 @@ restful = function(Doc, options) {
       }
     },
     "POST": function(id, data) {
-      return (new User(data)).save().then(res.ret);
+      return (new User(data)).save();
     },
     "PUT": function(id, data) {
       return User.findOne({
@@ -77,45 +80,20 @@ restful = function(Doc, options) {
     method = req.method;
     id = req.params.id;
     data = getRequesetData(req);
-    options[method](id, data);
-    return next();
+    console.log("restful act", method, id, data);
+    return options[method](id, data).then(function(data) {
+      res.restData = data;
+      return next();
+    });
   };
 };
 
 router.use('/api/*', require("../middlewares/jsonrpc"));
 
+router.use("/api/restful/:id?", restful(User, {}));
+
 router.all("/api/restful/:id?", function(req, res) {
-  var data, id, method;
-  method = req.method;
-  id = req.params.id;
-  data = getRequesetData(req);
-  if (!id) {
-    if (method === "GET") {
-      User.find(data).then(res.ret);
-    }
-    if (method === "POST") {
-      return (new User(data)).save().then(res.ret);
-    }
-  } else {
-    return User.findOne({
-      _id: id
-    }).then(function(user) {
-      if (method === "GET") {
-        return user;
-      }
-      if (method === "PUT") {
-        return user.save(data);
-      }
-      if (method === "DELETE") {
-        return user.remove().then(function(num) {
-          return {
-            _id: id,
-            deleted: true
-          };
-        });
-      }
-    }).then(res.ret);
-  }
+  return res.ret(res.restData);
 });
 
 api = Dispatcher.createAPI(User, ["find", "findOne", "register"]);

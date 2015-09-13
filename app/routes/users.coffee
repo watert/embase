@@ -20,13 +20,13 @@ getRequesetData = (req)->
     if method is "GET" then return req.query
     else return req.body
 
-restful = (Doc, options)->
+restful = (Doc, options={})->
     _.defaults options,
-        "GET":(id)-> #get list or item with id
-            if not id then Doc.find(data).then(ret)
-            else Doc.findOne(_id:id)
+        "GET":(id, data)-> #get list or item with id
+            if not id then return Doc.find(data)
+            else return Doc.findOne(_id:id)
         "POST":(id, data)-> #create (id will be null)
-            (new User(data)).save().then(res.ret)
+            (new User(data)).save()
         "PUT":(id,data)-> #update
             User.findOne(_id:id).then (user)->
                 user.save(data)
@@ -37,26 +37,34 @@ restful = (Doc, options)->
         method = req.method
         id = req.params.id
         data = getRequesetData(req)
-        options[method](id,data)
-        next()
+        console.log "restful act",method, id, data
+        options[method](id,data).then (data)->
+            res.restData = data
+            # res.ret(data)
+            next()
 
 router.use('/api/*', require("../middlewares/jsonrpc"))
-router.all "/api/restful/:id?", (req, res)->
-    method = req.method
-    id = req.params.id
-    data = getRequesetData(req)
+router.use "/api/restful/:id?", restful(User,{})
+router.all "/api/restful/:id?", (req,res)->
+    res.ret(res.restData)
 
-    if not id # collection op
-        if method is "GET" then User.find(data).then(res.ret)
-        if method is "POST" # Create
-            (new User(data)).save().then(res.ret)
-    else
-        User.findOne(_id:id).then (user)->
-            if method is "GET" then return user # Update
-            if method is "PUT" then return user.save(data) # Update
-            if method is "DELETE" # Delete
-                user.remove().then (num)-> {_id: id, deleted:yes}
-        .then(res.ret)
+
+# router.all "/api/restful/:id?", (req, res)->
+#     method = req.method
+#     id = req.params.id
+#     data = getRequesetData(req)
+#
+#     if not id # collection op
+#         if method is "GET" then User.find(data).then(res.ret)
+#         if method is "POST" # Create
+#             (new User(data)).save().then(res.ret)
+#     else
+#         User.findOne(_id:id).then (user)->
+#             if method is "GET" then return user # Update
+#             if method is "PUT" then return user.save(data) # Update
+#             if method is "DELETE" # Delete
+#                 user.remove().then (num)-> {_id: id, deleted:yes}
+#         .then(res.ret)
 
 api = Dispatcher.createAPI(User, ["find","findOne","register"])
 router.all '/api/:method', (req, res)->
