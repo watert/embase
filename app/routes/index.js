@@ -1,4 +1,4 @@
-var User, _, express, q, router;
+var User, _, express, q, retJSON, router;
 
 q = require('q');
 
@@ -24,7 +24,9 @@ router.get('/user/', function(req, res, next) {
 
 User = require("../models/user");
 
-router.use('/user/api/*', require("../middlewares/util")());
+retJSON = require("../middlewares/util").retJSON;
+
+router.use('/user/api/*', retJSON());
 
 router["delete"]('/user/api/:_id', function(req, res) {
   var _id, ref;

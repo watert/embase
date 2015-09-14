@@ -23,8 +23,8 @@ router.get '/user/', (req, res, next)->
 #     res.json({result:result, id:id})
 
 User = require("../models/user")
-
-router.use('/user/api/*', require("../middlewares/util")())
+{retJSON} = require("../middlewares/util")
+router.use('/user/api/*', retJSON())
 
 router.delete '/user/api/:_id', (req, res)-> #注销
     User.remove({_id} = req.params).then (ret)=> res.ret(ret)
