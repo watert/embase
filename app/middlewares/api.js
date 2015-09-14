@@ -29,7 +29,6 @@ apis = {
         if (result == null) {
           result = null;
         }
-        console.log("reterr begin", code, msg);
         if (msg != null ? msg.error : void 0) {
           error = msg.error, result = msg.result;
         } else if (code.error) {
@@ -40,7 +39,6 @@ apis = {
             message: msg
           };
         }
-        console.log("ret err", req.path);
         res.status(error.code).json({
           result: result,
           error: error
@@ -74,7 +72,6 @@ apis = {
       var data, method;
       method = req.params.method;
       data = apis.getRequesetData(req) || {};
-      console.log("method", method, data);
       return q.when(Model[method](data)).then(function(_data) {
         var ctx, eventMethod;
         res.data = _data;
@@ -89,7 +86,6 @@ apis = {
         }
         return res.ret(_data);
       }).fail(function(err) {
-        console.log("fail", err);
         return res.retError(err);
       });
     });
@@ -155,8 +151,13 @@ apis = {
         data: data
       };
       data = options.parseData.bind(ctx)(data);
+      if (data.error) {
+        return res.retError(data);
+      }
       return options[method].bind(ctx)(id, data).then(function(data) {
         return res.ret(data);
+      }).fail(function(err) {
+        return res.retError(err);
       });
     });
     return router;

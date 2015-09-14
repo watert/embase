@@ -124,7 +124,6 @@ define(["./base.js"], function(testBase) {
       doc = null;
       return it("should create a doc", function() {
         doc = UserDocs.create(docData);
-        console.log("created doc", doc);
         return doc.save().then(function(data) {
           return console.log("userdoc data", data);
         });

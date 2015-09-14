@@ -40,15 +40,25 @@ UserDoc = (function(superClass) {
       delete data.user;
     }
     if (!data.user_id) {
-      throw "UserDoc " + this.store + " must have user data or user_id";
+      return {
+        error: {
+          code: 400,
+          message: "UserDoc " + this.store + " must have user data or user_id"
+        }
+      };
     }
   };
 
   UserDoc.prototype.save = function(data) {
+    var err, ref1;
     if (data == null) {
       data = null;
     }
-    this.checkData(data);
+    if (err = (ref1 = this.checkData(data)) != null ? ref1.error : void 0) {
+      return q.reject({
+        error: err
+      });
+    }
     return UserDoc.__super__.save.call(this, data);
   };
 
@@ -98,7 +108,6 @@ User = (function(superClass) {
       return function(ret) {
         var user;
         if (ret.length) {
-          console.log("register already has reacord");
           return Promise.reject({
             error: {
               code: 406,
@@ -137,7 +146,5 @@ User = (function(superClass) {
   return User;
 
 })(BaseDoc);
-
-console.log("log userdoc", User.UserDoc);
 
 module.exports = User;

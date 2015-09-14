@@ -58,8 +58,22 @@ router.get('/user/api/', function(req, res) {
   }
 });
 
+console.log("article api init", User.UserDoc);
+
 articleAPI = api.restful({
-  model: User.UserDoc
+  model: User.UserDoc,
+  parseData: function(data) {
+    var user;
+    user = this.req.session.user;
+    if (!user) {
+      return {
+        error: {
+          message: "not logined",
+          code: 406
+        }
+      };
+    }
+  }
 });
 
 router.use('/user/docs/article/', articleAPI);

@@ -13,14 +13,12 @@ apis =
                 res.json({result:result, id:id})
                 return res
             res.retError = (code,msg,result=null)->
-                console.log "reterr begin", code, msg
                 if msg?.error
                     {error, result} = msg
                 else if code.error
                     error = code.error
                 else error =
                     code:code, message:msg
-                console.log "ret err",req.path
                 res.status(error.code).json(result:result, error:error)
                 return res
             next()
@@ -36,7 +34,6 @@ apis =
         router.post "/:method?", (req,res,next)->
             method = req.params.method
             data = apis.getRequesetData(req) or {}
-            console.log "method", method, data
             q.when(Model[method](data)).then (_data)->
                 res.data = _data
                 ctx = {data:_data, req, res, method}
@@ -47,7 +44,6 @@ apis =
                 res.ret(_data)
                 # next()
             .fail (err)->
-                console.log "fail", err
                 res.retError(err)
         return router
     restful: (options={})->
@@ -62,6 +58,7 @@ apis =
                 if not id then return Doc.find(data)
                 else return Doc.findOne(_id:id)
             "POST":(id, data)-> #create (id will be null)
+
                 (new Doc(data)).save()
             "PUT":(id,data)-> #update
                 Doc.findOne(_id:id).then (doc)->
@@ -76,9 +73,13 @@ apis =
             data = apis.getRequesetData(req)
             ctx = {req,res,method,id,data}
             data = options.parseData.bind(ctx)(data)
+            if data.error
+                return res.retError(data)
             options[method].bind(ctx)(id,data).then (data)->
                 # res.data = data
                 res.ret(data)
+            .fail (err)->
+                res.retError(err)
                 # options.next.bind(ctx)(req,res,next)
         return router
 

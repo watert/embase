@@ -7,6 +7,5 @@ _ = require("underscore")
 
 User = require("../app/models/user")
 UserDoc = User.UserDoc
-console.log "try get UserDoc",User, UserDoc
 
 module.exports = {DBStore, assert, _, User, UserDoc}

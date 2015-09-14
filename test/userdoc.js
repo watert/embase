@@ -15,6 +15,15 @@ describe("Other Doc with User", function() {
       return user = _user;
     });
   });
+  it("should fail create a doc without user", function() {
+    var doc;
+    doc = new UserDoc({
+      title: "hello"
+    });
+    return doc.save().fail(function(data) {
+      return assert(data.error.code === 400, "check must have user with userdoc");
+    });
+  });
   it("should create a doc with user owns it", function() {
     var doc;
     doc = new UserDoc({
@@ -25,7 +34,13 @@ describe("Other Doc with User", function() {
       return assert.equal(doc.get("title"), "hello");
     });
   });
-  it("should fetch by user");
+  it("should fetch by user", function() {
+    return UserDoc.find({
+      user_id: user.id
+    }).then(function(data) {
+      return assert(data[0].user_id === user.id, "check find user doc only");
+    });
+  });
   return after("Remove User", function() {
     return user.remove();
   });

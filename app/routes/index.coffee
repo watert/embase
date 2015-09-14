@@ -33,7 +33,10 @@ router.get '/user/api/', (req, res)->
         res.ret(user)
     else res.retError(406, "not logined")
 
-articleAPI = api.restful(model:User.UserDoc)
+console.log "article api init",User.UserDoc
+articleAPI = api.restful model:User.UserDoc,parseData:(data)->
+    user = @req.session.user
+    if not user then return {error:{message:"not logined", code:406}}
 router.use '/user/docs/article/', articleAPI
 
 

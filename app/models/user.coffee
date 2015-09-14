@@ -19,10 +19,13 @@ class UserDoc extends BaseDoc
             data.user_id = user.id or user._id
             delete(data.user)
         if not data.user_id
-            throw "UserDoc #{@store} must have user data or user_id"
+            # msg = "UserDoc #{@store} must have user data or user_id"
+            return error: {code: 400, message:"UserDoc #{@store} must have user data or user_id"}
     save:(data=null)->
-        @checkData(data)
+        if err = @checkData(data)?.error
+            return q.reject(error:err)
         super(data)
+    # @find:(options)->
 class User extends BaseDoc
     @UserDoc: UserDoc
     md5 = (_str)->
@@ -31,11 +34,9 @@ class User extends BaseDoc
     @store: "user"
     @register:(data)->
         if not _hasKeys(data, ["email", "name", "password"])
-            # console.log data
             return Promise.reject({error:{code:406, message: "needed more info to register"},data:data})
         @find({$or: [email:data.email, name:data.name]}).then (ret)=>
             if ret.length
-                console.log "register already has reacord"
                 return Promise.reject({error:{code:406, message:"name or email already exists"}})
             else
                 data = _.extend({}, data, password: @hash(data.password))
@@ -52,6 +53,5 @@ class User extends BaseDoc
     #         login:(data)=> @login.bind(@)
     #         find:(data)=> @find.bind(@)
 
-console.log "log userdoc",User.UserDoc
 
 module.exports = User

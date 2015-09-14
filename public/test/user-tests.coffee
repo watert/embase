@@ -46,7 +46,7 @@ define ["./base.js"], (testBase)->
             doc = null
             it "should create a doc", ->
                 doc = UserDocs.create(docData)
-                console.log "created doc",doc
+                # console.log "created doc",doc
                 doc.save().then (data)->
                     console.log "userdoc data",data
 
