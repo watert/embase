@@ -156,7 +156,7 @@ apis = {
       }
       return options[method].bind(ctx)(id, data).then(function(data) {
         return res.ret(data);
-      }).fail(function(err) {
+      })["catch"](function(err) {
         return res.retError(err);
       });
     });

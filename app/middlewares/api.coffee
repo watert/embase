@@ -78,7 +78,7 @@ apis =
             options[method].bind(ctx)(id,data).then (data)->
                 # res.data = data
                 res.ret(data)
-            .fail (err)->
+            .catch (err)->
                 res.retError(err)
                 # options.next.bind(ctx)(req,res,next)
         return router

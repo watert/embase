@@ -21,8 +21,7 @@ router.use("/api/restful/", restful({
 }));
 
 router.use("/api/", jsonrpc({
-  model: User,
-  methods: ["find", "findOne", "register"]
+  model: User
 }));
 
 router.get('/*', function(req, res, next) {

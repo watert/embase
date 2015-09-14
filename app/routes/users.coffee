@@ -11,7 +11,7 @@ router = express.Router()
 {restful, jsonrpc} = require("../middlewares/api")
 # router.use('/api/*', utilRouter())
 router.use "/api/restful/", restful(model:User)
-router.use "/api/", jsonrpc(model:User, methods:["find","findOne","register"])
+router.use "/api/", jsonrpc(model:User)
 
 router.get '/*', (req, res, next)->
     res.render('index', { title: 'Express' })
