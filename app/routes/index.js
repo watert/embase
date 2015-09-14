@@ -58,8 +58,6 @@ router.get('/user/api/', function(req, res) {
   }
 });
 
-console.log("article api init", User.UserDoc);
-
 articleAPI = api.restful({
   model: User.UserDoc,
   parseData: function(data) {
@@ -73,6 +71,17 @@ articleAPI = api.restful({
         }
       };
     }
+    if (data.user_id && data.user_id !== user.id) {
+      return {
+        error: {
+          message: "not your doc",
+          code: 406
+        }
+      };
+    }
+    return _.extend({}, data, {
+      user_id: user.id
+    });
   }
 });
 

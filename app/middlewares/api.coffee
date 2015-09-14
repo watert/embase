@@ -7,9 +7,10 @@ apis =
     retJSON: (options)->
         (req,res,next)->
             res.ret = (data)->
-                result = data._data or data
+                result = data._data or data.result or data
+                # console.log "ret data", JSON.stringify(result), _.isObject(result)
                 id = data.id or data._id or _.map(data, (item)-> item.id or item._id )
-                result = _.omit(result, "password")
+                if not _.isArray(result) then result = _.omit(result, "password")
                 res.json({result:result, id:id})
                 return res
             res.retError = (code,msg,result=null)->
@@ -55,7 +56,9 @@ apis =
             "next":(req,res,next)-> next()
             "parseData":(data)-> data
             "GET":(id, data)-> # get list or item with id
-                if not id then return Doc.find(data)
+                if not id then return Doc.find(data).then (data)->
+                    data.result = _.toArray(data)
+                    return data
                 else return Doc.findOne(_id:id)
             "POST":(id, data)-> #create (id will be null)
 

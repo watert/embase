@@ -3,8 +3,10 @@ define ["./base.js"], (testBase)->
 
     class UserDocs extends Backbone.Collection
         @storeName: "article"
+        idAttribute:"_id"
         url: -> "/user/docs/#{@storeName or @constructor.storeName}/"
         model: class UserDocModel extends Backbone.Model
+            idAttribute:"_id"
             parse: (data)-> data.result or data
         parse: (data)-> data.result or data
         @create: (data)->
@@ -49,6 +51,22 @@ define ["./base.js"], (testBase)->
                 # console.log "created doc",doc
                 doc.save().then (data)->
                     console.log "userdoc data",data
+            it "should fetch docs", ->
+                list = null
+                UserDocs.create(docData).save().then ->
+                    (list = new UserDocs).fetch()
+                .then ()-> assert(list.length)
+            it "should update a doc", ->
+                doc = UserDocs.create(docData)
+                doc.save().then ->
+                    doc.save({title:"hello2"})
+                .then ->
+                    assert.equal(doc.get("title"), "hello2", "should update doc")
+            it "should remove a doc", ->
+                doc = UserDocs.create(docData)
+                doc.save().then ->
+                    console.log "try destroy", doc, doc.destroy
+                    doc.destroy()
 
     # dfd.resolve()
     return $.when(1)

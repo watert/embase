@@ -15,6 +15,8 @@ define(["./base.js"], function(testBase) {
 
     UserDocs.storeName = "article";
 
+    UserDocs.prototype.idAttribute = "_id";
+
     UserDocs.prototype.url = function() {
       return "/user/docs/" + (this.storeName || this.constructor.storeName) + "/";
     };
@@ -25,6 +27,8 @@ define(["./base.js"], function(testBase) {
       function UserDocModel() {
         return UserDocModel.__super__.constructor.apply(this, arguments);
       }
+
+      UserDocModel.prototype.idAttribute = "_id";
 
       UserDocModel.prototype.parse = function(data) {
         return data.result || data;
@@ -122,10 +126,36 @@ define(["./base.js"], function(testBase) {
         content: "content"
       };
       doc = null;
-      return it("should create a doc", function() {
+      it("should create a doc", function() {
         doc = UserDocs.create(docData);
         return doc.save().then(function(data) {
           return console.log("userdoc data", data);
+        });
+      });
+      it("should fetch docs", function() {
+        var list;
+        list = null;
+        return UserDocs.create(docData).save().then(function() {
+          return (list = new UserDocs).fetch();
+        }).then(function() {
+          return assert(list.length);
+        });
+      });
+      it("should update a doc", function() {
+        doc = UserDocs.create(docData);
+        return doc.save().then(function() {
+          return doc.save({
+            title: "hello2"
+          });
+        }).then(function() {
+          return assert.equal(doc.get("title"), "hello2", "should update doc");
+        });
+      });
+      return it("should remove a doc", function() {
+        doc = UserDocs.create(docData);
+        return doc.save().then(function() {
+          console.log("try destroy", doc, doc.destroy);
+          return doc.destroy();
         });
       });
     });

@@ -86,6 +86,6 @@ class BaseDoc
             store.findOne(args...).then (data)-> new DocClass(data)
     @find:(where={}, args...)->
         @getStore().then (store)->
-            return store.find(where, args...)
+            store.find(where, args...)
 
 module.exports = {BaseDoc, DBStore}

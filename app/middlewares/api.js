@@ -13,11 +13,13 @@ apis = {
     return function(req, res, next) {
       res.ret = function(data) {
         var id, result;
-        result = data._data || data;
+        result = data._data || data.result || data;
         id = data.id || data._id || _.map(data, function(item) {
           return item.id || item._id;
         });
-        result = _.omit(result, "password");
+        if (!_.isArray(result)) {
+          result = _.omit(result, "password");
+        }
         res.json({
           result: result,
           id: id
@@ -107,7 +109,10 @@ apis = {
       },
       "GET": function(id, data) {
         if (!id) {
-          return Doc.find(data);
+          return Doc.find(data).then(function(data) {
+            data.result = _.toArray(data);
+            return data;
+          });
         } else {
           return Doc.findOne({
             _id: id
