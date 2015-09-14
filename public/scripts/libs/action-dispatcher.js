@@ -17,19 +17,24 @@ factory = function($, _) {
   };
   return ActionDispatcher = (function() {
     ActionDispatcher.createAPI = function(Model, methods) {
-      var actions, api, method, name;
+      var Class, actions, api, method, name;
       actions = (function() {
-        var i, len, results;
+        var i, len, ref, results;
         results = [];
         for (i = 0, len = methods.length; i < len; i++) {
           name = methods[i];
-          method = Model[name].bind(Model);
+          method = (ref = Model[name]) != null ? ref.bind(Model) : void 0;
+          if (!method) {
+            throw "method not exists " + name;
+          }
           results.push([name, method]);
         }
         return results;
       })();
+      actions = _.object(actions);
+      Class = this;
       return api = new this({
-        actions: _.object(actions)
+        actions: actions
       });
     };
 
@@ -37,6 +42,7 @@ factory = function($, _) {
       if (options == null) {
         options = {};
       }
+      this.actions = {};
       this.addActions(options.actions || {});
       return this;
     }
@@ -58,6 +64,7 @@ factory = function($, _) {
 
     ActionDispatcher.prototype.call = function(method, data, callback) {
       var dfd, msg;
+      console.log("@actions", _.methods(this.actions));
       if (this.actions[method]) {
         dfd = $when(this.actions[method].bind(this)(data));
         if (this.isShowingRequestDebug) {
@@ -94,6 +101,7 @@ factory = function($, _) {
     ActionDispatcher.prototype.actions = {};
 
     ActionDispatcher.prototype.addActions = function(map) {
+      console.log("add actions while @actions", _.methods(this.actions), _.methods(map));
       return _(map).each((function(_this) {
         return function(actionMethod, name) {
           var oldMethod;

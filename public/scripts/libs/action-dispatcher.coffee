@@ -17,11 +17,17 @@ factory = ($, _)->
 
         @createAPI = (Model, methods)->
             actions = for name in methods
-                method = Model[name].bind(Model)
+
+                method = Model[name]?.bind(Model)
+                if not method then throw("method not exists #{name}")
                 [name, method]
-            api = new this(actions: _.object(actions))
+            actions = _.object(actions)
+            # console.log "actions",actions, this
+            Class = this
+            api = new this(actions: actions)
 
         constructor: (options={})->
+            @actions = {}
             @addActions(options.actions or {})
             return this
         # isShowingRequestDebug: yes
@@ -37,6 +43,7 @@ factory = ($, _)->
             dfd.fail (res)-> alertWithStatus("fail", res)
 
         call:(method, data, callback)->
+            console.log "@actions", _.methods(@actions)
             if @actions[method]
                 dfd = $when @actions[method].bind(this)(data)
                 if @isShowingRequestDebug
@@ -62,6 +69,7 @@ factory = ($, _)->
                 callback?()
         actions:{}
         addActions:(map)->
+            console.log "add actions while @actions", _.methods(@actions), _.methods(map)
             _(map).each (actionMethod,name)=>
                 oldMethod = @actions[name]
                 if not oldMethod

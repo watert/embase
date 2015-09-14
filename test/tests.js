@@ -113,11 +113,40 @@ describe("Main", function() {
         return assert.equal(val, "hello", "a action");
       });
     });
-    return it("should wrap User as api", function() {
+    it("should wrap User as api", function() {
       var api, dfd;
       api = Dispatcher.createAPI(User, ["find"]);
       return dfd = api.call("find").then(function(data) {
         return assert(data.length, "find data");
+      });
+    });
+    it("should dispatcher isolated", function() {
+      var api1, api2;
+      api1 = new Dispatcher({
+        actions: {
+          "hello": function() {
+            return "world1";
+          }
+        }
+      });
+      return api2 = new Dispatcher({
+        actions: {
+          "hello": function() {
+            return "world2";
+          }
+        }
+      });
+    });
+    return it("should dispatcher register", function() {
+      var api, userData;
+      userData = {
+        email: "testing@TTT.com",
+        name: "TTT",
+        password: "xx"
+      };
+      api = Dispatcher.createAPI(User, ["register"]);
+      return api.call("register", userData).then(function(data) {
+        return console.log("register data", data);
       });
     });
   });

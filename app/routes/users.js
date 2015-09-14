@@ -18,9 +18,7 @@ ref = require("../middlewares/api"), restful = ref.restful, jsonrpc = ref.jsonrp
 
 router.use("/api/restful/", restful({
   model: User
-}), function(req, res, next) {
-  return res.ret(res.restData);
-});
+}));
 
 router.use("/api/", jsonrpc({
   model: User,

@@ -1,4 +1,4 @@
-var BaseDoc, DBStore, User, UserDoc, _, _hasKeys, crypto, ref,
+var BaseDoc, DBStore, User, UserDoc, _, _hasKeys, crypto, q, ref,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
@@ -7,6 +7,8 @@ ref = require("./db"), BaseDoc = ref.BaseDoc, DBStore = ref.DBStore;
 crypto = require('crypto');
 
 _ = require('underscore');
+
+q = require("q");
 
 _hasKeys = function(obj, keys) {
   var i, k, len;
@@ -96,9 +98,10 @@ User = (function(superClass) {
       return function(ret) {
         var user;
         if (ret.length) {
+          console.log("register already has reacord");
           return Promise.reject({
             error: {
-              code: 400,
+              code: 406,
               message: "name or email already exists"
             }
           });

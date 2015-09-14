@@ -1,10 +1,12 @@
-var Dispatcher, _, apis, express;
+var Dispatcher, _, apis, express, q;
 
 _ = require("underscore");
 
 express = require("express");
 
 Dispatcher = require("../../public/scripts/libs/action-dispatcher");
+
+q = require("q");
 
 apis = {
   retJSON: function(options) {
@@ -27,15 +29,19 @@ apis = {
         if (result == null) {
           result = null;
         }
-        if (msg.error) {
+        console.log("reterr begin", code, msg);
+        if (msg != null ? msg.error : void 0) {
           error = msg.error, result = msg.result;
+        } else if (code.error) {
+          error = code.error;
         } else {
           error = {
             code: code,
             message: msg
           };
         }
-        res.status(code).json({
+        console.log("ret err", req.path);
+        res.status(error.code).json({
           result: result,
           error: error
         });
@@ -54,22 +60,37 @@ apis = {
     }
   },
   jsonrpc: function(options) {
-    var Model, api, router;
+    var Model, router;
     if (options == null) {
       options = {};
     }
+    options = _.extend({
+      on: {}
+    }, options);
     Model = options.model;
     router = express.Router();
-    api = Dispatcher.createAPI(Model, options.methods);
-    router.use(apis.retJSON());
-    router.post("/:method?", function(req, res) {
+    router.use("/*", apis.retJSON());
+    router.post("/:method?", function(req, res, next) {
       var data, method;
       method = req.params.method;
       data = apis.getRequesetData(req) || {};
-      return api.call(method, data).then(function(data) {
-        return res.ret(data);
+      console.log("method", method, data);
+      return q.when(Model[method](data)).then(function(_data) {
+        var ctx, eventMethod;
+        res.data = _data;
+        ctx = {
+          data: _data,
+          req: req,
+          res: res,
+          method: method
+        };
+        if (eventMethod = options.events[method]) {
+          eventMethod.bind(ctx)(req, res);
+        }
+        return res.ret(_data);
       }).fail(function(err) {
-        return res.status(400).retError(err);
+        console.log("fail", err);
+        return res.retError(err);
       });
     });
     return router;
@@ -135,8 +156,7 @@ apis = {
       };
       data = options.parseData.bind(ctx)(data);
       return options[method].bind(ctx)(id, data).then(function(data) {
-        res.restData = data;
-        return options.next.bind(ctx)(req, res, next);
+        return res.ret(data);
       });
     });
     return router;

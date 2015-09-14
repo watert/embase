@@ -69,12 +69,21 @@ describe "Main", ->
                 a: ()-> "hello"
             dispatcher.call("a").then (val)->
                 assert.equal(val, "hello", "a action")
-
         it "should wrap User as api", ->
             # api = new Dispatcher()
             api = Dispatcher.createAPI(User, ["find"])
             dfd = api.call("find").then (data)->
                 assert(data.length, "find data")
+        it "should dispatcher isolated", ->
+            api1 = new Dispatcher(actions: {"hello":-> "world1"})
+            api2 = new Dispatcher(actions: {"hello":-> "world2"})
+        it "should dispatcher register", ->
+            userData = {email:"testing@TTT.com",name:"TTT", password:"xx"}
+            api = Dispatcher.createAPI(User, ["register"])
+            api.call("register",userData).then (data)->
+                console.log "register data", data
+            # api1 = Dispatcher.createAPI(User, ["find"])
+            # api2 = Dispatcher.createAPI(User, ["find"])
 
     after "NeDB destroy", ()->
         fs = require("fs")

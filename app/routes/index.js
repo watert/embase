@@ -1,4 +1,4 @@
-var User, _, express, q, retJSON, router;
+var User, _, api, articleAPI, express, q, router, rpcRouter;
 
 q = require('q');
 
@@ -24,9 +24,21 @@ router.get('/user/', function(req, res, next) {
 
 User = require("../models/user");
 
-retJSON = require("../middlewares/util").retJSON;
+api = require("../middlewares/api");
 
-router.use('/user/api/*', retJSON());
+router.use('/user/api/*', api.retJSON());
+
+rpcRouter = api.jsonrpc({
+  model: User,
+  events: {
+    "login": function(req, res) {
+      console.log("on login", res.data);
+      return req.session.user = res.data;
+    }
+  }
+});
+
+router.use('/user/api/', rpcRouter);
 
 router["delete"]('/user/api/:_id', function(req, res) {
   var _id, ref;
@@ -38,27 +50,18 @@ router["delete"]('/user/api/:_id', function(req, res) {
 });
 
 router.get('/user/api/', function(req, res) {
-  if (req.session.user) {
-    return res.ret(req.session.user);
+  var user;
+  if (user = req.session.user) {
+    return res.ret(user);
   } else {
-    return res.status(406).retError(406, "not logined");
+    return res.retError(406, "not logined");
   }
 });
 
-router.post('/user/api/:action', function(req, res) {
-  var act, dfd;
-  act = req.params.action;
-  dfd = User[act](req.body);
-  if (!User[act]) {
-    res.retError(500, "method " + act + " not exists");
-  }
-  return q.when(dfd).then(function(data) {
-    console.log(act, "then data", data);
-    req.session.user = data;
-    return res.ret(data);
-  }).fail(function(data) {
-    return res.retError(400, data);
-  });
+articleAPI = api.restful({
+  model: User.UserDoc
 });
+
+router.use('/user/docs/article/', articleAPI);
 
 module.exports = router;

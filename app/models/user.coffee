@@ -1,6 +1,7 @@
 {BaseDoc, DBStore} = require("./db")
 crypto = require('crypto')
 _ = require('underscore')
+q = require("q")
 # Dispatcher = require("../../public/scripts/libs/action-dispatcher")
 
 _hasKeys = (obj, keys)->
@@ -30,10 +31,12 @@ class User extends BaseDoc
     @store: "user"
     @register:(data)->
         if not _hasKeys(data, ["email", "name", "password"])
+            # console.log data
             return Promise.reject({error:{code:406, message: "needed more info to register"},data:data})
         @find({$or: [email:data.email, name:data.name]}).then (ret)=>
             if ret.length
-                return Promise.reject({error:{code:400, message:"name or email already exists"}})
+                console.log "register already has reacord"
+                return Promise.reject({error:{code:406, message:"name or email already exists"}})
             else
                 data = _.extend({}, data, password: @hash(data.password))
                 user = new this(data)
