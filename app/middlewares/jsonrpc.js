@@ -1,39 +1,30 @@
-var _;
+var Dispatcher, _, express, getRequesetData;
 
 _ = require("underscore");
 
-module.exports = function(req, res, next) {
-  res.ret = function(data) {
-    var id, result;
-    result = data._data || data;
-    id = data.id || data._id || _.map(data, function(item) {
-      return item.id || item._id;
+express = require("express");
+
+Dispatcher = require("../../public/scripts/libs/action-dispatcher");
+
+getRequesetData = require("./util").getRequesetData;
+
+module.exports = function(options) {
+  var Model, api, router;
+  if (options == null) {
+    options = {};
+  }
+  Model = options.model;
+  router = express.Router();
+  api = Dispatcher.createAPI(Model, options.methods);
+  router.post("/:method?", function(req, res) {
+    var data, method;
+    method = req.params.method;
+    data = getRequesetData(req) || {};
+    return api.call(method, data).then(function(data) {
+      return res.ret(data);
+    }).fail(function(err) {
+      return res.status(400).retError(err);
     });
-    result = _.omit(result, "password");
-    res.json({
-      result: result,
-      id: id
-    });
-    return res;
-  };
-  res.retError = function(code, msg, result) {
-    var error;
-    if (result == null) {
-      result = null;
-    }
-    if (msg.error) {
-      error = msg.error, result = msg.result;
-    } else {
-      error = {
-        code: code,
-        message: msg
-      };
-    }
-    res.status(code).json({
-      result: result,
-      error: error
-    });
-    return res;
-  };
-  return next();
+  });
+  return router;
 };

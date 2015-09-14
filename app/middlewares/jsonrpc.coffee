@@ -1,14 +1,20 @@
 _ = require("underscore")
-module.exports = (req,res,next)->
-        res.ret = (data)->
-            result = data._data or data
-            id = data.id or data._id or _.map(data, (item)-> item.id or item._id )
-            result = _.omit(result, "password")
-            res.json({result:result, id:id})
-            return res
-        res.retError = (code,msg,result=null)->
-            if msg.error then {error, result} = msg
-            else error = code:code, message:msg
-            res.status(code).json(result:result, error:error)
-            return res
-        next()
+express = require("express")
+Dispatcher = require("../../public/scripts/libs/action-dispatcher")
+
+{getRequesetData} = require("./util")
+
+module.exports = (options={})->
+    Model = options.model
+
+    router = express.Router()
+    api = Dispatcher.createAPI(Model, options.methods)
+
+    router.post "/:method?", (req,res)->
+        method = req.params.method
+        data = getRequesetData(req) or {}
+        api.call(method,data).then (data)->
+            res.ret(data)
+        .fail (err)->
+            res.status(400).retError(err)
+    return router

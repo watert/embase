@@ -24,7 +24,7 @@ router.get('/user/', function(req, res, next) {
 
 User = require("../models/user");
 
-router.use('/user/api/*', require("../middlewares/jsonrpc"));
+router.use('/user/api/*', require("../middlewares/util")());
 
 router["delete"]('/user/api/:_id', function(req, res) {
   var _id, ref;
