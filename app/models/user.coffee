@@ -15,24 +15,17 @@ class UserDoc extends BaseDoc
     checkData:(data)->
         data ?= @_data
         if user = data.user
-            # console.log "has user data"
             data.user_id = user.id or user._id
-            # delete(data.user)
             return _.omit(data, "user")
         if not data.user_id
-            # msg = "UserDoc #{@store} must have user data or user_id"
             return error: {code: 400, message:"UserDoc #{@store} must have user data or user_id"}
     save:(_data=null)->
         data = @checkData(_data)
         @set(data)
         @omit("user")
-        # console.log "@omit",@omit,@_data
         if err = data?.error
             return q.reject(error:err)
         super(data)
-    # @find:(options)->
-
-        # super(data)
 class User extends BaseDoc
     @UserDoc: UserDoc
     md5 = (_str)->

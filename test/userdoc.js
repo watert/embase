@@ -19,8 +19,16 @@ UserFile = (function(superClass) {
 
   UserFile.store = "userfiles";
 
+  UserFile.prototype.remove = function() {
+    return q.nfcall(fs.unlink, this.get("path")).then((function(_this) {
+      return function() {
+        return UserFile.__super__.remove.call(_this);
+      };
+    })(this));
+  };
+
   UserFile.prototype.save = function(data) {
-    var extname, fname, source, target;
+    var extname, fname, getTarget, getUrl, source;
     if (data == null) {
       data = null;
     }
@@ -29,19 +37,19 @@ UserFile = (function(superClass) {
     }
     source = data.file;
     fname = path.basename(source);
-    extname = path.extname(fname);
-    target = function(id) {
-      return __dirname + "/../public/uploads/" + id + "." + extname;
+    extname = path.extname(fname).slice(1);
+    getUrl = function(id) {
+      return "uploads/" + id + "." + extname;
     };
-    return q.when().then(function() {
-      return q.nfcall(fs.stat, source);
-    }).then((function(_this) {
+    getTarget = function(id) {
+      return __dirname + "/../public/" + (getUrl(id));
+    };
+    return q.nfcall(fs.stat, source).then((function(_this) {
       return function(info) {
         var fdoc, stat;
         fdoc = {
           fname: fname,
-          extname: extname,
-          path: target
+          extname: extname
         };
         stat = _.pick(info, "mtime", "size", "ctime");
         fdoc = _.extend(fdoc, data, stat);
@@ -49,8 +57,21 @@ UserFile = (function(superClass) {
         _this.omit("file");
         return UserFile.__super__.save.call(_this);
       };
+    })(this)).then((function(_this) {
+      return function(doc) {
+        var id, target, url;
+        id = doc.id;
+        assert.isString(id, "has id");
+        target = getTarget(id);
+        url = getUrl(id);
+        _this.set({
+          path: target,
+          url: url
+        });
+        return UserFile.__super__.save.call(_this);
+      };
     })(this)).then(function(doc) {
-      return q.nfcall(fs.rename, source, target(doc.id, extname));
+      return q.nfcall(fs.rename, source, getTarget(doc.id));
     });
   };
 
@@ -61,8 +82,8 @@ UserFile = (function(superClass) {
 describe("Other Doc with User", function() {
   var user, user_data;
   user_data = {
-    name: "test_user_doc",
-    email: "test_user_doc@x.com",
+    name: "user_doc2",
+    email: "user_doc2@x.com",
     password: "testuserdoc"
   };
   user = null;
@@ -99,22 +120,74 @@ describe("Other Doc with User", function() {
       });
     });
   });
-  describe("User Files ", function() {
+  return describe("User Files ", function() {
+    var createFile;
+    createFile = function(ext) {
+      var source;
+      if (ext == null) {
+        ext = "txt";
+      }
+      source = __dirname + "/testfile." + ext;
+      fs.writeFileSync(source, "hello " + (new Date).getTime());
+      return source;
+    };
     it("should upload file", function() {
       var source, ufile;
-      source = __dirname + "/testfile.txt";
-      fs.writeFileSync(source, "hello " + (new Date).getTime());
+      source = createFile();
       ufile = new UserFile({
         file: source,
         user: user
       });
       return ufile.save();
     });
-    it("should list file");
-    it("should list images file");
-    return it("should delete file");
-  });
-  return after("Remove User", function() {
-    return user.remove();
+    it("should list file", function() {
+      var source, ufile;
+      source = createFile("md");
+      ufile = new UserFile({
+        file: source,
+        user: user
+      });
+      return ufile.save().then(function() {
+        return UserFile.find({
+          user_id: user.id
+        }).then(function(data) {
+          return assert(data.length);
+        });
+      });
+    });
+    it("should list with ext filter", function() {
+      return UserFile.find({
+        user_id: user.id,
+        extname: "md"
+      }).then(function(data) {
+        return assert(data.length);
+      });
+    });
+    it("should delete file", function() {
+      var ufile;
+      ufile = new UserFile({
+        file: createFile("md"),
+        user: user
+      });
+      return ufile.save().then(function() {
+        return ufile.remove();
+      });
+    });
+    return after("Remove User", function() {
+      return UserFile.find({
+        user_id: user.id
+      }).then(function(data) {
+        var dfd;
+        dfd = q.when();
+        q.when(_.map(data, function(item) {
+          return dfd = dfd.then(function() {
+            return (new UserFile(item)).remove();
+          });
+        }));
+        return dfd;
+      }).then(function() {
+        return user.remove();
+      });
+    });
   });
 });

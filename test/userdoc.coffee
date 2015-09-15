@@ -6,29 +6,37 @@ path = require('path')
 q = require("q")
 class UserFile extends UserDoc
     @store: "userfiles"
-
+    remove:()->
+        q.nfcall(fs.unlink, @get("path")).then =>
+            super()
     save:(data=null)->
         data ?= @_data
         source = data.file
         fname = path.basename(source)
-        extname = path.extname(fname)
-        target = (id)->"#{__dirname}/../public/uploads/#{id}.#{extname}"
-        q.when()
-        .then ()->
-            q.nfcall(fs.stat, source)
+        extname = path.extname(fname).slice(1)
+        getUrl = (id)-> "uploads/#{id}.#{extname}"
+        getTarget = (id)-> "#{__dirname}/../public/#{getUrl(id)}"
+        q.nfcall(fs.stat, source)
         .then (info)=>
-            fdoc = {fname:fname, extname:extname, path:target}
+            fdoc = {fname:fname, extname:extname}
             stat = _.pick(info, "mtime", "size", "ctime")
             fdoc = _.extend(fdoc, data, stat)
             @set(fdoc)
             @omit("file")
             super()
+        .then (doc)=>
+            id = doc.id
+            assert.isString(id, "has id")
+            target = getTarget(id)
+            url = getUrl(id)
+            # console.log "shit"
+            @set(path:target, url:url)
+            super()
         .then (doc)->
-            # console.log "save doc",doc
-            q.nfcall(fs.rename, source, target(doc.id, extname))
+            q.nfcall(fs.rename, source, getTarget(doc.id))
 
 describe "Other Doc with User", ->
-    user_data = name:"test_user_doc", email:"test_user_doc@x.com", password:"testuserdoc"
+    user_data = name:"user_doc2", email:"user_doc2@x.com", password:"testuserdoc"
     user = null
     before "Create User", ->
         User.register(user_data).then (_user)-> user = _user
@@ -48,24 +56,37 @@ describe "Other Doc with User", ->
                 assert(data[0].user_id is user.id,"check find user doc only")
                 # assert(data.length, "should find userdocs")
     describe "User Files ", ->
-        it "should upload file", ->
-
-            source = "#{__dirname}/testfile.txt"
+        createFile = (ext="txt")->
+            source = "#{__dirname}/testfile.#{ext}"
             fs.writeFileSync(source, "hello "+(new Date).getTime())
-
+            return source
+        it "should upload file", ->
+            source = createFile()
             ufile = new UserFile(file: source,user:user)
             ufile.save()
-            #     console.log fdoc
-            # fdoc = {fname:fname}
-            # q.nfcall(fs.stat, source).then (info)->
-            #     fdoc = {fname:fname, ext:path.extname(fname)}
-            #     stat = _.pick(info, "mtime", "size", "ctime")
-            #     return _.extend(fdoc, stat)
-            # .then (fdoc)->
-            #     q.nfcall(fs.rename, source, target)
-            # .then ->
-            #     q.nfcall(fs.stat, target)
-        it "should list file"
-        it "should list images file"
-        it "should delete file"
-    after "Remove User", -> user.remove()
+
+        it "should list file", ->
+            source = createFile("md")
+            ufile = new UserFile(file: source,user:user)
+            ufile.save().then ->
+                UserFile.find(user_id:user.id).then (data)->
+                    assert(data.length)
+        it "should list with ext filter", ->
+            UserFile.find(user_id:user.id, extname:"md").then (data)->
+                assert(data.length)
+        it "should delete file", ->
+            ufile = new UserFile(file: createFile("md"),user:user)
+            ufile.save().then ()->
+                ufile.remove()
+
+        after "Remove User", ->
+
+            UserFile.find(user_id:user.id).then (data)->
+                # return yes
+                dfd = q.when()
+                q.when _.map data, (item)->
+                    dfd = dfd.then -> (new UserFile(item)).remove()
+                return dfd
+            .then ->
+                user.remove()
+        # fs.unlinkSync(DBStore.storePath("user"))
