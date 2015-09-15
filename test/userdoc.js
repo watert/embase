@@ -45,11 +45,11 @@ UserFile = (function(superClass) {
         };
         stat = _.pick(info, "mtime", "size", "ctime");
         fdoc = _.extend(fdoc, data, stat);
-        delete data.file;
-        return UserFile.__super__.save.call(_this, fdoc);
+        _this.set(fdoc);
+        _this.omit("file");
+        return UserFile.__super__.save.call(_this);
       };
     })(this)).then(function(doc) {
-      console.log("save doc", doc);
       return q.nfcall(fs.rename, source, target(doc.id, extname));
     });
   };
@@ -108,9 +108,7 @@ describe("Other Doc with User", function() {
         file: source,
         user: user
       });
-      return ufile.save().then(function(fdoc) {
-        return console.log(fdoc);
-      });
+      return ufile.save();
     });
     it("should list file");
     it("should list images file");

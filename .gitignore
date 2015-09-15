@@ -1,4 +1,4 @@
 node_modules
 tools/highlight.js
 app/db/
-app/uploads/
+public/uploads/

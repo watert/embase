@@ -20,10 +20,11 @@ class UserFile extends UserDoc
             fdoc = {fname:fname, extname:extname, path:target}
             stat = _.pick(info, "mtime", "size", "ctime")
             fdoc = _.extend(fdoc, data, stat)
-            delete data.file
-            super(fdoc)
+            @set(fdoc)
+            @omit("file")
+            super()
         .then (doc)->
-            console.log "save doc",doc
+            # console.log "save doc",doc
             q.nfcall(fs.rename, source, target(doc.id, extname))
 
 describe "Other Doc with User", ->
@@ -49,13 +50,12 @@ describe "Other Doc with User", ->
     describe "User Files ", ->
         it "should upload file", ->
 
-
             source = "#{__dirname}/testfile.txt"
             fs.writeFileSync(source, "hello "+(new Date).getTime())
 
             ufile = new UserFile(file: source,user:user)
-            ufile.save().then (fdoc)->
-                console.log fdoc
+            ufile.save()
+            #     console.log fdoc
             # fdoc = {fname:fname}
             # q.nfcall(fs.stat, source).then (info)->
             #     fdoc = {fname:fname, ext:path.extname(fname)}

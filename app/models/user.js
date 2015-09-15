@@ -36,9 +36,8 @@ UserDoc = (function(superClass) {
       data = this._data;
     }
     if (user = data.user) {
-      console.log("has user data");
       data.user_id = user.id || user._id;
-      delete data.user;
+      return _.omit(data, "user");
     }
     if (!data.user_id) {
       return {
@@ -50,12 +49,15 @@ UserDoc = (function(superClass) {
     }
   };
 
-  UserDoc.prototype.save = function(data) {
-    var err, ref1;
-    if (data == null) {
-      data = null;
+  UserDoc.prototype.save = function(_data) {
+    var data, err;
+    if (_data == null) {
+      _data = null;
     }
-    if (err = (ref1 = this.checkData(data)) != null ? ref1.error : void 0) {
+    data = this.checkData(_data);
+    this.set(data);
+    this.omit("user");
+    if (err = data != null ? data.error : void 0) {
       return q.reject({
         error: err
       });

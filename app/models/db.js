@@ -96,6 +96,12 @@ BaseDoc = (function() {
     }
   };
 
+  BaseDoc.prototype.omit = function() {
+    var args;
+    args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+    return this._data = _.omit.apply(_, [this._data].concat(slice.call(args)));
+  };
+
   BaseDoc.prototype.save = function(object) {
     var data, where;
     if (object) {

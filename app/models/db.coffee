@@ -42,6 +42,8 @@ class BaseDoc
     get:(key=null)->
         if not key then return @_data
         else return @_data[key]
+    omit:(args...)->
+        @_data = _.omit(@_data, args...)
     save:(object)->
         if object then @set(object)
         data = @_data
