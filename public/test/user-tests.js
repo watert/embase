@@ -119,7 +119,7 @@ define(["./base.js"], function(testBase) {
         return user.destroy();
       });
     });
-    return describe("User Doc", function() {
+    describe("User Doc", function() {
       var doc, docData;
       docData = {
         title: "hello world",
@@ -158,6 +158,13 @@ define(["./base.js"], function(testBase) {
           return doc.destroy();
         });
       });
+    });
+    return describe("User Files", function() {
+      it("upload file with user");
+      it("list files with user");
+      it("list images files with user");
+      it("modify files with user");
+      return it("delete files with user");
     });
   });
   return $.when(1);

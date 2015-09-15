@@ -24,7 +24,7 @@ _hasKeys = function(obj, keys) {
 UserDoc = (function(superClass) {
   extend(UserDoc, superClass);
 
-  UserDoc.store = "userdoc";
+  UserDoc.store = "userdocs";
 
   function UserDoc(data) {
     UserDoc.__super__.constructor.call(this, data);
@@ -36,6 +36,7 @@ UserDoc = (function(superClass) {
       data = this._data;
     }
     if (user = data.user) {
+      console.log("has user data");
       data.user_id = user.id || user._id;
       delete data.user;
     }

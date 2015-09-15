@@ -68,5 +68,11 @@ define ["./base.js"], (testBase)->
                     console.log "try destroy", doc, doc.destroy
                     doc.destroy()
 
+        describe "User Files", ->
+            it "upload file with user"
+            it "list files with user"
+            it "list images files with user"
+            it "modify files with user"
+            it "delete files with user"
     # dfd.resolve()
     return $.when(1)

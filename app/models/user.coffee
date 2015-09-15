@@ -8,14 +8,14 @@ _hasKeys = (obj, keys)->
     for k in keys
         if not obj[k] then return no
     return yes
-
 class UserDoc extends BaseDoc
-    @store: "userdoc"
+    @store: "userdocs"
     constructor:(data)->
         super(data)
     checkData:(data)->
         data ?= @_data
         if user = data.user
+            console.log "has user data"
             data.user_id = user.id or user._id
             delete(data.user)
         if not data.user_id
@@ -26,6 +26,8 @@ class UserDoc extends BaseDoc
             return q.reject(error:err)
         super(data)
     # @find:(options)->
+
+        # super(data)
 class User extends BaseDoc
     @UserDoc: UserDoc
     md5 = (_str)->
