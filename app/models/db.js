@@ -1,4 +1,4 @@
-var BaseDoc, DBStore, _, config, wrapMethods,
+var BaseDoc, DBStore, _, config, q, wrapMethods,
   slice = [].slice;
 
 _ = require("underscore");
@@ -6,6 +6,8 @@ _ = require("underscore");
 DBStore = require("nedb");
 
 config = require("../config");
+
+q = require("q");
 
 wrapMethods = function(obj, methods) {
   var fn, generateNewMethod, i, len, m;
@@ -47,11 +49,12 @@ DBStore.storePath = function(name) {
 };
 
 DBStore.storeConfig = function(name) {
-  var ret;
-  ret = {
-    filename: DBStore.storePath(name)
+  var conf;
+  conf = {
+    filename: DBStore.storePath(name),
+    autoload: true
   };
-  return ret;
+  return conf;
 };
 
 DBStore.getStore = function(name) {
@@ -82,7 +85,8 @@ BaseDoc = (function() {
 
   BaseDoc.prototype.set = function(object) {
     _.extend(this._data, object);
-    return this.changed = true;
+    this.changed = true;
+    return this;
   };
 
   BaseDoc.prototype.get = function(key) {
@@ -180,7 +184,7 @@ BaseDoc = (function() {
   };
 
   BaseDoc.getStore = function() {
-    return DBStore.getStore(this.store);
+    return q.when(DBStore.getStore(this.store));
   };
 
   BaseDoc.findOne = function() {

@@ -36,6 +36,10 @@ UserFile = (function(superClass) {
       data = this._data;
     }
     source = data.file;
+    if (data.path && !source) {
+      this.set(data);
+      return UserFile.__super__.save.call(this);
+    }
     fname = path.basename(source);
     extname = path.extname(fname).slice(1);
     getUrl = function(id) {
@@ -88,8 +92,12 @@ describe("Other Doc with User", function() {
   };
   user = null;
   before("Create User", function() {
-    return User.register(user_data).then(function(_user) {
-      return user = _user;
+    return User.remove({}, {
+      multi: true
+    }).then(function() {
+      return User.register(user_data).then(function(_user) {
+        return user = _user;
+      });
     });
   });
   describe("User Doc Base", function() {
@@ -161,6 +169,21 @@ describe("Other Doc with User", function() {
         extname: "md"
       }).then(function(data) {
         return assert(data.length);
+      });
+    });
+    it("should update file", function() {
+      var source, ufile;
+      source = createFile("md");
+      ufile = new UserFile({
+        file: source,
+        user: user
+      });
+      return ufile.save().then(function() {
+        return ufile.set({
+          "title": "hello world"
+        }).save();
+      }).then(function() {
+        return assert.equal(ufile.get("title"), "hello world");
       });
     });
     it("should delete file", function() {

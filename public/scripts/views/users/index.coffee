@@ -1,10 +1,10 @@
-define ["views/_base/view","tmpls/base"],(BaseView, baseTmpls)->
+define ["views/_base/view","tmpls/base"],(BaseView, baseTmpl)->
     class Users extends Backbone.Collection
         model: Backbone.Model.extend
             defaults: {email:"",name:""}
         url: "/users/api/restful"
         parse: (data)-> data.result
-    {navbar, toolbar, templer} = baseTmpls
+    {navbar, toolbar, templer} = baseTmpl
     class UserIndexView extends BaseView
         tagName:"div"
         events: 
@@ -34,7 +34,7 @@ define ["views/_base/view","tmpls/base"],(BaseView, baseTmpls)->
                 super(name)
                 # console.log "coll",users
             # $.get("/users/api/find").then (data)=>
-        template: templer
+        template: baseTmpl.extend
             detail: """
 
             """
@@ -47,7 +47,7 @@ define ["views/_base/view","tmpls/base"],(BaseView, baseTmpls)->
                 </ul>
                 <ul class="list users">
                     <%_.each(users, function(item){%>
-                        <%=listItem({data:item})%>
+                        <%=invoke(listItem,{data:item})%>
                     <%})%>
                 </ul>
                 <%=toolbar()%>

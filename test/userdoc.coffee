@@ -12,6 +12,9 @@ class UserFile extends UserDoc
     save:(data=null)->
         data ?= @_data
         source = data.file
+        if data.path and not source
+            @set(data)
+            return super()
         fname = path.basename(source)
         extname = path.extname(fname).slice(1)
         getUrl = (id)-> "uploads/#{id}.#{extname}"
@@ -39,7 +42,10 @@ describe "Other Doc with User", ->
     user_data = name:"user_doc2", email:"user_doc2@x.com", password:"testuserdoc"
     user = null
     before "Create User", ->
-        User.register(user_data).then (_user)-> user = _user
+        User.remove({}, multi:yes).then ->
+            User.register(user_data).then (_user)->
+                user = _user
+
     describe "User Doc Base", ->
         it "should fail create a doc without user", ->
             doc = new UserDoc(title:"hello")
@@ -47,7 +53,6 @@ describe "Other Doc with User", ->
                 assert(data.error.code is 400, "check must have user with userdoc")
 
         it "should create a doc with user owns it", ->
-            # console.log UserDoc
             doc = new UserDoc(user:user, title:"hello")
             doc.save().then (data)->
                 assert.equal(doc.get("title"), "hello")
@@ -74,13 +79,19 @@ describe "Other Doc with User", ->
         it "should list with ext filter", ->
             UserFile.find(user_id:user.id, extname:"md").then (data)->
                 assert(data.length)
+        it "should update file", ->
+            source = createFile("md")
+            # return
+            ufile = new UserFile(file: source, user:user)
+            ufile.save().then ()->
+                ufile.set({"title":"hello world"}).save()
+            .then ->
+                assert.equal(ufile.get("title"), "hello world")
         it "should delete file", ->
             ufile = new UserFile(file: createFile("md"),user:user)
             ufile.save().then ()->
                 ufile.remove()
-
         after "Remove User", ->
-
             UserFile.find(user_id:user.id).then (data)->
                 # return yes
                 dfd = q.when()
@@ -89,4 +100,3 @@ describe "Other Doc with User", ->
                 return dfd
             .then ->
                 user.remove()
-        # fs.unlinkSync(DBStore.storePath("user"))

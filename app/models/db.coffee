@@ -1,6 +1,7 @@
 _ = require("underscore")
 DBStore = require("nedb")
 config = require("../config")
+q = require("q")
 
 wrapMethods = (obj,methods)->
     generateNewMethod = (oldMethod)-> (args...)->
@@ -18,8 +19,10 @@ wrapMethods = (obj,methods)->
 DBStore.storePath = (name)->
     config.appPath("db/#{name}.db")
 DBStore.storeConfig = (name)->
-    ret = filename: DBStore.storePath(name)
-    return ret
+    conf =
+        filename: DBStore.storePath(name)
+        autoload:yes
+    return conf
 
 DBStore.getStore = (name)->
     dbconfig = DBStore.storeConfig(name)
@@ -39,6 +42,7 @@ class BaseDoc
     set:(object)->
         _.extend(@_data, object)
         @changed = yes
+        return @
     get:(key=null)->
         if not key then return @_data
         else return @_data[key]
@@ -81,7 +85,7 @@ class BaseDoc
         @getStore().then (store)->
             store.remove({_id:id}, {})
     @getStore:()->
-        DBStore.getStore(@store)
+        q.when(DBStore.getStore(@store))
     @findOne:(args...)->
         DocClass = this
         @getStore().then (store)->
