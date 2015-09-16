@@ -1,4 +1,5 @@
 node_modules
 tools/highlight.js
 app/db/
+app/tmpfiles/
 public/uploads/

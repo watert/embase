@@ -1,7 +1,19 @@
 define ["./base.js", "models/user"], (testBase, User)->
     {assert, retFail, chai} = testBase
     {UserDocs} = User
-
+    class UserFile extends Backbone.Model
+        @uploadWithForm:(form)->
+            upload = (formData)=>
+                console.log "@prototype.urlRoot",@prototype.urlRoot, formData
+                $.ajax(url:@prototype.urlRoot, data:formData, processData:no
+                    ,contentType:no, type:"POST")
+            if form instanceof FormData
+                return upload(form)
+            else if form instanceof jQuery
+                return upload(new FormData(form[0]))
+            else $.Deferred().reject("uploadWithForm must call with jquery form or FormData")
+        urlRoot: "/user/files/"
+        parse: (data)-> data.result
     describe "User and UserDocs", ->
         describe "User Base", ->
             userData = {name:"xxxx1", email:"xx@asd.com", password:"xxx"}
@@ -45,6 +57,14 @@ define ["./base.js", "models/user"], (testBase, User)->
         describe "User Files", ->
             userData = {name:"xxxx1", email:"xx@asd.com", password:"xxx"}
             user = null
+            createForm = (ext="txt")->
+                formData = new FormData()
+                blob = new Blob(["Hello World"], type:"text/plain");
+                formData.append("file", blob, "hello.#{ext}")
+                return formData
+            # $.upload = (formData)->
+            #     url = "/user/files/"
+            #     $.ajax(url:url, data:formData, processData:no, contentType:no, type:"POST")
             before "create user", (done)->
                 User.call("register", userData).always (ret)->
                     User.call("login",userData).then (_user)->
@@ -54,19 +74,9 @@ define ["./base.js", "models/user"], (testBase, User)->
                 user.destroy()
 
             it "upload file with user", ->
-                formData = new FormData()
-                blob = new Blob(["Hello World"], type:"text/plain");
-                console.log blob
-                formData.append("file", blob, "hello.txt")
-                $.upload = (url, formData)->
-                    $.ajax(url:url, data:formData, processData:no, contentType:no, type:"POST")
-                url = "/user/files/"
-                $.upload(url, formData).then (data)->
-                    console.log "uploaded to ", url, data
-                # reader = new FileReader();
-                # reader.onload = (data)->
-                #     console.log "reader onload", arguments...
-                # reader.readAsText(blob)
+                # console.log "type form",$("body") instanceof FormData
+                UserFile.uploadWithForm(createForm("md"))
+
             it "list files with user"
             it "list images files with user"
             it "modify files with user"

@@ -1,7 +1,49 @@
+var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+  hasProp = {}.hasOwnProperty;
+
 define(["./base.js", "models/user"], function(testBase, User) {
-  var UserDocs, assert, chai, retFail;
+  var UserDocs, UserFile, assert, chai, retFail;
   assert = testBase.assert, retFail = testBase.retFail, chai = testBase.chai;
   UserDocs = User.UserDocs;
+  UserFile = (function(superClass) {
+    extend(UserFile, superClass);
+
+    function UserFile() {
+      return UserFile.__super__.constructor.apply(this, arguments);
+    }
+
+    UserFile.uploadWithForm = function(form) {
+      var upload;
+      upload = (function(_this) {
+        return function(formData) {
+          console.log("@prototype.urlRoot", _this.prototype.urlRoot, formData);
+          return $.ajax({
+            url: _this.prototype.urlRoot,
+            data: formData,
+            processData: false,
+            contentType: false,
+            type: "POST"
+          });
+        };
+      })(this);
+      if (form instanceof FormData) {
+        return upload(form);
+      } else if (form instanceof jQuery) {
+        return upload(new FormData(form[0]));
+      } else {
+        return $.Deferred().reject("uploadWithForm must call with jquery form or FormData");
+      }
+    };
+
+    UserFile.prototype.urlRoot = "/user/files/";
+
+    UserFile.prototype.parse = function(data) {
+      return data.result;
+    };
+
+    return UserFile;
+
+  })(Backbone.Model);
   describe("User and UserDocs", function() {
     describe("User Base", function() {
       var user, userData;
@@ -70,13 +112,25 @@ define(["./base.js", "models/user"], function(testBase, User) {
       });
     });
     return describe("User Files", function() {
-      var user, userData;
+      var createForm, user, userData;
       userData = {
         name: "xxxx1",
         email: "xx@asd.com",
         password: "xxx"
       };
       user = null;
+      createForm = function(ext) {
+        var blob, formData;
+        if (ext == null) {
+          ext = "txt";
+        }
+        formData = new FormData();
+        blob = new Blob(["Hello World"], {
+          type: "text/plain"
+        });
+        formData.append("file", blob, "hello." + ext);
+        return formData;
+      };
       before("create user", function(done) {
         return User.call("register", userData).always(function(ret) {
           return User.call("login", userData).then(function(_user) {
@@ -89,26 +143,7 @@ define(["./base.js", "models/user"], function(testBase, User) {
         return user.destroy();
       });
       it("upload file with user", function() {
-        var blob, formData, url;
-        formData = new FormData();
-        blob = new Blob(["Hello World"], {
-          type: "text/plain"
-        });
-        console.log(blob);
-        formData.append("file", blob, "hello.txt");
-        $.upload = function(url, formData) {
-          return $.ajax({
-            url: url,
-            data: formData,
-            processData: false,
-            contentType: false,
-            type: "POST"
-          });
-        };
-        url = "/user/files/";
-        return $.upload(url, formData).then(function(data) {
-          return console.log("uploaded to ", url, data);
-        });
+        return UserFile.uploadWithForm(createForm("md"));
       });
       it("list files with user");
       it("list images files with user");
