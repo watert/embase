@@ -8,19 +8,20 @@ apis =
         (req,res,next)->
             res.ret = (data)->
                 result = data._data or data.result or data
-                # console.log "ret data", JSON.stringify(result), _.isObject(result)
                 id = data.id or data._id or _.map(data, (item)-> item.id or item._id )
                 if not _.isArray(result) then result = _.omit(result, "password")
                 res.json({result:result, id:id})
                 return res
             res.retError = (code,msg,result=null)->
+                json = {}
                 if msg?.error
-                    {error, result} = msg
+                    json = {error, result}
                 else if code.error
-                    error = code.error
-                else error =
-                    code:code, message:msg
-                res.status(error.code).json(result:result, error:error)
+                    # res.code(code)
+                    json = code
+                else
+                    json = error:{code:code, message:msg}
+                res.status(json.error.code or 500).json(json)
                 return res
             next()
     getRequesetData: (req)->
@@ -61,12 +62,11 @@ apis =
                     return data
                 else return Doc.findOne(_id:id)
             "POST":(id, data)-> #create (id will be null)
-
+                console.log "create with restful", id, Doc.name, data
                 (new Doc(data)).save()
             "PUT":(id,data)-> #update
 
                 Doc.findOne(_id:id).then (doc)->
-                    console.log "restful put", Doc, data
                     doc.save(data)
             "DELETE":(id)->
                 Doc.findOne(_id:id).then (doc)->
@@ -82,9 +82,14 @@ apis =
                 return res.retError(data)
             options[method].bind(ctx)(id,data).then (data)->
                 # res.data = data
+                console.log "try ret",method, Doc.name,data
                 res.ret(data)
-            .catch (err)->
-                res.retError(err)
+            .fail (err)->
+                console.log "restful error",method, Doc.name, arguments
+                console.trace(err)
+                data = err
+                data = {error:{code:500,message:err.toString()}} if not err.error
+                res.retError(data)
                 # options.next.bind(ctx)(req,res,next)
         return router
 

@@ -12,7 +12,8 @@ my base code for embedded basement for fast prototype develop
 
 ## TODOs
 
-- User Login / Register / Profile
+- ~~User Login / Register / Profile~~
+- User File Upload test
 - Basic System Status Admin
 - Editor for general doc and files
 - User Files Gallery and upload

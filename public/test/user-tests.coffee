@@ -43,10 +43,34 @@ define ["./base.js", "models/user"], (testBase, User)->
                     doc.destroy()
 
         describe "User Files", ->
-            it "upload file with user"
+            userData = {name:"xxxx1", email:"xx@asd.com", password:"xxx"}
+            user = null
+            before "create user", (done)->
+                User.call("register", userData).always (ret)->
+                    User.call("login",userData).then (_user)->
+                        user = _user
+                        done()
+            after "delete user", ->
+                user.destroy()
+
+            it "upload file with user", ->
+                formData = new FormData()
+                blob = new Blob(["Hello World"], type:"text/plain");
+                console.log blob
+                formData.append("file", blob, "hello.txt")
+                $.upload = (url, formData)->
+                    $.ajax(url:url, data:formData, processData:no, contentType:no, type:"POST")
+                url = "/user/files/"
+                $.upload(url, formData).then (data)->
+                    console.log "uploaded to ", url, data
+                # reader = new FileReader();
+                # reader.onload = (data)->
+                #     console.log "reader onload", arguments...
+                # reader.readAsText(blob)
             it "list files with user"
             it "list images files with user"
             it "modify files with user"
             it "delete files with user"
+
     # dfd.resolve()
     return $.when(1)

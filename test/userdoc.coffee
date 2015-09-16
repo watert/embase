@@ -1,43 +1,10 @@
 {DBStore, assert, _, User, UserDoc} = require("./base")
-
+{UserFile} = User
 console.log "# userdoc tests"
 
 fs = require('fs')
 path = require('path')
 q = require("q")
-class UserFile extends UserDoc
-    @store: "userfiles"
-    remove:()->
-        q.nfcall(fs.unlink, @get("path")).then =>
-            super()
-    save:(data=null)->
-        data ?= @_data
-        source = data.file
-        if data.path and not source
-            @set(data)
-            return super()
-        fname = path.basename(source)
-        extname = path.extname(fname).slice(1)
-        getUrl = (id)-> "uploads/#{id}.#{extname}"
-        getTarget = (id)-> "#{__dirname}/../public/#{getUrl(id)}"
-        q.nfcall(fs.stat, source)
-        .then (info)=>
-            fdoc = {fname:fname, extname:extname}
-            stat = _.pick(info, "mtime", "size", "ctime")
-            fdoc = _.extend(fdoc, data, stat)
-            @set(fdoc)
-            @omit("file")
-            super()
-        .then (doc)=>
-            id = doc.id
-            assert.isString(id, "has id")
-            target = getTarget(id)
-            url = getUrl(id)
-            # console.log "shit"
-            @set(path:target, url:url)
-            super()
-        .then (doc)->
-            q.nfcall(fs.rename, source, getTarget(doc.id))
 
 describe "Other Doc with User", ->
     user_data = name:"user_doc2", email:"user_doc2@x.com", password:"testuserdoc"

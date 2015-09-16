@@ -2,10 +2,24 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
   hasProp = {}.hasOwnProperty;
 
 define(["backbone", "jquery"], function() {
-  var User, UserDocs;
-  UserDocs = (function(superClass) {
-    var UserDocModel;
+  var User, UserDocModel, UserDocs;
+  UserDocModel = (function(superClass) {
+    extend(UserDocModel, superClass);
 
+    function UserDocModel() {
+      return UserDocModel.__super__.constructor.apply(this, arguments);
+    }
+
+    UserDocModel.prototype.idAttribute = "_id";
+
+    UserDocModel.prototype.parse = function(data) {
+      return data.result || data;
+    };
+
+    return UserDocModel;
+
+  })(Backbone.Model);
+  UserDocs = (function(superClass) {
     extend(UserDocs, superClass);
 
     function UserDocs() {
@@ -20,22 +34,7 @@ define(["backbone", "jquery"], function() {
       return "/user/docs/" + (this.storeName || this.constructor.storeName) + "/";
     };
 
-    UserDocs.prototype.model = UserDocModel = (function(superClass1) {
-      extend(UserDocModel, superClass1);
-
-      function UserDocModel() {
-        return UserDocModel.__super__.constructor.apply(this, arguments);
-      }
-
-      UserDocModel.prototype.idAttribute = "_id";
-
-      UserDocModel.prototype.parse = function(data) {
-        return data.result || data;
-      };
-
-      return UserDocModel;
-
-    })(Backbone.Model);
+    UserDocs.prototype.model = UserDocModel;
 
     UserDocs.prototype.parse = function(data) {
       return data.result || data;

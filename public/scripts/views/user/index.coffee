@@ -5,9 +5,14 @@ define ["views/_base/view","tmpls/base","libs/util","models/user"],(BaseView, ba
     #     parse:(data)-> data.result or data
     class UserIndex extends BaseView
         events:
+            "click .btn-logout": ->
+                User.call("logout").then (data)=>
+                    console.log "logout",data
+                    alert("Logout Successfully")
+                    @render("login")
             "click .btn-login": -> @render("login", yes)
             "click .btn-register": -> @render("register")
-            "click .form .btn-submit": (e)->
+            "submit .form": (e)->
                 $form = $(e.target).closest("form")
                 formData = util.deparamQuery($form.serialize())
                 action = $form.data("action")
@@ -56,7 +61,7 @@ define ["views/_base/view","tmpls/base","libs/util","models/user"],(BaseView, ba
                     <input type="email" name="email" placeholder="Email"/>
                     <input type="password" name="password" placeholder="Password"/>
                     <div class="actions">
-                        <button class="btn btn-submit" type="button">Register</button>
+                        <button class="btn btn-submit" type="submit">Register</button>
                         <a class="btn btn-login btn-link" href="javascript:void(0)"> Already has account </a>
                     </div>
                 </form>
@@ -67,7 +72,7 @@ define ["views/_base/view","tmpls/base","libs/util","models/user"],(BaseView, ba
                     <input type="email" name="email" placeholder="Email"/>
                     <input type="password" name="password" placeholder="Password"/>
                     <div class="actions">
-                        <button class="btn btn-submit" type="button">Login</button>
+                        <button class="btn btn-submit" type="submit">Login</button>
                         <button class="btn btn-register" type="button">Register</button>
                     </div>
                 </form>

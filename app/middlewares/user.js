@@ -1,4 +1,4 @@
-var User, _, api, articleREST, crypto, express, md5, renderIndex, router, rpcRouter, userInfo, userRemove;
+var User, _, api, articleREST, crypto, express, md5, multipart, renderIndex, router, rpcRouter, userInfo, userRemove;
 
 express = require('express');
 
@@ -72,15 +72,37 @@ renderIndex = function(req, res) {
   return res.render("index");
 };
 
+router.all('/api/logout', function(req, res) {
+  req.session.destroy();
+  return res.json({
+    message: "Logout successfully"
+  });
+});
+
 router.use('/api/', rpcRouter);
 
 router["delete"]('/api/:_id', userRemove);
 
 router.get('/api/', userInfo);
 
-router.get('/api/logout', function(req, res) {});
-
 router.use('/docs/article/', articleREST);
+
+multipart = require("connect-multiparty")({
+  uploadDir: __dirname + "/../tmpfiles/"
+});
+
+router.use("/files/", multipart, api.restful({
+  model: User.UserFile,
+  parseData: function(data) {
+    var files, user;
+    user = this.req.session.user;
+    data.user_id = user.id;
+    if (files = this.req.files) {
+      _.extend(data, files);
+    }
+    return data;
+  }
+}));
 
 router.use('/*', renderIndex);
 

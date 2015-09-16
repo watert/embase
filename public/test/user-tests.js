@@ -70,7 +70,46 @@ define(["./base.js", "models/user"], function(testBase, User) {
       });
     });
     return describe("User Files", function() {
-      it("upload file with user");
+      var user, userData;
+      userData = {
+        name: "xxxx1",
+        email: "xx@asd.com",
+        password: "xxx"
+      };
+      user = null;
+      before("create user", function(done) {
+        return User.call("register", userData).always(function(ret) {
+          return User.call("login", userData).then(function(_user) {
+            user = _user;
+            return done();
+          });
+        });
+      });
+      after("delete user", function() {
+        return user.destroy();
+      });
+      it("upload file with user", function() {
+        var blob, formData, url;
+        formData = new FormData();
+        blob = new Blob(["Hello World"], {
+          type: "text/plain"
+        });
+        console.log(blob);
+        formData.append("file", blob, "hello.txt");
+        $.upload = function(url, formData) {
+          return $.ajax({
+            url: url,
+            data: formData,
+            processData: false,
+            contentType: false,
+            type: "POST"
+          });
+        };
+        url = "/user/files/";
+        return $.upload(url, formData).then(function(data) {
+          return console.log("uploaded to ", url, data);
+        });
+      });
       it("list files with user");
       it("list images files with user");
       it("modify files with user");

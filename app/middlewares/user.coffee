@@ -34,13 +34,29 @@ userInfo = (req,res)->
 renderIndex = (req,res)->
     res.render("index")
 
+router.all('/api/logout',(req,res)->
+    req.session.destroy()
+    res.json({message:"Logout successfully"})
+    )
 router.use('/api/', rpcRouter)
 router.delete('/api/:_id', userRemove)
 router.get('/api/',userInfo)
-router.get('/api/logout',(req,res)->
-
-    )
 router.use('/docs/article/', articleREST)
+
+multipart = require("connect-multiparty")(uploadDir:__dirname+"/../tmpfiles/")
+router.use "/files/",multipart, api.restful
+    model:User.UserFile
+    parseData:(data)->
+        user = @req.session.user
+        # console.log "upload user", user
+        data.user_id = user.id
+        if files = @req.files then _.extend(data, files)
+        # console.log "upload data",data
+        return data
+# router.post '/files/', multipart , (req,res)->
+#
+#     console.log "req.files",req.files, req.body
+#     res.json("1")
 router.use('/*', renderIndex)
 
 module.exports = router

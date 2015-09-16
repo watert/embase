@@ -27,24 +27,27 @@ apis = {
         return res;
       };
       res.retError = function(code, msg, result) {
-        var error;
+        var json;
         if (result == null) {
           result = null;
         }
+        json = {};
         if (msg != null ? msg.error : void 0) {
-          error = msg.error, result = msg.result;
+          json = {
+            error: error,
+            result: result
+          };
         } else if (code.error) {
-          error = code.error;
+          json = code;
         } else {
-          error = {
-            code: code,
-            message: msg
+          json = {
+            error: {
+              code: code,
+              message: msg
+            }
           };
         }
-        res.status(error.code).json({
-          result: result,
-          error: error
-        });
+        res.status(json.error.code || 500).json(json);
         return res;
       };
       return next();
@@ -120,13 +123,13 @@ apis = {
         }
       },
       "POST": function(id, data) {
+        console.log("create with restful", id, Doc.name, data);
         return (new Doc(data)).save();
       },
       "PUT": function(id, data) {
         return Doc.findOne({
           _id: id
         }).then(function(doc) {
-          console.log("restful put", Doc, data);
           return doc.save(data);
         });
       },
@@ -161,9 +164,21 @@ apis = {
         return res.retError(data);
       }
       return options[method].bind(ctx)(id, data).then(function(data) {
+        console.log("try ret", method, Doc.name, data);
         return res.ret(data);
-      })["catch"](function(err) {
-        return res.retError(err);
+      }).fail(function(err) {
+        console.log("restful error", method, Doc.name, arguments);
+        console.trace(err);
+        data = err;
+        if (!err.error) {
+          data = {
+            error: {
+              code: 500,
+              message: err.toString()
+            }
+          };
+        }
+        return res.retError(data);
       });
     });
     return router;

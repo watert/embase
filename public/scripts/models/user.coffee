@@ -1,12 +1,13 @@
 define ["backbone","jquery"],()->
 
+    class UserDocModel extends Backbone.Model
+        idAttribute:"_id"
+        parse: (data)-> data.result or data
     class UserDocs extends Backbone.Collection
         @storeName: "article"
         idAttribute:"_id"
         url: -> "/user/docs/#{@storeName or @constructor.storeName}/"
-        model: class UserDocModel extends Backbone.Model
-            idAttribute:"_id"
-            parse: (data)-> data.result or data
+        model: UserDocModel
         parse: (data)-> data.result or data
         @create: (data)->
             (docs = new @).add(data)
