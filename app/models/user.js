@@ -195,7 +195,7 @@ User = (function(superClass) {
       return function(ret) {
         var user;
         if (ret.length) {
-          return Promise.reject({
+          return q.reject({
             error: {
               code: 406,
               message: "name or email already exists"

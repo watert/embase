@@ -74,9 +74,9 @@ class User extends BaseDoc
     @register:(data)->
         if not _hasKeys(data, ["email", "name", "password"])
             return Promise.reject({error:{code:406, message: "needed more info to register"},data:data})
-        @find({$or: [email:data.email, name:data.name]}).then (ret)=>
+        return @find({$or: [email:data.email, name:data.name]}).then (ret)=>
             if ret.length
-                return Promise.reject({error:{code:406, message:"name or email already exists"}})
+                return q.reject({error:{code:406, message:"name or email already exists"}})
             else
                 data = _.extend({}, data, password: @hash(data.password))
                 user = new this(data)

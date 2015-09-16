@@ -91,12 +91,13 @@ describe("Main", function() {
         email: "xx@xx.com",
         password: "braitsch"
       };
-      return User.register(data).then(function() {
+      User.register(data).then(function() {
         return User.register(data);
-      })["catch"](function(err) {
-        assert.equal(err.error.code, 400, "shit");
+      }).fail(function(err) {
+        assert.equal(err.error.code, 406, "shit");
         return done();
       });
+      return false;
     });
   });
   describe("action dispatcher", function() {
@@ -145,9 +146,7 @@ describe("Main", function() {
         password: "xx"
       };
       api = Dispatcher.createAPI(User, ["register"]);
-      return api.call("register", userData).then(function(data) {
-        return console.log("register data", data);
-      });
+      return api.call("register", userData);
     });
   });
   return after("NeDB destroy", function() {

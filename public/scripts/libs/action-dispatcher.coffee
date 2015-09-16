@@ -43,7 +43,6 @@ factory = ($, _)->
             dfd.fail (res)-> alertWithStatus("fail", res)
 
         call:(method, data, callback)->
-            console.log "@actions", _.methods(@actions)
             if @actions[method]
                 dfd = $when @actions[method].bind(this)(data)
                 if @isShowingRequestDebug
@@ -69,7 +68,6 @@ factory = ($, _)->
                 callback?()
         actions:{}
         addActions:(map)->
-            console.log "add actions while @actions", _.methods(@actions), _.methods(map)
             _(map).each (actionMethod,name)=>
                 oldMethod = @actions[name]
                 if not oldMethod

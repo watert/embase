@@ -64,7 +64,6 @@ factory = function($, _) {
 
     ActionDispatcher.prototype.call = function(method, data, callback) {
       var dfd, msg;
-      console.log("@actions", _.methods(this.actions));
       if (this.actions[method]) {
         dfd = $when(this.actions[method].bind(this)(data));
         if (this.isShowingRequestDebug) {
@@ -101,7 +100,6 @@ factory = function($, _) {
     ActionDispatcher.prototype.actions = {};
 
     ActionDispatcher.prototype.addActions = function(map) {
-      console.log("add actions while @actions", _.methods(this.actions), _.methods(map));
       return _(map).each((function(_this) {
         return function(actionMethod, name) {
           var oldMethod;

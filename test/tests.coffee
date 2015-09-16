@@ -53,13 +53,12 @@ describe "Main", ->
             .then (user)->
         it "register with same name", (done)->
             data = name:"testuser3", email:"xx@xx.com", password:"braitsch"
-            # assert.ok(no, "msg")
             User.register(data).then ->
-                User.register(data)
-            .catch (err)->
-                # console.log err
-                assert.equal(err.error.code, 400 , "shit")
+                return User.register(data)
+            .fail (err)->
+                assert.equal(err.error.code, 406, "shit")
                 done()
+            return no
 
     describe "action dispatcher", ->
         Dispatcher = require("../public/scripts/libs/action-dispatcher")
@@ -80,8 +79,7 @@ describe "Main", ->
         it "should dispatcher register", ->
             userData = {email:"testing@TTT.com",name:"TTT", password:"xx"}
             api = Dispatcher.createAPI(User, ["register"])
-            api.call("register",userData).then (data)->
-                console.log "register data", data
+            api.call("register",userData)
             # api1 = Dispatcher.createAPI(User, ["find"])
             # api2 = Dispatcher.createAPI(User, ["find"])
 
@@ -97,7 +95,6 @@ describe "extendable template", ->
         newTmpl = tmpl.extend(world:tmpl.world+"2")
         assert.equal(newTmpl(), "hello world2")
     it "should context deliver to sub templer", ->
-        # console.log "====="
         tmpl = templer
             outsider: " [Outsider] "
             useInIndex: templer " <%=outsider%> "
