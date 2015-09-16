@@ -15,12 +15,15 @@ class UserDoc extends BaseDoc
     checkData:(data)->
         data ?= @_data
         if user = data.user
+            console.log "omit user"
             data.user_id = user.id or user._id
             return _.omit(data, "user")
         if not data.user_id
             return error: {code: 400, message:"UserDoc #{@store} must have user data or user_id"}
+        return data
     save:(_data=null)->
         data = @checkData(_data)
+        # console.log "userdoc before save", _data
         @set(data)
         @omit("user")
         if err = data?.error
@@ -42,6 +45,9 @@ class User extends BaseDoc
                 data = _.extend({}, data, password: @hash(data.password))
                 user = new this(data)
                 user.save().then -> user
+    # emailHash:()->
+    #     email = @get("email")
+    #     hash = md5(email)
     @login:(data)->
         if not data.password
             Promise.reject({error:{code:406, message: "no password"},data:data})

@@ -1,5 +1,6 @@
 {DBStore, assert, _, User, UserDoc} = require("./base")
 
+console.log "# userdoc tests"
 
 fs = require('fs')
 path = require('path')
@@ -60,6 +61,13 @@ describe "Other Doc with User", ->
             UserDoc.find(user_id:user.id).then (data)->
                 assert(data[0].user_id is user.id,"check find user doc only")
                 # assert(data.length, "should find userdocs")
+        it "should update", ->
+            doc = new UserDoc(user:user, title:"hello")
+            doc.save().then (data)->
+                doc.set({"title":"helloxx"}).save()
+            .then ->
+                assert.equal(doc.get("title"),"helloxx","check update userdoc")
+
     describe "User Files ", ->
         createFile = (ext="txt")->
             source = "#{__dirname}/testfile.#{ext}"
@@ -69,7 +77,6 @@ describe "Other Doc with User", ->
             source = createFile()
             ufile = new UserFile(file: source,user:user)
             ufile.save()
-
         it "should list file", ->
             source = createFile("md")
             ufile = new UserFile(file: source,user:user)
@@ -81,7 +88,6 @@ describe "Other Doc with User", ->
                 assert(data.length)
         it "should update file", ->
             source = createFile("md")
-            # return
             ufile = new UserFile(file: source, user:user)
             ufile.save().then ()->
                 ufile.set({"title":"hello world"}).save()
@@ -100,3 +106,4 @@ describe "Other Doc with User", ->
                 return dfd
             .then ->
                 user.remove()
+    return q.when(1)

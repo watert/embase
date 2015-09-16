@@ -64,7 +64,8 @@ define(["jquery", "backbone", "libs/action-dispatcher", "libs/templer", "libs/ut
           query = util.deparamQuery();
           _this.view = view = new View({
             el: $body,
-            query: query
+            query: query,
+            path: path
           });
           $.when(view.render()).then(function() {});
           return dfd.resolve(view);

@@ -171,3 +171,31 @@ input {outline: none; font-size:16px;}
         }
     }
 }
+
+
+// users
+.view-user-index {
+    font-size:17px;
+    .form { .flexbox(); .flex-flow(column); text-align: center;
+        margin:0 10px; padding-top: 20px;
+        input {height:44px; margin:5px; border-radius:4px; border:1px solid #DDD;
+            box-sizing:border-box; padding: 0 10px;
+        }
+        .actions {margin-top: 20px;}
+    }
+    button {height:44px; width:8em; font-size:17px;
+        border:none; background: @brand-primary; color:#FFF; border-radius:4px;
+    }
+    .btn-register { background: @gray; }
+    .btn-link {display: block; background: transparent; text-decoration: none;
+        font-size:14px; margin-top: 18px;}
+    .profile {
+        .flexbox(); .flex-flow(column); text-align: center;
+        .avatar {background: #333; color:#FFF; padding-top: 20px; margin-bottom: 10px; }
+        img { border-radius: 50%; width: 100px; height: 100px;}
+        .actions {margin-top: 40px;}
+        .small {font-size:12px; opacity:.5; margin-bottom: 0;}
+        .small + p {margin-top: 0;}
+        .btn-logout { background: @brand-danger; }
+    }
+}

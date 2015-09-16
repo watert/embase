@@ -26,7 +26,21 @@ define(["libs/modelview", "libs/util"], function(ModelView, util) {
         options = {};
       }
       this.query = options.query;
+      this.options = options;
       return BaseView.__super__.initialize.apply(this, arguments);
+    };
+
+    BaseView.prototype.setQuery = function(query, options) {
+      var link, path;
+      if (options == null) {
+        options = {};
+      }
+      _.defaults(options, {
+        trigger: false
+      });
+      path = this.options.path;
+      link = path + "?" + $.param(query);
+      return app.router.navigate(link, options);
     };
 
     BaseView.prototype.navigateWithQuery = function(link, query) {

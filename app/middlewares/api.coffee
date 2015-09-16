@@ -64,7 +64,9 @@ apis =
 
                 (new Doc(data)).save()
             "PUT":(id,data)-> #update
+
                 Doc.findOne(_id:id).then (doc)->
+                    console.log "restful put", Doc, data
                     doc.save(data)
             "DELETE":(id)->
                 Doc.findOne(_id:id).then (doc)->

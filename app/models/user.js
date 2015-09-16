@@ -36,6 +36,7 @@ UserDoc = (function(superClass) {
       data = this._data;
     }
     if (user = data.user) {
+      console.log("omit user");
       data.user_id = user.id || user._id;
       return _.omit(data, "user");
     }
@@ -47,6 +48,7 @@ UserDoc = (function(superClass) {
         }
       };
     }
+    return data;
   };
 
   UserDoc.prototype.save = function(_data) {

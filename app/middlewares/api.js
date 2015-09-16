@@ -126,6 +126,7 @@ apis = {
         return Doc.findOne({
           _id: id
         }).then(function(doc) {
+          console.log("restful put", Doc, data);
           return doc.save(data);
         });
       },

@@ -4,6 +4,8 @@ var DBStore, User, UserDoc, UserFile, _, assert, fs, path, q, ref,
 
 ref = require("./base"), DBStore = ref.DBStore, assert = ref.assert, _ = ref._, User = ref.User, UserDoc = ref.UserDoc;
 
+console.log("# userdoc tests");
+
 fs = require('fs');
 
 path = require('path');
@@ -120,15 +122,29 @@ describe("Other Doc with User", function() {
         return assert.equal(doc.get("title"), "hello");
       });
     });
-    return it("should fetch by user", function() {
+    it("should fetch by user", function() {
       return UserDoc.find({
         user_id: user.id
       }).then(function(data) {
         return assert(data[0].user_id === user.id, "check find user doc only");
       });
     });
+    return it("should update", function() {
+      var doc;
+      doc = new UserDoc({
+        user: user,
+        title: "hello"
+      });
+      return doc.save().then(function(data) {
+        return doc.set({
+          "title": "helloxx"
+        }).save();
+      }).then(function() {
+        return assert.equal(doc.get("title"), "helloxx", "check update userdoc");
+      });
+    });
   });
-  return describe("User Files ", function() {
+  describe("User Files ", function() {
     var createFile;
     createFile = function(ext) {
       var source;
@@ -213,4 +229,5 @@ describe("Other Doc with User", function() {
       });
     });
   });
+  return q.when(1);
 });

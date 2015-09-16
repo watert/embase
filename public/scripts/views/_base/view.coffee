@@ -5,7 +5,13 @@ define ["libs/modelview","libs/util"],(ModelView, util)->
 			@on "destroy", -> $dom.remove()
 		initialize:(options={})->
 			@query = options.query
+			@options = options
 			super(arguments...)
+		setQuery:(query, options={})->
+			_.defaults(options, trigger:no)
+			path = @options.path
+			link = path+"?"+$.param(query)
+			app.router.navigate(link, options)
 		navigateWithQuery:(link, query)->
 			if -1 is link.indexOf("?") then link += "?"
 			else link += "&"
