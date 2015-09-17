@@ -14,7 +14,6 @@ retJSON = function(options) {
   return function(req, res, next) {
     res.ret = function(data) {
       var defaultAttr, id, result;
-      console.log("res.ret", data);
       result = data;
       defaultAttr = function(data, arr) {
         var i, key, len, ret;
@@ -30,7 +29,7 @@ retJSON = function(options) {
       result = defaultAttr(data, ["_data", "result"]);
       id = data.id || data._id || null;
       if (_.isArray(data)) {
-        _.map(data, function(item) {
+        id = _.map(data, function(item) {
           return item.id || item._id;
         });
       }
@@ -110,7 +109,6 @@ apis = {
       return q.when(Model[method](data)).then(function(_data) {
         var ctx, eventMethod;
         res.data = _data;
-        console.log("rpc called", method, _data);
         ctx = {
           data: _data,
           req: req,
@@ -118,7 +116,6 @@ apis = {
           method: method
         };
         if (eventMethod = options.events[method]) {
-          console.log("bind call eventMethod", eventMethod);
           eventMethod.bind(ctx)(req, res);
         }
         return res.ret(_data);
@@ -158,7 +155,6 @@ apis = {
         }
       },
       "POST": function(id, data) {
-        console.log("create with restful", id, Doc.name, data);
         return (new Doc(data)).save();
       },
       "PUT": function(id, data) {
@@ -217,7 +213,6 @@ apis = {
         return res.retError(data);
       }
       return options[method].bind(ctx)(id, data).then(function(data) {
-        console.log("try ret", method, Doc.name, data);
         data = options.parseReturn.bind(ctx)(data);
         return res.ret(data);
       }).fail(function(err) {

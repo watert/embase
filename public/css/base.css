@@ -8,14 +8,6 @@ body {
   font-size: 16px;
   background: #f5f6f7;
 }
-.app,
-.app-body {
-  height: 100%;
-}
-.view-container {
-  height: 100%;
-  overflow: auto;
-}
 small {
   font-size: 12px;
   opacity: .75;
@@ -37,12 +29,6 @@ input {
 .text-primary {
   color: #10d066;
 }
-.app a {
-  color: #4078c0;
-}
-.app a:hover {
-  color: #07f;
-}
 .clearfix.after {
   content: " ";
   /* Older browser do not support empty content */
@@ -50,6 +36,30 @@ input {
   display: block;
   height: 0;
   clear: both;
+}
+.app a {
+  color: #4078c0;
+}
+.app a:hover {
+  color: #07f;
+}
+.app,
+.app-body {
+  height: 100%;
+}
+.container {
+  padding: 0 10px;
+}
+.container > .tableview,
+.container > .list {
+  margin: 0 -10px;
+}
+.pull-right {
+  float: right;
+}
+.view-container {
+  height: 100%;
+  overflow: auto;
 }
 .card {
   padding: 4px;
@@ -219,6 +229,14 @@ input {
   display: -ms-flex;
   display: -o-flex;
   display: flex;
+  -webkit-box-pack: justify;
+  -moz-box-pack: justify;
+  -ms-flex-pack: justify;
+  -webkit-justify-content: space-between;
+  -moz-justify-content: space-between;
+  -ms-justify-content: space-between;
+  -o-justify-content: space-between;
+  justify-content: space-between;
   -webkit-box-align: center;
   -moz-box-align: center;
   -ms-box-align: center;
@@ -234,6 +252,13 @@ input {
   height: 44px;
   border-bottom: 1px solid #ebebeb;
   padding: 0 10px;
+}
+.tableview .tableview-cell .body {
+  -webkit-box-flex: 5;
+  -webkit-flex-grow: 5;
+  -moz-box-flex: 5;
+  -ms-flex: 5 1 auto;
+  flex-grow: 5;
 }
 .tableview .tableview-cell:first-child {
   border-top: 1px solid #ebebeb;
@@ -302,6 +327,9 @@ input {
 }
 .navbar-inner .btn {
   color: #10d066;
+}
+.navbar-static .navbar-inner {
+  position: static;
 }
 .toolbar {
   height: 44px;
@@ -613,6 +641,7 @@ input {
 }
 .splitview .view-master,
 .splitview .view-detail {
+  width: 100%;
   height: 100%;
   overflow: auto;
 }
@@ -633,9 +662,18 @@ input {
     -moz-box-flex: 1;
     -ms-flex: 1 1 auto;
     flex-grow: 1;
+    width: auto;
   }
   .splitview .view-master {
     width: 320px;
     border-right: 1px solid #DDD;
   }
+}
+.view-admin-index code {
+  font-size: 12px;
+  line-height: 17px;
+  background-color: #EEE;
+  padding: 2px 5px;
+  border-radius: 4px;
+  margin-top: 0px;
 }

@@ -9,7 +9,6 @@ q.longStackSupport = yes
 retJSON = (options)->
     (req,res,next)->
         res.ret = (data)->
-            console.log "res.ret", data
             result = data
             defaultAttr = (data, arr)->
                 for key in arr
@@ -19,7 +18,7 @@ retJSON = (options)->
                 return data
             result = defaultAttr(data, ["_data", "result"])
             id = data.id or data._id or null
-            _.map(data, (item)-> item.id or item._id ) if _.isArray(data)
+            id = _.map(data, (item)-> item.id or item._id ) if _.isArray(data)
             res.json({result:result, id:id})
             return res
         res.retError = (code,msg,result=null)->
@@ -57,10 +56,8 @@ apis =
             data = options.parseData.bind({Model,data,method})(data)
             q.when(Model[method](data)).then (_data)->
                 res.data = _data
-                console.log "rpc called", method, _data
                 ctx = {data:_data, req, res, method}
                 if eventMethod = options.events[method]
-                    console.log "bind call eventMethod",eventMethod
                     eventMethod.bind(ctx)(req,res)
                 res.ret(_data)
             .fail (err)->
@@ -77,12 +74,10 @@ apis =
             "parseReturn": (data)-> data
             "GET":(id, data)-> # get list or item with id
                 if not id then return Doc.find(data).then (_data)->
-                    # console.log "GET", id, _data
                     _data.result = _.toArray(_data)
                     return _data
                 else return Doc.findOne(_id:id)
             "POST":(id, data)-> #create (id will be null)
-                console.log "create with restful", id, Doc.name, data
                 (new Doc(data)).save()
             "PUT":(id,data)-> #update
                 Doc.findOne(_id:id).then (doc)->
@@ -110,8 +105,6 @@ apis =
                 return res.retError(data)
             options[method].bind(ctx)(id,data).then (data)->
                 # res.data = data
-                console.log "try ret",method, Doc.name, data
-
                 data = options.parseReturn.bind(ctx)(data)
                 res.ret(data)
             .fail (err)->

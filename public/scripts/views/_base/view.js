@@ -92,12 +92,15 @@ define(["libs/modelview", "libs/util", "tmpls/base"], function(ModelView, util, 
       return this.$(".splitview:eq(0)").addClass("show-detail");
     };
 
-    SplitView.prototype.renderDetail = function(tmplName) {
+    SplitView.prototype.renderDetail = function(tmplName, data) {
       var tmpl;
       if (tmplName == null) {
         tmplName = "detail";
       }
-      tmpl = this.template.invoke(this.template[tmplName]);
+      if (data == null) {
+        data = {};
+      }
+      tmpl = this.template.invoke(this.template[tmplName], data);
       return this.$(".view-detail .body:eq(0)").empty().append(tmpl);
     };
 

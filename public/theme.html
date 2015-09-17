@@ -21,8 +21,8 @@
       #examples .code { width: 320px; padding:0 30px; background: #FFF; }
       @media (max-width:500px) {
 
-          #examples .code { width:auto;}
-          #examples .example .body { display:block;}
+          #examples .code { width:auto; border:none;}
+          #examples .example .body { display:block; border:none;}
       }
 
   </style>
@@ -30,6 +30,16 @@
 "use strict";
 let codes = [
 {
+    title:"Navbar",
+    code:`<div class="navbar navbar-static">
+    <div class="navbar-inner">
+        <div class="navbar-left">  </div>
+        <div class="navbar-title"> Title </div>
+        <div class="navbar-right"> Right </div>
+    </div>
+</div>`
+}
+,{
     title:"Cards",
     code:`<div class="cards">
     <div class="card"> Card 1 </div>

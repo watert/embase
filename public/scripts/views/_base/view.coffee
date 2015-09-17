@@ -47,8 +47,8 @@ define ["libs/modelview","libs/util","tmpls/base"],(ModelView, util, baseTmpl)->
 		showDetail:(tmplName)->
 			@renderDetail(tmplName)
 			@$(".splitview:eq(0)").addClass("show-detail")
-		renderDetail:(tmplName="detail")->
-			tmpl = @template.invoke(@template[tmplName])
+		renderDetail:(tmplName="detail", data={})->
+			tmpl = @template.invoke(@template[tmplName], data)
 			@$(".view-detail .body:eq(0)").empty().append(tmpl)
 
 		template: splitViewTmpl

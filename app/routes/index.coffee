@@ -13,7 +13,5 @@ router.get '/user/', (req, res, next)->
 userRouter = require("../middlewares/user")
 router.use('/user/', userRouter)
 
-router.get '/*', (req, res, next)->
-    res.render('index', { title: 'Express' })
 
 module.exports = router
