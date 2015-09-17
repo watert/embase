@@ -8,12 +8,6 @@ _ = require('underscore');
 
 router = express.Router();
 
-router.get('/', function(req, res, next) {
-  return res.render('index', {
-    title: 'Express'
-  });
-});
-
 router.get('/codes/*', function(req, res) {
   return res.render("index");
 });
@@ -25,5 +19,11 @@ router.get('/user/', function(req, res, next) {
 userRouter = require("../middlewares/user");
 
 router.use('/user/', userRouter);
+
+router.get('/*', function(req, res, next) {
+  return res.render('index', {
+    title: 'Express'
+  });
+});
 
 module.exports = router;

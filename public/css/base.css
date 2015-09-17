@@ -8,6 +8,14 @@ body {
   font-size: 16px;
   background: #f5f6f7;
 }
+.app,
+.app-body {
+  height: 100%;
+}
+.view-container {
+  height: 100%;
+  overflow: auto;
+}
 small {
   font-size: 12px;
   opacity: .75;
@@ -19,6 +27,9 @@ p {
 input {
   outline: none;
   font-size: 16px;
+}
+.text-center {
+  text-align: center;
 }
 .text-danger {
   color: #d9534f;
@@ -86,7 +97,7 @@ input {
 .card.expand {
   max-height: none;
 }
-@media only screen and (min-width:415px) {
+@media only screen and (min-width:769px) {
   .cards {
     display: -webkit-box;
     display: -moz-box;
@@ -585,4 +596,46 @@ input {
 }
 .view-user-index .dashboard .item {
   margin: 0 20px;
+}
+.splitview {
+  height: 100%;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-box;
+  display: -o-box;
+  display: box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flex;
+  display: -o-flex;
+  display: flex;
+}
+.splitview .view-master,
+.splitview .view-detail {
+  height: 100%;
+  overflow: auto;
+}
+.splitview .view-master {
+  background: #e7e9ec;
+}
+.splitview .view-detail {
+  display: none;
+}
+.splitview.show-detail .view-detail {
+  display: block;
+}
+@media only screen and (min-width:769px) {
+  .splitview .view-detail {
+    display: block;
+    -webkit-box-flex: 1;
+    -webkit-flex-grow: 1;
+    -moz-box-flex: 1;
+    -ms-flex: 1 1 auto;
+    flex-grow: 1;
+  }
+  .splitview .view-master {
+    width: 320px;
+    border-right: 1px solid #DDD;
+  }
 }

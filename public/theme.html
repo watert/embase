@@ -1,0 +1,109 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My Theme</title>
+    <link rel="stylesheet" href="/css/base.css">
+  </head>
+  <base href="/">
+  <link rel="stylesheet" href="/bower_components/font-awesome/css/font-awesome.min.css">
+  <script src="bower_components/requirejs/require.js"></script>
+  <script src="scripts/require-config.js"></script>
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <style>
+      #examples { margin:0 20px;}
+      #examples pre code { font-size:11px;}
+      /*#examples .example {  border: 1px solid #DDD; border-width: 1px 0; padding:0 10px;}*/
+
+      #examples .example .section-title { margin:20px 0 5px; font-size:17px; font-weight:bold; color:#999; }
+      #examples .example .body { display:flex; border: 1px solid #DDD; border-width: 1px 0; padding:0 10px;}
+      #examples .demo { flex-grow: 2; border: 1px solid #DDD;border-width: 0 1px; }
+      #examples .code { width: 320px; padding:0 30px; background: #FFF; }
+      @media (max-width:500px) {
+
+          #examples .code { width:auto;}
+          #examples .example .body { display:block;}
+      }
+
+  </style>
+  <script>
+"use strict";
+let codes = [
+{
+    title:"Cards",
+    code:`<div class="cards">
+    <div class="card"> Card 1 </div>
+    <div class="card"> Card 2 </div>
+</div>`
+}
+,{
+    title:"List",
+    code:`<div class="list">
+    <div class="list-item">
+        <div class="list-body">Item 1</div>
+        <i class="fa fa-angle-right"></i>
+    </div>
+    <div class="list-item"> Item 2 </div>
+</div>`
+}
+,{
+    title:"List",
+    code:`<div class="list">
+    <div class="list-item">
+        <div class="list-body">Item 1</div>
+        <i class="fa fa-angle-right"></i>
+    </div>
+    <div class="list-item"> Item 2 </div>
+</div>`
+}
+,{
+    title:"TableView",
+    code:`<div class="tableview">
+    <div class="tableview-header"> Header </div>
+    <div class="tableview-cell"> Cell1 </div>
+    <div class="tableview-cell"> Cell2 </div>
+</div>`
+}
+];
+
+require(["views/_base/view","jquery"],(BaseView)=> {
+    var ThemeView = BaseView.extend({
+        // initialize: ()=> {
+        //     BaseView.prototype.initialize.apply(this);
+        // },
+        tagName:"div",
+        template: BaseView.baseTmpl.extend({
+            escape:(html)=> {
+                return $("<div/>").text(html).html()
+            },
+            index:`
+            <div class="example">
+                <h3 class="section-title"> <%=title%> </h3>
+                <div class="body">
+                    <div class="demo"> <%=code%> </div>
+                    <div class="code">
+                        <pre><code><%=escape(code)%> </code></pre>
+                    </div>
+                </div>
+            </div>
+                `
+        })
+    });
+    $(()=>{
+
+        let $dom = $("#examples");
+        _.each(codes, (code)=>{
+            let view = new ThemeView({ model:code});
+            // console.log(view,view.template())
+            view.render();
+            view.$el.appendTo($dom);
+        })
+    })
+});
+  </script>
+  <body>
+      <div id="examples">
+          <h1>theme</h1>
+      </div>
+  </body>
+</html>

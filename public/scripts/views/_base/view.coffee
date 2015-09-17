@@ -1,4 +1,4 @@
-define ["libs/modelview","libs/util"],(ModelView, util)->
+define ["libs/modelview","libs/util","tmpls/base"],(ModelView, util, baseTmpl)->
 	class BaseView extends ModelView
 		loadCSS:(url)->
 			$dom = $("<link>",{href:url, rel:"stylesheet"}).appendTo($("head"))
@@ -19,3 +19,38 @@ define ["libs/modelview","libs/util"],(ModelView, util)->
 			app.router.navigate(link, {trigger:yes})
 		navigate: (link)->
 			app.router.navigate(link, {trigger:yes})
+	splitViewTmpl = baseTmpl.extend
+		detail:"Empty"
+		master:""
+		# detailNavbar:baseTmpl.navbar.extend
+		# 	title:"Detail"
+		# masterNavbar:baseTmpl.navbar.extend
+		# 	title:"Master"
+		index:"""
+			<div class="splitview">
+				<div class="view-master">
+					<div class="body"><%=invoke(master)%></div>
+				</div>
+				<div class="view-detail">
+					<div class="body"></div>
+				</div>
+			</div>
+		"""
+
+	class SplitView extends BaseView
+		className:"splitview"
+		initialize:(options)->
+			super(arguments...)
+		render:()->
+			super(arguments...)
+			@renderDetail()
+		showDetail:(tmplName)->
+			@renderDetail(tmplName)
+			@$(".splitview:eq(0)").addClass("show-detail")
+		renderDetail:(tmplName="detail")->
+			tmpl = @template.invoke(@template[tmplName])
+			@$(".view-detail .body:eq(0)").empty().append(tmpl)
+
+		template: splitViewTmpl
+	_.extend(BaseView, {SplitView, baseTmpl, splitViewTmpl})
+	return BaseView
