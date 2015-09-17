@@ -56,6 +56,13 @@ describe("Other Doc with User", function() {
         return assert(data[0].user_id === user.id, "check find user doc only");
       });
     });
+    it("should count", function() {
+      return UserDoc.count({
+        user_id: user.id
+      }).then(function(ret) {
+        return assert(ret.count, "check has count");
+      });
+    });
     return it("should update", function() {
       var doc;
       doc = new UserDoc({

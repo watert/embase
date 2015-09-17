@@ -31,9 +31,12 @@ define ["views/_base/view","tmpls/base","libs/util","models/user"],(BaseView, ba
                 return super(tmpl)
             user = new User()
             user.fetch().then (data)=>
-                console.log user.toJSON()
-                @setModel(user)
-                super(tmpl)
+                console.log "user",user.toJSON()
+                User.call("status").then (status)=>
+                    user.set("status", status)
+                    console.log "status",data
+                    @setModel(user)
+                    super(tmpl)
             .fail =>
                 console.log "try login", tmpl
                 super("login")
@@ -48,6 +51,16 @@ define ["views/_base/view","tmpls/base","libs/util","models/user"],(BaseView, ba
                     <div class="info">
                         <div class="small"> Email </div>
                         <p><%=email%></p>
+                        <div class="dashboard">
+                            <div class="item">
+                                <div class="small"> Articles </div>
+                                <div class="value"> <%=status.docCount%> </div>
+                            </div>
+                            <div class="item">
+                                <div class="small"> Files </div>
+                                <div class="value"> <%=status.filesCount%> </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="actions">
                         <button class="btn btn-logout">Logout</button>

@@ -16,7 +16,6 @@ define(["./base.js", "models/user"], function(testBase, User) {
       var upload;
       upload = (function(_this) {
         return function(formData) {
-          console.log("@prototype.urlRoot", _this.prototype.urlRoot, formData);
           return $.ajax({
             url: _this.prototype.urlRoot,
             data: formData,
@@ -72,8 +71,25 @@ define(["./base.js", "models/user"], function(testBase, User) {
         return user.destroy();
       });
     });
-    describe("User Doc", function() {
-      var doc, docData;
+    return describe("User Doc", function() {
+      var doc, docData, user, userData;
+      userData = {
+        name: "xxxx1",
+        email: "xx@asd.com",
+        password: "xxx"
+      };
+      user = null;
+      before("create user", function(done) {
+        return User.call("register", userData).always(function(ret) {
+          return User.call("login", userData).then(function(_user) {
+            user = _user;
+            return done();
+          });
+        });
+      });
+      after("delete user", function() {
+        return user.destroy();
+      });
       docData = {
         title: "hello world",
         content: "content"
@@ -104,51 +120,55 @@ define(["./base.js", "models/user"], function(testBase, User) {
           return assert.equal(doc.get("title"), "hello2", "should update doc");
         });
       });
-      return it("should remove a doc", function() {
+      it("should count docs", function() {
+        return UserDocs.call("count").then(function(ret) {
+          return assert(ret.count);
+        });
+      });
+      it("should remove a doc", function() {
         doc = UserDocs.create(docData);
         return doc.save().then(function() {
           return doc.destroy();
         });
       });
-    });
-    return describe("User Files", function() {
-      var createForm, user, userData;
-      userData = {
-        name: "xxxx1",
-        email: "xx@asd.com",
-        password: "xxx"
-      };
-      user = null;
-      createForm = function(ext) {
-        var blob, formData;
-        if (ext == null) {
-          ext = "txt";
-        }
-        formData = new FormData();
-        blob = new Blob(["Hello World"], {
-          type: "text/plain"
+      describe("User Files", function() {
+        var createForm;
+        createForm = function(ext) {
+          var blob, formData;
+          if (ext == null) {
+            ext = "txt";
+          }
+          formData = new FormData();
+          blob = new Blob(["Hello World"], {
+            type: "text/plain"
+          });
+          formData.append("file", blob, "hello." + ext);
+          return formData;
+        };
+        it("upload file with user", function() {
+          return UserFile.uploadWithForm(createForm("md"));
         });
-        formData.append("file", blob, "hello." + ext);
-        return formData;
-      };
-      before("create user", function(done) {
-        return User.call("register", userData).always(function(ret) {
-          return User.call("login", userData).then(function(_user) {
-            user = _user;
-            return done();
+        it("list files with user");
+        it("list images files with user");
+        it("modify files with user");
+        return it("delete files with user");
+      });
+      return describe("User Status", function() {
+        before("add records to userdoc", function() {
+          var save;
+          save = function() {
+            return UserDocs.create(docData).save();
+          };
+          return save().then(function() {
+            return save();
+          });
+        });
+        return it("should get status", function() {
+          return User.call("status").then(function(data) {
+            return console.log("user status", data);
           });
         });
       });
-      after("delete user", function() {
-        return user.destroy();
-      });
-      it("upload file with user", function() {
-        return UserFile.uploadWithForm(createForm("md"));
-      });
-      it("list files with user");
-      it("list images files with user");
-      it("modify files with user");
-      return it("delete files with user");
     });
   });
   return $.when(1);

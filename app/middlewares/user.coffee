@@ -1,4 +1,5 @@
 express = require('express')
+q = require('q')
 _ = require("underscore")
 User = require("../models/user")
 api = require("../middlewares/api")
@@ -38,25 +39,30 @@ router.all('/api/logout',(req,res)->
     req.session.destroy()
     res.json({message:"Logout successfully"})
     )
+router.post '/api/status/', api.retJSON(), (req,res)->
+    user = req.session.user
+    where = user_id:user.id
+    result = {}
+    User.UserDoc.count(where).then (ret)->
+        result.docCount = ret.count
+        User.UserFile.count(where)
+    .then (ret)->
+        result.filesCount = ret.count
+        res.ret(result)
 router.use('/api/', rpcRouter)
 router.delete('/api/:_id', userRemove)
 router.get('/api/',userInfo)
 router.use('/docs/article/', articleREST)
+router.use('/docs/article/api', api.jsonrpc(model: User.UserDoc))
 
 multipart = require("connect-multiparty")(uploadDir:__dirname+"/../tmpfiles/")
 router.use "/files/",multipart, api.restful
     model:User.UserFile
     parseData:(data)->
         user = @req.session.user
-        # console.log "upload user", user
         data.user_id = user.id
         if files = @req.files then _.extend(data, files)
-        # console.log "upload data",data
         return data
-# router.post '/files/', multipart , (req,res)->
-#
-#     console.log "req.files",req.files, req.body
-#     res.json("1")
 router.use('/*', renderIndex)
 
 module.exports = router

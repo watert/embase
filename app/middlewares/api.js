@@ -1,4 +1,4 @@
-var Dispatcher, _, apis, express, q;
+var Dispatcher, _, apis, express, getRequesetData, q, retJSON;
 
 _ = require("underscore");
 
@@ -8,67 +8,92 @@ Dispatcher = require("../../public/scripts/libs/action-dispatcher");
 
 q = require("q");
 
-apis = {
-  retJSON: function(options) {
-    return function(req, res, next) {
-      res.ret = function(data) {
-        var id, result;
-        result = data._data || data.result || data;
-        id = data.id || data._id || _.map(data, function(item) {
+q.longStackSupport = true;
+
+retJSON = function(options) {
+  return function(req, res, next) {
+    res.ret = function(data) {
+      var defaultAttr, id, result;
+      console.log("res.ret", data);
+      result = data;
+      defaultAttr = function(data, arr) {
+        var i, key, len, ret;
+        for (i = 0, len = arr.length; i < len; i++) {
+          key = arr[i];
+          if (!_.isUndefined(ret = data[key])) {
+            console.log("not isUndefined", ret);
+            return ret;
+          }
+        }
+        return data;
+      };
+      result = defaultAttr(data, ["_data", "result"]);
+      id = data.id || data._id || null;
+      if (_.isArray(data)) {
+        _.map(data, function(item) {
           return item.id || item._id;
         });
-        if (!_.isArray(result)) {
-          result = _.omit(result, "password");
-        }
-        res.json({
-          result: result,
-          id: id
-        });
-        return res;
-      };
-      res.retError = function(code, msg, result) {
-        var json;
-        if (result == null) {
-          result = null;
-        }
-        json = {};
-        if (msg != null ? msg.error : void 0) {
-          json = {
-            error: error,
-            result: result
-          };
-        } else if (code.error) {
-          json = code;
-        } else {
-          json = {
-            error: {
-              code: code,
-              message: msg
-            }
-          };
-        }
-        res.status(json.error.code || 500).json(json);
-        return res;
-      };
-      return next();
+      }
+      res.json({
+        result: result,
+        id: id
+      });
+      return res;
     };
-  },
-  getRequesetData: function(req) {
-    var method;
-    method = req.method;
-    if (method === "GET") {
-      return req.query;
-    } else {
-      return req.body;
-    }
-  },
+    res.retError = function(code, msg, result) {
+      var json;
+      if (result == null) {
+        result = null;
+      }
+      json = {};
+      if (code instanceof Error) {
+        console.trace(code);
+      }
+      if (msg != null ? msg.error : void 0) {
+        json = {
+          error: error,
+          result: result
+        };
+      } else if (code.error) {
+        json = code;
+      } else {
+        json = {
+          error: {
+            code: code,
+            message: msg
+          }
+        };
+      }
+      res.status(json.error.code || 500).json(json);
+      return res;
+    };
+    return next();
+  };
+};
+
+getRequesetData = function(req) {
+  var method;
+  method = req.method;
+  if (method === "GET") {
+    return req.query;
+  } else {
+    return req.body;
+  }
+};
+
+apis = {
+  retJSON: retJSON,
+  getRequesetData: getRequesetData,
   jsonrpc: function(options) {
     var Model, router;
     if (options == null) {
       options = {};
     }
     options = _.extend({
-      on: {}
+      events: {},
+      parseData: function(data) {
+        return data;
+      }
     }, options);
     Model = options.model;
     router = express.Router();
@@ -77,9 +102,15 @@ apis = {
       var data, method;
       method = req.params.method;
       data = apis.getRequesetData(req) || {};
+      data = options.parseData.bind({
+        Model: Model,
+        data: data,
+        method: method
+      })(data);
       return q.when(Model[method](data)).then(function(_data) {
         var ctx, eventMethod;
         res.data = _data;
+        console.log("rpc called", method, _data);
         ctx = {
           data: _data,
           req: req,
@@ -87,6 +118,7 @@ apis = {
           method: method
         };
         if (eventMethod = options.events[method]) {
+          console.log("bind call eventMethod", eventMethod);
           eventMethod.bind(ctx)(req, res);
         }
         return res.ret(_data);
@@ -110,11 +142,14 @@ apis = {
       "parseData": function(data) {
         return data;
       },
+      "parseReturn": function(data) {
+        return data;
+      },
       "GET": function(id, data) {
         if (!id) {
-          return Doc.find(data).then(function(data) {
-            data.result = _.toArray(data);
-            return data;
+          return Doc.find(data).then(function(_data) {
+            _data.result = _.toArray(_data);
+            return _data;
           });
         } else {
           return Doc.findOne({
@@ -147,6 +182,24 @@ apis = {
       }
     });
     router.use(apis.retJSON());
+    router.get("/count", function(req, res) {
+      var ctx, data;
+      data = apis.getRequesetData(req);
+      ctx = {
+        req: req,
+        res: res,
+        data: data
+      };
+      data = options.parseData.bind(ctx)(data);
+      return Doc.find(data).then(function(data) {
+        return {
+          result: {
+            count: data.length
+          },
+          id: -1
+        };
+      }).then(res.ret).fail(res.retError);
+    });
     router.all("/:id?", function(req, res, next) {
       var ctx, data, id, method;
       method = req.method;
@@ -165,6 +218,7 @@ apis = {
       }
       return options[method].bind(ctx)(id, data).then(function(data) {
         console.log("try ret", method, Doc.name, data);
+        data = options.parseReturn.bind(ctx)(data);
         return res.ret(data);
       }).fail(function(err) {
         console.log("restful error", method, Doc.name, arguments);

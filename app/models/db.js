@@ -63,7 +63,7 @@ DBStore.getStore = function(name) {
   store = new DBStore(dbconfig);
   return new Promise(function(res, rej) {
     return store.loadDatabase(function(err) {
-      wrapMethods(store, ["find", "findOne", "insert", "update", "remove"]);
+      wrapMethods(store, ["find", "findOne", "insert", "update", "remove", "count"]);
       if (!err) {
         return res(store);
       } else {
@@ -153,6 +153,18 @@ BaseDoc = (function() {
         return num;
       };
     })(this));
+  };
+
+  BaseDoc.count = function(data) {
+    console.log("db @count");
+    return this.getStore().then(function(store) {
+      return store.count(data).then(function(num) {
+        return {
+          count: num,
+          id: -1
+        };
+      });
+    });
   };
 
   BaseDoc.findByID = function(id) {

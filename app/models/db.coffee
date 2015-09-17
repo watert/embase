@@ -29,7 +29,7 @@ DBStore.getStore = (name)->
     store = new DBStore(dbconfig)
     new Promise (res,rej)->
         store.loadDatabase (err)->
-            wrapMethods(store, ["find","findOne","insert","update","remove"])
+            wrapMethods(store, ["find","findOne","insert","update","remove","count"])
             if not err then res(store) else rej(err)
 
 class BaseDoc
@@ -73,6 +73,10 @@ class BaseDoc
             delete @_data._id
             @isDeleted = yes
             return num
+    @count:(data)->
+        console.log "db @count"
+        @getStore().then (store)->
+            store.count(data).then (num)-> {count:num, id:-1}
     @findByID:(id)->
         DocClass = this
         @getStore().then (store)->

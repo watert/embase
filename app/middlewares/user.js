@@ -1,6 +1,8 @@
-var User, _, api, articleREST, crypto, express, md5, multipart, renderIndex, router, rpcRouter, userInfo, userRemove;
+var User, _, api, articleREST, crypto, express, md5, multipart, q, renderIndex, router, rpcRouter, userInfo, userRemove;
 
 express = require('express');
+
+q = require('q');
 
 _ = require("underscore");
 
@@ -79,6 +81,22 @@ router.all('/api/logout', function(req, res) {
   });
 });
 
+router.post('/api/status/', api.retJSON(), function(req, res) {
+  var result, user, where;
+  user = req.session.user;
+  where = {
+    user_id: user.id
+  };
+  result = {};
+  return User.UserDoc.count(where).then(function(ret) {
+    result.docCount = ret.count;
+    return User.UserFile.count(where);
+  }).then(function(ret) {
+    result.filesCount = ret.count;
+    return res.ret(result);
+  });
+});
+
 router.use('/api/', rpcRouter);
 
 router["delete"]('/api/:_id', userRemove);
@@ -86,6 +104,10 @@ router["delete"]('/api/:_id', userRemove);
 router.get('/api/', userInfo);
 
 router.use('/docs/article/', articleREST);
+
+router.use('/docs/article/api', api.jsonrpc({
+  model: User.UserDoc
+}));
 
 multipart = require("connect-multiparty")({
   uploadDir: __dirname + "/../tmpfiles/"

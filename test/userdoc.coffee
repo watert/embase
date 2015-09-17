@@ -28,6 +28,9 @@ describe "Other Doc with User", ->
             UserDoc.find(user_id:user.id).then (data)->
                 assert(data[0].user_id is user.id,"check find user doc only")
                 # assert(data.length, "should find userdocs")
+        it "should count", ->
+            UserDoc.count(user_id:user.id).then (ret)->
+                assert(ret.count, "check has count")
         it "should update", ->
             doc = new UserDoc(user:user, title:"hello")
             doc.save().then (data)->

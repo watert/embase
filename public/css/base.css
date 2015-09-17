@@ -561,3 +561,28 @@ input {
 .view-user-index .profile .btn-logout {
   background: #d9534f;
 }
+.view-user-index .dashboard {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-box;
+  display: -o-box;
+  display: box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flex;
+  display: -o-flex;
+  display: flex;
+  -webkit-box-pack: center;
+  -moz-box-pack: center;
+  -ms-flex-pack: center;
+  -webkit-justify-content: center;
+  -moz-justify-content: center;
+  -ms-justify-content: center;
+  -o-justify-content: center;
+  justify-content: center;
+  margin-top: 20px;
+}
+.view-user-index .dashboard .item {
+  margin: 0 20px;
+}

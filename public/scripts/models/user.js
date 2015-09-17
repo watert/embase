@@ -30,14 +30,29 @@ define(["backbone", "jquery"], function() {
 
     UserDocs.prototype.idAttribute = "_id";
 
+    UserDocs.prototype.getStoreName = function() {
+      return this.storeName || this.constructor.storeName;
+    };
+
     UserDocs.prototype.url = function() {
-      return "/user/docs/" + (this.storeName || this.constructor.storeName) + "/";
+      return "/user/docs/" + (this.getStoreName()) + "/";
     };
 
     UserDocs.prototype.model = UserDocModel;
 
     UserDocs.prototype.parse = function(data) {
       return data.result || data;
+    };
+
+    UserDocs.call = function(method, data) {
+      var url;
+      if (data == null) {
+        data = {};
+      }
+      url = "/user/docs/" + (this.prototype.getStoreName()) + "/api/" + method;
+      return $.post(url, data).then(function(data) {
+        return data.result;
+      });
     };
 
     UserDocs.create = function(data) {
@@ -78,7 +93,11 @@ define(["backbone", "jquery"], function() {
       }
       url = this.urlApi(method);
       return $.post(url, data).then(function(data) {
-        return new User(data.result);
+        if (data.result._id) {
+          return new User(data.result);
+        } else {
+          return data.result;
+        }
       });
     };
 

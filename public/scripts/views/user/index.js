@@ -63,9 +63,13 @@ define(["views/_base/view", "tmpls/base", "libs/util", "models/user"], function(
       user = new User();
       return user.fetch().then((function(_this) {
         return function(data) {
-          console.log(user.toJSON());
-          _this.setModel(user);
-          return UserIndex.__super__.render.call(_this, tmpl);
+          console.log("user", user.toJSON());
+          return User.call("status").then(function(status) {
+            user.set("status", status);
+            console.log("status", data);
+            _this.setModel(user);
+            return UserIndex.__super__.render.call(_this, tmpl);
+          });
         };
       })(this)).fail((function(_this) {
         return function() {
@@ -80,7 +84,7 @@ define(["views/_base/view", "tmpls/base", "libs/util", "models/user"], function(
     };
 
     UserIndex.prototype.template = baseTmpls.extend({
-      index: "<div class=\"profile\">\n    <div class=\"avatar\">\n        <img src=\"http://www.gravatar.com/avatar/<%=emailHash%>?s=200\" alt=\"\" />\n        <h3> <%=name%> </h3>\n    </div>\n    <div class=\"info\">\n        <div class=\"small\"> Email </div>\n        <p><%=email%></p>\n    </div>\n    <div class=\"actions\">\n        <button class=\"btn btn-logout\">Logout</button>\n    </div>\n</div>",
+      index: "<div class=\"profile\">\n    <div class=\"avatar\">\n        <img src=\"http://www.gravatar.com/avatar/<%=emailHash%>?s=200\" alt=\"\" />\n        <h3> <%=name%> </h3>\n    </div>\n    <div class=\"info\">\n        <div class=\"small\"> Email </div>\n        <p><%=email%></p>\n        <div class=\"dashboard\">\n            <div class=\"item\">\n                <div class=\"small\"> Articles </div>\n                <div class=\"value\"> <%=status.docCount%> </div>\n            </div>\n            <div class=\"item\">\n                <div class=\"small\"> Files </div>\n                <div class=\"value\"> <%=status.filesCount%> </div>\n            </div>\n        </div>\n    </div>\n    <div class=\"actions\">\n        <button class=\"btn btn-logout\">Logout</button>\n    </div>\n</div>",
       register: "<form data-action=\"register\" class=\"form form-register\">\n    <h2> User Register </h2>\n    <input type=\"text\" name=\"name\" placeholder=\"Name\"/>\n    <input type=\"email\" name=\"email\" placeholder=\"Email\"/>\n    <input type=\"password\" name=\"password\" placeholder=\"Password\"/>\n    <div class=\"actions\">\n        <button class=\"btn btn-submit\" type=\"submit\">Register</button>\n        <a class=\"btn btn-login btn-link\" href=\"javascript:void(0)\"> Already has account </a>\n    </div>\n</form>",
       login: "<form data-action=\"login\" class=\"form form-login\">\n    <h2> User Login </h2>\n    <input type=\"email\" name=\"email\" placeholder=\"Email\"/>\n    <input type=\"password\" name=\"password\" placeholder=\"Password\"/>\n    <div class=\"actions\">\n        <button class=\"btn btn-submit\" type=\"submit\">Login</button>\n        <button class=\"btn btn-register\" type=\"button\">Register</button>\n    </div>\n</form>"
     });
