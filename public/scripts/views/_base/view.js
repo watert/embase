@@ -16,7 +16,7 @@ define(["libs/modelview", "libs/util", "tmpls/base"], function(ModelView, util, 
         href: url,
         rel: "stylesheet"
       }).appendTo($("head"));
-      return this.on("destroy", function() {
+      return this.on("remove", function() {
         return $dom.remove();
       });
     };
@@ -67,7 +67,7 @@ define(["libs/modelview", "libs/util", "tmpls/base"], function(ModelView, util, 
   splitViewTmpl = baseTmpl.extend({
     detail: "Empty",
     master: "",
-    index: "<div class=\"splitview\">\n	<div class=\"view-master\">\n		<div class=\"body\"><%=invoke(master)%></div>\n	</div>\n	<div class=\"view-detail\">\n		<div class=\"body\"></div>\n	</div>\n</div>"
+    index: "<div class=\"view-master\">\n	<div class=\"body\"><%=invoke(master)%></div>\n</div>\n<div class=\"view-detail\">\n	<div class=\"body\"></div>\n</div>"
   });
   SplitView = (function(superClass) {
     extend(SplitView, superClass);

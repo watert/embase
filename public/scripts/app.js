@@ -30,6 +30,10 @@ define(["jquery", "backbone", "libs/action-dispatcher", "libs/templer", "libs/ut
       return App.__super__.constructor.apply(this, arguments);
     }
 
+    App.prototype.util = util;
+
+    App.prototype.templer = templer;
+
     App.prototype.initialize = function() {
       this.router = new Router;
       this.router.on("route-path", this.loadViewPath.bind(this));
@@ -50,7 +54,7 @@ define(["jquery", "backbone", "libs/action-dispatcher", "libs/templer", "libs/ut
     App.prototype.loadViewPath = function(path) {
       var dfd, ref;
       if ((ref = this.view) != null) {
-        ref.trigger("destroy").destroy();
+        ref.trigger("remove").remove();
       }
       console.log("App loadViewPath", path);
       dfd = $.Deferred();
@@ -63,10 +67,10 @@ define(["jquery", "backbone", "libs/action-dispatcher", "libs/templer", "libs/ut
           $body = _this.$(".view-container").empty().removeClass().addClass("view-container view-" + (path.replace("/", "-")));
           query = util.deparamQuery();
           _this.view = view = new View({
-            el: $body,
             query: query,
             path: path
           });
+          view.$el.appendTo($body);
           $.when(view.render()).then(function() {});
           return dfd.resolve(view);
         };

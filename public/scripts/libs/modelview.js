@@ -64,7 +64,7 @@ Factory = function($, Backbone) {
     };
 
     ModelView.prototype.render = function(name) {
-      var base, base1, data, html, ref, ref1, ref2, ref3, tmpl, tmplRenderer;
+      var base, base1, data, html, ref, ref1, ref2, tmpl, tmplRenderer;
       if (name == null) {
         name = "index";
       }
@@ -73,11 +73,10 @@ Factory = function($, Backbone) {
         data.collection = (typeof (base = this.collection).toJSON === "function" ? base.toJSON() : void 0) || this.collection;
       }
       data = _.extend(data, this.templateHelpers);
-      console.log(this.template, (ref1 = this.template) != null ? ref1[name] : void 0, data);
-      tmpl = ((ref2 = this.template) != null ? ref2[name] : void 0) || this.template;
+      tmpl = ((ref1 = this.template) != null ? ref1[name] : void 0) || this.template;
       html = (typeof tmpl === "function" ? tmpl() : void 0) || (typeof (base1 = this.template).invoke === "function" ? base1.invoke(tmpl, data) : void 0) || tmpl;
       this.$el.html(html);
-      if (tmplRenderer = (ref3 = this.template._context) != null ? ref3.onRender : void 0) {
+      if (tmplRenderer = (ref2 = this.template._context) != null ? ref2.onRender : void 0) {
         tmplRenderer.bind(this)();
       }
       this.trigger("render");

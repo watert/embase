@@ -64,6 +64,13 @@ input {outline: none; font-size:16px;}
 }
 .pull-right {float: right;}
 .view-container {height: 100%; overflow: auto;}
+.btn {
+    height: 34px; padding: 2px 10px; box-sizing: border-box; border: 0;
+    background-color: @brand-primary; color: #FFF; font-size: 17px;
+    border-radius:4px; cursor:pointer;
+    &:hover { background: darken(@brand-primary, 5%); }
+    &.btn-danger {background: @brand-danger;}
+}
 .card {
     .clearfix(); padding: 4px;
     margin:10px; background:#FFF; border-radius:4px;
@@ -112,6 +119,7 @@ input {outline: none; font-size:16px;}
         &:first-child {border-top: 1px solid @gray-lighter;}
     }
     .key {width:100px;margin-right: 10px;}
+
     input { .flex-grow(2); height:100%; box-sizing:border-box; border:none; }
 }
 .navbar { height:54px; }
@@ -229,6 +237,16 @@ input {outline: none; font-size:16px;}
     });
 }
 .view-admin-index {
-    code { font-size: 12px; line-height: 17px; background-color: #EEE;
+    h2 {margin:10px 0; font-size:17px;}
+    code { font-size: 12px; line-height: 17px;
         padding: 2px 5px; border-radius: 4px; margin-top: 0px; }
+    .view-master {
+        .tableview-cell.active {background: #666; color:#FFF;}
+    }
+    .CodeMirror pre { font-size:14px; }
+    .doc-info { height: 34px; line-height: 34px; border: 1px solid #DDD; border-width: 1px 0;
+        .flexbox(); .align-items(center); .justify-content(space-between);
+        .btn {height:28px;font-size:14px;}
+    }
+    .actions {padding-top:5px; border-top: 1px solid #DDD; text-align: right;}
 }

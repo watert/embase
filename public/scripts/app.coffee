@@ -16,6 +16,8 @@ define [
             #     console.log path
             #     @trigger("route-path",path)
     class App extends Backbone.View
+        util:util
+        templer: templer
         initialize: ->
             # super()
             @router = new Router
@@ -36,7 +38,7 @@ define [
             </div>
         """
         loadViewPath:(path)->
-            @view?.trigger("destroy").destroy()
+            @view?.trigger("remove").remove()
             console.log "App loadViewPath",path
             dfd = $.Deferred()
             path = path.slice(0,-1) if path.slice(-1) == "/"
@@ -47,7 +49,8 @@ define [
                 $body = @$(".view-container").empty()
                     .removeClass().addClass("view-container view-#{path.replace("/","-")}")
                 query = util.deparamQuery()
-                @view = view = new View(el: $body, query:query, path:path)
+                @view = view = new View( query:query, path:path)
+                view.$el.appendTo($body)
                 # @view.path = path
                 $.when(view.render()).then =>
                     # new IScroll(view.el)

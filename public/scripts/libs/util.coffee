@@ -7,6 +7,11 @@ define [],()->
                 i = i.replace(/\//g,"_")
                 ctx[i] = arguments[idx]
     util =
+        promiseFCall:(method, args...)->
+            dfd = $.Deferred()
+            method args..., ()->
+                dfd.resolve(arguments...)
+            return dfd
         deparamQuery:(string)->
             string ?= location.search.slice(1)
             if string.length is 0 then return {}

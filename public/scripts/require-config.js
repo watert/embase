@@ -9,7 +9,8 @@ require.config({
         "iscroll":"../bower_components/iscroll/build/iscroll",
         "iscroll-lite":"../bower_components/iscroll/build/iscroll-lite",
         "highlightjs":"libs/highlight.pack",
-        "marked":"../bower_components/marked/marked.min"
+        "marked":"../bower_components/marked/marked.min",
+        "codemirror":"../bower_components/codemirror/lib/codemirror"
     },
     shim:{
         backbone: ["underscore","jquery"],

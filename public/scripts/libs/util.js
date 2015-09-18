@@ -1,3 +1,5 @@
+var slice = [].slice;
+
 define([], function() {
   var util;
   require.loadExport = function(arr, ctx) {
@@ -19,6 +21,15 @@ define([], function() {
     });
   };
   util = {
+    promiseFCall: function() {
+      var args, dfd, method;
+      method = arguments[0], args = 2 <= arguments.length ? slice.call(arguments, 1) : [];
+      dfd = $.Deferred();
+      method.apply(null, slice.call(args).concat([function() {
+        return dfd.resolve.apply(dfd, arguments);
+      }]));
+      return dfd;
+    },
     deparamQuery: function(string) {
       var pairs;
       if (string == null) {

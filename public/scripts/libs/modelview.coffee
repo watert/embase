@@ -46,7 +46,6 @@ Factory = ($, Backbone)-> # Initializer
 			Empty ModelView
 		"""
 		show:()->
-			# console.debug "modelview show", @$el.parents()
 			@trigger("show")
 			@onShow?()
 		render:(name="index")->
@@ -54,7 +53,6 @@ Factory = ($, Backbone)-> # Initializer
 			if @collection
 				data.collection = @collection.toJSON?() || @collection
 			data = _.extend(data, @templateHelpers)
-			console.log @template, @template?[name], data
 			tmpl = @template?[name] or @template
 			html = tmpl?() or @template.invoke?(tmpl, data) or tmpl
 			@$el.html(html)
@@ -68,7 +66,6 @@ Factory = ($, Backbone)-> # Initializer
 			if res = message.err
 				code = res.code
 				msg = res.message
-			# console.debug code,msg
 			@$el.html("""
 				<br />
 				<div class="text-center text-danger">
@@ -82,6 +79,5 @@ Factory = ($, Backbone)-> # Initializer
 				<p class="text-center"> #{msg} </p>
 			""")
 if window.require&&require.defined
-	# console.debug "try define"
 	define(["jquery","backbone"], Factory)
 else window.ModelView = Factory($, Backbone)

@@ -2,7 +2,7 @@ define ["libs/modelview","libs/util","tmpls/base"],(ModelView, util, baseTmpl)->
 	class BaseView extends ModelView
 		loadCSS:(url)->
 			$dom = $("<link>",{href:url, rel:"stylesheet"}).appendTo($("head"))
-			@on "destroy", -> $dom.remove()
+			@on "remove", -> $dom.remove()
 		initialize:(options={})->
 			@query = options.query
 			@options = options
@@ -27,14 +27,12 @@ define ["libs/modelview","libs/util","tmpls/base"],(ModelView, util, baseTmpl)->
 		# masterNavbar:baseTmpl.navbar.extend
 		# 	title:"Master"
 		index:"""
-			<div class="splitview">
 				<div class="view-master">
 					<div class="body"><%=invoke(master)%></div>
 				</div>
 				<div class="view-detail">
 					<div class="body"></div>
 				</div>
-			</div>
 		"""
 
 	class SplitView extends BaseView
