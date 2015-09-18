@@ -216,6 +216,9 @@ apis = {
         return res.retError(data);
       }
       return options[method].bind(ctx)(id, data).then(function(data) {
+        if (data._data) {
+          data = data._data;
+        }
         if (_.isArray(data)) {
           data = _.map(data, function(item) {
             return options.parseReturn.bind(ctx)(item);
@@ -223,6 +226,7 @@ apis = {
         } else {
           data = options.parseReturn.bind(ctx)(data);
         }
+        console.log("rest action", method, id, data, options.parseReturn);
         return res.ret(data);
       }).fail(function(err) {
         console.log("restful error", method, Doc.name, arguments);

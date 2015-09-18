@@ -111,11 +111,13 @@ apis =
                 return res.retError(data)
             options[method].bind(ctx)(id,data).then (data)->
                 # res.data = data
+                data = data._data if data._data
                 if _.isArray(data)
                     data = _.map data, (item)->
                         return options.parseReturn.bind(ctx)(item)
                 else
                     data = options.parseReturn.bind(ctx)(data)
+                console.log "rest action", method, id, data, options.parseReturn
                 res.ret(data)
             .fail (err)->
                 console.log "restful error",method, Doc.name, arguments

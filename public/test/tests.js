@@ -13,10 +13,10 @@ define(["./base.js"], function(testBase) {
 
     User.prototype.idAttribute = "_id";
 
-    User.prototype.urlRoot = "/users/api/restful";
+    User.prototype.urlRoot = "/admin/api/users";
 
     User.urlApi = function(method) {
-      return "/users/api/" + method;
+      return "/admin/api/users/" + method;
     };
 
     User.call = function(method, data) {
@@ -45,7 +45,7 @@ define(["./base.js"], function(testBase) {
       return Users.__super__.constructor.apply(this, arguments);
     }
 
-    Users.prototype.url = "/users/api/restful";
+    Users.prototype.url = "/admin/api/users";
 
     Users.prototype.model = User;
 

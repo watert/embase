@@ -163,8 +163,9 @@ define(["views/_base/view"], function(BaseView) {
 
     DocEditView.prototype.template = baseTmpl.extend({
       navbarBack: navbarBack,
-      error: " <div class=\"text-center\">\n    <br /> <strong> ERROR </strong>\n    <br /> <code> <%=message%> </code>\n</div>",
-      index: " <div class=\"editor container\">\n    <div class=\"edge when-mobile\">\n        <%=navbarBack({backTitle:\"List\"})%>\n    </div>\n    <h2>Edit Document</h2>\n    <div class=\"doc-info\">\n        <code> doc: <%=store%> / <%=id%> </code>\n        <div class=\"actions\">\n\n        </div>\n    </div>\n    <textarea name=\"\" id=\"\" cols=\"30\" rows=\"10\"></textarea>\n    <div class=\"actions\">\n        <button class=\"btn\">Save</button>\n        <button class=\"btn btn-delete btn-danger\">Delete</button>\n        <button class=\"btn confirm-delete btn-danger hide\">Confirm Delete</button>\n    </div>\n</div>"
+      edgeNavbarBack: "<div class=\"edge when-mobile\">\n    <%=navbarBack({backTitle:backTitle})%>\n</div>",
+      error: "<%=invoke(edgeNavbarBack, {backTitle:\"List\"})%>\n<div class=\"text-center\">\n    <br /> <strong> ERROR </strong>\n    <br /> <code> <%=message%> </code>\n</div>",
+      index: " <div class=\"editor container\">\n    <%=invoke(edgeNavbarBack, {backTitle:\"List\"})%>\n    <h2>Edit Document</h2>\n    <div class=\"doc-info\">\n        <code> doc: <%=store%> / <%=id%> </code>\n        <div class=\"actions\">\n\n        </div>\n    </div>\n    <textarea name=\"\" id=\"\" cols=\"30\" rows=\"10\"></textarea>\n    <div class=\"actions\">\n        <button class=\"btn\">Save</button>\n        <button class=\"btn btn-delete btn-danger\">Delete</button>\n        <button class=\"btn confirm-delete btn-danger hide\">Confirm Delete</button>\n    </div>\n</div>"
     });
 
     return DocEditView;

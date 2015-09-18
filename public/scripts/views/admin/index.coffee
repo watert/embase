@@ -62,15 +62,20 @@ define ["views/_base/view"], (BaseView)->
                     super("error", {code:-1, message:"Document <code>#{id}</code> not found"})
         template: baseTmpl.extend
             navbarBack: navbarBack
-            error:""" <div class="text-center">
+            edgeNavbarBack: """
+                <div class="edge when-mobile">
+                    <%=navbarBack({backTitle:backTitle})%>
+                </div>
+            """
+            error:"""
+                <%=invoke(edgeNavbarBack, {backTitle:"List"})%>
+                <div class="text-center">
                     <br /> <strong> ERROR </strong>
                     <br /> <code> <%=message%> </code>
                 </div>
             """
             index: """ <div class="editor container">
-                    <div class="edge when-mobile">
-                        <%=navbarBack({backTitle:"List"})%>
-                    </div>
+                    <%=invoke(edgeNavbarBack, {backTitle:"List"})%>
                     <h2>Edit Document</h2>
                     <div class="doc-info">
                         <code> doc: <%=store%> / <%=id%> </code>

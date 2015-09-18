@@ -8,8 +8,8 @@ define ["./base.js"], (testBase)->
 
     class User extends Backbone.Model
         idAttribute: "_id"
-        urlRoot: "/users/api/restful"
-        @urlApi: (method)->"/users/api/#{method}"
+        urlRoot: "/admin/api/users"
+        @urlApi: (method)->"/admin/api/users/#{method}"
         @call:(method, data={})->
             url = @urlApi(method)
             $.post(url, data).then (data)->
@@ -17,7 +17,7 @@ define ["./base.js"], (testBase)->
                 return data
         parse:(data)-> return data.result or data
     class Users extends Backbone.Collection
-        url: "/users/api/restful"
+        url: "/admin/api/users"
         model:User
         idAttribute: "_id"
         parse:(data)-> return data.result
