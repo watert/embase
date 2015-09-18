@@ -2,7 +2,7 @@ var extend = function(child, parent) { for (var key in parent) { if (hasProp.cal
   hasProp = {}.hasOwnProperty;
 
 define(["views/_base/view"], function(BaseView) {
-  var AdminView, BaseAPICollection, BaseAPIModel, DocEditView, Users, baseTmpl, parseData, rpcCall, splitViewTmpl, stores;
+  var AdminView, BaseAPICollection, BaseAPIModel, DocEditView, Users, baseTmpl, navbarBack, parseData, rpcCall, splitViewTmpl, stores;
   baseTmpl = BaseView.baseTmpl, splitViewTmpl = BaseView.splitViewTmpl;
   parseData = function(data) {
     return data.result || data;
@@ -67,6 +67,10 @@ define(["views/_base/view"], function(BaseView) {
     articles: "/admin/api/articles/",
     files: "/admin/api/files/"
   };
+  navbarBack = baseTmpl.navbar.extend({
+    backTitle: "Back",
+    left: baseTmpl.templer("<div class=\"btn-back\">\n    <i class=\"fa fa-angle-left\"></i>\n    <%=backTitle%></div>")
+  });
   DocEditView = (function(superClass) {
     extend(DocEditView, superClass);
 
@@ -75,6 +79,9 @@ define(["views/_base/view"], function(BaseView) {
     }
 
     DocEditView.prototype.events = {
+      "click .btn-back": function() {
+        return history.back();
+      },
       "click .confirm-delete": function() {
         return this.doc.destroy().then((function(_this) {
           return function() {
@@ -155,8 +162,9 @@ define(["views/_base/view"], function(BaseView) {
     };
 
     DocEditView.prototype.template = baseTmpl.extend({
-      error: "<div class=\"text-center\">\n    <br />\n    <strong> ERROR </strong>\n    <br />\n    <code> <%=message%> </code>\n</div>",
-      index: "<div class=\"editor container\">\n    <h2>Edit Document</h2>\n    <div class=\"doc-info\">\n        <code> doc: <%=store%> / <%=id%> </code>\n        <div class=\"actions\">\n\n        </div>\n    </div>\n    <textarea name=\"\" id=\"\" cols=\"30\" rows=\"10\"></textarea>\n    <div class=\"actions\">\n        <button class=\"btn\">Save</button>\n        <button class=\"btn btn-delete btn-danger\">Delete</button>\n        <button class=\"btn confirm-delete btn-danger hide\">Confirm Delete</button>\n    </div>\n</div>"
+      navbarBack: navbarBack,
+      error: " <div class=\"text-center\">\n    <br /> <strong> ERROR </strong>\n    <br /> <code> <%=message%> </code>\n</div>",
+      index: " <div class=\"editor container\">\n    <div class=\"edge when-mobile\">\n        <%=navbarBack({backTitle:\"List\"})%>\n    </div>\n    <h2>Edit Document</h2>\n    <div class=\"doc-info\">\n        <code> doc: <%=store%> / <%=id%> </code>\n        <div class=\"actions\">\n\n        </div>\n    </div>\n    <textarea name=\"\" id=\"\" cols=\"30\" rows=\"10\"></textarea>\n    <div class=\"actions\">\n        <button class=\"btn\">Save</button>\n        <button class=\"btn btn-delete btn-danger\">Delete</button>\n        <button class=\"btn confirm-delete btn-danger hide\">Confirm Delete</button>\n    </div>\n</div>"
     });
 
     return DocEditView;
@@ -170,6 +178,10 @@ define(["views/_base/view"], function(BaseView) {
     }
 
     AdminView.prototype.events = {
+      "click .btn-back": function() {
+        this.hideDetail();
+        return this.setQuery({}).render();
+      },
       "click .view-detail .btn-query": function(e) {
         var query;
         query = JSON.parse(this.$(".view-detail [name=query]").val() || "{}");
@@ -277,11 +289,11 @@ define(["views/_base/view"], function(BaseView) {
         right: ""
       }),
       cell: "<div class=\"tableview-cell\" data-id=\"<%=id%>\">\n    <span class=\"body\"><%=title%></span>\n    <i class=\"fa fa-angle-right\"></i>\n</div>",
+      navbarBack: navbarBack,
       master: "<div class=\"container\">\n    <h2>Admin</h2>\n    <div class=\"tableview\">\n        <%=invoke(cell, {id:\"users\", title:\"users\"})%>\n        <%=invoke(cell, {id:\"articles\", title:\"articles\"})%>\n        <%=invoke(cell, {id:\"files\", title:\"files\"})%>\n    </div>\n</div>",
       detailError: "<div class=\"text-center\">\n<br />\n<code> <%=code%> <%=message%> </code>\n</div>",
       detail: "<div class=\"container\">\n\n</div>",
-      jsonEditor: "<div class=\"editor container\">\n    <h2>Edit Document</h2>\n    <div class=\"doc-info\">\n        <code> doc: <%=store%> / <%=id%> </code>\n        <div class=\"actions\">\n\n        </div>\n    </div>\n    <textarea name=\"\" id=\"\" cols=\"30\" rows=\"10\"></textarea>\n    <div class=\"actions\">\n        <button class=\"btn\">Save</button>\n        <button class=\"btn btn-delete btn-danger\">Delete</button>\n    </div>\n</div>",
-      jsonList: "<div class=\"tableview\">\n    <div class=\"tableview-header\"> Query </div>\n    <div class=\"tableview-cell\">\n        <input type=\"text\" name=\"query\" value=\"<%-query.query%>\"\n            placeholder=\"NeDB Query JSON\"/>\n        <button class=\"btn btn-primary btn-query\"> Query </button>\n    </div>\n    <div class=\"tableview-header\"> Data set </div>\n    <%_.each(list, function(item){ %>\n        <div class=\"list-item tableview-cell\" data-id=\"<%=item._id%>\">\n            <div class=\"body\">\n                <code><%=item._id%></code>\n                <%=JSON.stringify(_.omit(item, \"_id\"))%>\n            </div>\n            <i class=\"fa fa-angle-right\"></i>\n        </div>\n    <% }); %>\n</div>"
+      jsonList: "<div class=\"edge when-mobile\">\n    <%=navbarBack({backTitle:\"Admin\"})%>\n</div>\n<div class=\"tableview\">\n    <div class=\"tableview-header\"> Query </div>\n    <div class=\"tableview-cell\">\n        <input type=\"text\" name=\"query\" value=\"<%-query.query%>\"\n            placeholder=\"NeDB Query JSON\"/>\n        <button class=\"btn btn-primary btn-query\"> Query </button>\n    </div>\n    <div class=\"tableview-header\"> Data set </div>\n    <%_.each(list, function(item){ %>\n        <div class=\"list-item tableview-cell\" data-id=\"<%=item._id%>\">\n            <div class=\"body\">\n                <code><%=item._id%></code>\n                <%=JSON.stringify(_.omit(item, \"_id\"))%>\n            </div>\n            <i class=\"fa fa-angle-right\"></i>\n        </div>\n    <% }); %>\n</div>"
     });
 
     return AdminView;

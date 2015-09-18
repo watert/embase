@@ -1,6 +1,6 @@
 define(["libs/templer"], function(templer) {
   var base;
-  return base = templer({
+  base = templer({
     templer: templer,
     invoke: function(method, data) {
       var tmpl;
@@ -24,12 +24,14 @@ define(["libs/templer"], function(templer) {
       items: ["Delete", "Mark"],
       itemTmpl: templer("<div class=\"toolbar-item\">\n    <div class=\"btn\"><%=name%></div>\n</div>"),
       index: "<div class=\"toolbar\">\n    <div class=\"toolbar-inner\">\n    <% _.each(items, function(item){ %>\n        <%=itemTmpl({name:item})%>\n    <% });%>\n    </div>\n</div>"
-    }),
-    navbar: templer({
+    })
+  });
+  return base = base.extend({
+    navbar: base.extend({
       left: "",
       right: "Right",
       title: "Navbar",
-      index: "<div class=\"navbar\">\n    <div class=\"navbar-inner\">\n        <div class=\"navbar-left\">\n            <%=left%>\n        </div>\n        <div class=\"navbar-title\">\n            <%=title%>\n        </div>\n        <div class=\"navbar-right\">\n            <%=right%>\n        </div>\n    </div>\n</div>"
+      index: "<div class=\"navbar\">\n    <div class=\"navbar-inner\">\n        <div class=\"navbar-left\">\n            <%=invoke(left)%>\n        </div>\n        <div class=\"navbar-title\">\n            <%=title%>\n        </div>\n        <div class=\"navbar-right\">\n            <%=right%>\n        </div>\n    </div>\n</div>"
     })
   });
 });

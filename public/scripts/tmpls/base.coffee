@@ -56,8 +56,8 @@ define ["libs/templer"],(templer)->
                     </div>
                 </div>
             """
-
-        navbar: templer
+    base = base.extend
+        navbar: base.extend
             left: ""
             right: "Right"
             title: "Navbar"
@@ -65,7 +65,7 @@ define ["libs/templer"],(templer)->
                 <div class="navbar">
                     <div class="navbar-inner">
                         <div class="navbar-left">
-                            <%=left%>
+                            <%=invoke(left)%>
                         </div>
                         <div class="navbar-title">
                             <%=title%>

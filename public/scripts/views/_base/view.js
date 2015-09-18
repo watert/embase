@@ -93,6 +93,10 @@ define(["libs/modelview", "libs/util", "tmpls/base"], function(ModelView, util, 
       return this.renderDetail();
     };
 
+    SplitView.prototype.hideDetail = function() {
+      return this.$el.removeClass("show-detail");
+    };
+
     SplitView.prototype.showDetail = function() {
       return this.$el.addClass("show-detail");
     };

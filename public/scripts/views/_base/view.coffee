@@ -46,8 +46,9 @@ define ["libs/modelview","libs/util","tmpls/base"],(ModelView, util, baseTmpl)->
 		render:()->
 			super(arguments...)
 			@renderDetail()
+		hideDetail:()->
+			@$el.removeClass("show-detail")
 		showDetail:()->
-			# @renderDetail(tmplName)
 			@$el.addClass("show-detail")
 		renderDetail:(tmplName="detail", data={})->
 			tmpl = @template.invoke(@template[tmplName], data)

@@ -66,7 +66,10 @@ input {outline: none; font-size:16px;}
 }
 .app, .app-body {height: 100%;}
 .container {padding:0 10px;
-    & > .tableview, & > .list {margin:0 -10px; }
+    & > .tableview,
+    & > .list,
+    & > .navbar,
+    & > .edge {margin:0 -10px; }
 }
 .pull-right {float: right;}
 .view-container {height: 100%; overflow: auto;}
@@ -76,6 +79,7 @@ input {outline: none; font-size:16px;}
     border-radius:4px; cursor:pointer;
     &:hover { background: darken(@brand-primary, 5%); }
     &.btn-danger {background: @brand-danger;}
+    &.btn-link {background: transparent; color:@brand-primary; line-height: 34px; }
 }
 .card {
     .clearfix(); padding: 4px;
@@ -89,6 +93,10 @@ input {outline: none; font-size:16px;}
     max-height:250px; overflow: hidden;
     &.expand { max-height:none; }
 }
+.when-mobile {display: none;}
+.whenMobile({
+    .when-mobile {display: block;}
+    });
 .whenDesktop({
     .cards { .flexbox(); .flex-wrap(wrap); .justify-content(center); }
     .card {max-width: 26em; min-width:16em; }
@@ -138,6 +146,7 @@ input {outline: none; font-size:16px;}
     .btn { color:@brand-primary; }
 }
 .navbar-static .navbar-inner {position: static;}
+
 .toolbar {height:44px;}
 .toolbar-inner {
     height:44px; width:100%; position: fixed; bottom:0; background: rgba(255,255,255,.8);

@@ -19,8 +19,20 @@ define ["views/_base/view"], (BaseView)->
         users: "/admin/api/users/"
         articles: "/admin/api/articles/"
         files: "/admin/api/files/"
+
+    navbarBack = baseTmpl.navbar.extend
+        backTitle: "Back"
+        left: baseTmpl.templer """
+            <div class="btn-back">
+                <i class="fa fa-angle-left"></i>
+                <%=backTitle%></div>
+        """
+
+
     class DocEditView extends BaseView
         events:
+            "click .btn-back":()->
+                history.back()
             "click .confirm-delete":()->
                 @doc.destroy().then =>
                     @render("msg", {msg: "Document <code>#{@doc.id}</code> deleted"})
@@ -49,16 +61,16 @@ define ["views/_base/view"], (BaseView)->
                 .fail =>
                     super("error", {code:-1, message:"Document <code>#{id}</code> not found"})
         template: baseTmpl.extend
-            error:"""
-                <div class="text-center">
-                    <br />
-                    <strong> ERROR </strong>
-                    <br />
-                    <code> <%=message%> </code>
+            navbarBack: navbarBack
+            error:""" <div class="text-center">
+                    <br /> <strong> ERROR </strong>
+                    <br /> <code> <%=message%> </code>
                 </div>
             """
-            index: """
-                <div class="editor container">
+            index: """ <div class="editor container">
+                    <div class="edge when-mobile">
+                        <%=navbarBack({backTitle:"List"})%>
+                    </div>
                     <h2>Edit Document</h2>
                     <div class="doc-info">
                         <code> doc: <%=store%> / <%=id%> </code>
@@ -76,6 +88,9 @@ define ["views/_base/view"], (BaseView)->
             """
     class AdminView extends BaseView.SplitView
         events:
+            "click .btn-back":()->
+                @hideDetail()
+                @setQuery({}).render()
             "click .view-detail .btn-query":(e)->
                 query = JSON.parse(@$(".view-detail [name=query]").val() or "{}")
                 query = _.extend({},@query, query:JSON.stringify(query))
@@ -98,22 +113,6 @@ define ["views/_base/view"], (BaseView)->
 
             @once "remove render", ->
                 detailView.remove()
-            # @loadCSS("bower_components/codemirror/lib/codemirror.css")
-            # if not storeURL = stores[store]
-            #     return @renderDetail("detailError", {code:-1, message:"Can't find store"})
-            #
-            # whenLoadDoc = do ()->
-            #     class ModelClass extends BaseAPIModel
-            #         urlRoot: storeURL
-            #     (doc = new ModelClass(_id: id)).fetch().then -> doc
-            # require ["codemirror"], (CM)=>
-            #     @renderDetail("jsonEditor", {store, id, @query})
-            #     $editor = @$(".view-detail textarea")
-            #     whenLoadDoc.then (doc)=>
-            #         editor = CM.fromTextArea($editor[0], { lineNumbers:yes })
-            #         json = JSON.stringify(doc.toJSON(),null,"\t")
-            #         editor.setValue(json)
-
         renderList:(store)->
             if not storeURL = stores[store]
                 return @renderDetail("detailError", {code:-1, message:"Can't find store"})
@@ -148,7 +147,7 @@ define ["views/_base/view"], (BaseView)->
                     <i class="fa fa-angle-right"></i>
                 </div>
             """
-
+            navbarBack: navbarBack
             master:"""
                 <div class="container">
                     <h2>Admin</h2>
@@ -170,23 +169,10 @@ define ["views/_base/view"], (BaseView)->
 
                 </div>
             """
-            jsonEditor: """
-                <div class="editor container">
-                    <h2>Edit Document</h2>
-                    <div class="doc-info">
-                        <code> doc: <%=store%> / <%=id%> </code>
-                        <div class="actions">
-
-                        </div>
-                    </div>
-                    <textarea name="" id="" cols="30" rows="10"></textarea>
-                    <div class="actions">
-                        <button class="btn">Save</button>
-                        <button class="btn btn-delete btn-danger">Delete</button>
-                    </div>
-                </div>
-            """
             jsonList: """
+                <div class="edge when-mobile">
+                    <%=navbarBack({backTitle:"Admin"})%>
+                </div>
                 <div class="tableview">
                     <div class="tableview-header"> Query </div>
                     <div class="tableview-cell">

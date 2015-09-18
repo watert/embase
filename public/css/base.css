@@ -69,7 +69,9 @@ input {
   padding: 0 10px;
 }
 .container > .tableview,
-.container > .list {
+.container > .list,
+.container > .navbar,
+.container > .edge {
   margin: 0 -10px;
 }
 .pull-right {
@@ -95,6 +97,11 @@ input {
 }
 .btn.btn-danger {
   background: #d9534f;
+}
+.btn.btn-link {
+  background: transparent;
+  color: #4caf50;
+  line-height: 34px;
 }
 .card {
   padding: 4px;
@@ -141,6 +148,14 @@ input {
 }
 .card.expand {
   max-height: none;
+}
+.when-mobile {
+  display: none;
+}
+@media only screen and (max-width:414px) {
+  .when-mobile {
+    display: block;
+  }
 }
 @media only screen and (min-width:769px) {
   .cards {
