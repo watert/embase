@@ -1,3 +1,9 @@
+###
+apis = require("middleware/api")
+router.use "/api/restful/", restful(model:User)
+router.use "/api/", jsonrpc(model:User)
+###
+
 _ = require("underscore")
 express = require("express")
 Dispatcher = require("../../public/scripts/libs/action-dispatcher")

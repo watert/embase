@@ -8,8 +8,6 @@ var compress = require('compression')
 var session = require('express-session');
 
 
-var routes = require('./routes/index');
-var users = require('./routes/users');
 
 
 var app = express();
@@ -31,8 +29,9 @@ app.use(session({secret:"embase"}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../public')));
 
-app.use('/', routes);
-app.use('/users', users);
+/* Routers */
+app.use('/', require('./routes/index'));
+app.use('/admin', require('./routes/admin'));
 app.get('/*', function(req, res, next){
     res.render('index', { title: 'Express' });
 });

@@ -16,11 +16,11 @@ router = express.Router();
 
 ref = require("../middlewares/api"), restful = ref.restful, jsonrpc = ref.jsonrpc;
 
-router.use("/api/restful/", restful({
+router.use("/api/users/", restful({
   model: User
 }));
 
-router.use("/api/", jsonrpc({
+router.use("/api/users/", jsonrpc({
   model: User
 }));
 

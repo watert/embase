@@ -69,7 +69,7 @@ class User extends BaseDoc
     @UserFile: UserFile
     md5 = (_str)->
         crypto.createHash('md5').update(_str).digest('hex')
-    @hash: (str)-> md5(str)
+    @hash: (str)-> md5(md5(str))
     @store: "user"
     @register:(data)->
         if not _hasKeys(data, ["email", "name", "password"])

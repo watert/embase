@@ -63,7 +63,7 @@ Factory = function($, Backbone) {
       return typeof this.onShow === "function" ? this.onShow() : void 0;
     };
 
-    ModelView.prototype.render = function(name) {
+    ModelView.prototype.render = function(name, argData) {
       var base, base1, data, html, ref, ref1, ref2, tmpl, tmplRenderer;
       if (name == null) {
         name = "index";
@@ -72,7 +72,7 @@ Factory = function($, Backbone) {
       if (this.collection) {
         data.collection = (typeof (base = this.collection).toJSON === "function" ? base.toJSON() : void 0) || this.collection;
       }
-      data = _.extend(data, this.templateHelpers);
+      data = _.extend(data, this.templateHelpers, argData);
       tmpl = ((ref1 = this.template) != null ? ref1[name] : void 0) || this.template;
       html = (typeof tmpl === "function" ? tmpl() : void 0) || (typeof (base1 = this.template).invoke === "function" ? base1.invoke(tmpl, data) : void 0) || tmpl;
       this.$el.html(html);

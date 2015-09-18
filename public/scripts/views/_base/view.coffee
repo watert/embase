@@ -11,7 +11,9 @@ define ["libs/modelview","libs/util","tmpls/base"],(ModelView, util, baseTmpl)->
 			_.defaults(options, trigger:no)
 			path = @options.path
 			link = path+"?"+$.param(query)
+			@query = query
 			app.router.navigate(link, options)
+			return @
 		navigateWithQuery:(link, query)->
 			if -1 is link.indexOf("?") then link += "?"
 			else link += "&"
@@ -19,6 +21,8 @@ define ["libs/modelview","libs/util","tmpls/base"],(ModelView, util, baseTmpl)->
 			app.router.navigate(link, {trigger:yes})
 		navigate: (link)->
 			app.router.navigate(link, {trigger:yes})
+		template: baseTmpl.extend
+			index: "Base View"
 	splitViewTmpl = baseTmpl.extend
 		detail:"Empty"
 		master:""

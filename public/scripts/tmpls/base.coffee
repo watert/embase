@@ -36,29 +36,10 @@ define ["libs/templer"],(templer)->
                     })%>
                 </div>
             """
-        # list:
-        #     index: templer """
-        #         <ul class="list">
-        #             <%_.each(data, function(item){%>
-        #                 <%=listItem({data:item})%>
-        #             <%})%>
-        #         </ul>
-        #     """
-        #     body:""
-        #     listItemBody: templer """
-        #     <div class="item-body">
-        #     <%=name%> <small> (<%=email%>) </small>
-        #     </div>
-        #     """
-        #     listItem: templer """
-        #     <li class="list-item" data-id="<%=data._id%>">
-        #         <div class="list-check">
-        #             <input type="checkbox" name="check[<%=data._id%>]" id="" />
-        #         </div>
-        #         <%=listItemBody(data)%>
-        #         <div class="arrow"> <i class="fa fa-angle-right"></i> </div>
-        #     </li>
-        #     """
+        msg: """
+            <br />
+            <div class="text-center"><%=msg%></div>
+        """
         toolbar: templer
             items: ["Delete","Mark"]
             itemTmpl: templer """

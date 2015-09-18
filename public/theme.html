@@ -17,18 +17,29 @@
 
       #examples .example .section-title { margin:20px 0 5px; font-size:17px; font-weight:bold; color:#999; }
       #examples .example .body { display:flex; border: 1px solid #DDD; border-width: 1px 0; padding:0 10px;}
-      #examples .demo { flex-grow: 2; border: 1px solid #DDD;border-width: 0 1px; }
+      #examples .demo { flex-grow: 2; border: 1px solid #DDD; border-radius:4px; padding:4px; }
       #examples .code { width: 320px; padding:0 30px; background: #FFF; }
       @media (max-width:500px) {
 
+          /*#examples .body { width:auto; border:none;}*/
           #examples .code { width:auto; border:none;}
-          #examples .example .body { display:block; border:none;}
+          #examples .example .body { display:block; border:none; padding:0;}
       }
 
   </style>
   <script>
 "use strict";
 let codes = [
+{
+    title:"Typo",
+    code:` <p class="text-center"> Text Center </p>
+    <div>
+        <span class="text-primary">primary</span>
+        <span class="text-danger">danger</span>
+        <span class="text-muted"> muted </span>
+        <span class="text-lighter"> lighter </span>
+    </div>`
+},
 {
     title:"Navbar",
     code:`<div class="navbar navbar-static">

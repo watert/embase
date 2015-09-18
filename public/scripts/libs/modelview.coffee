@@ -48,11 +48,11 @@ Factory = ($, Backbone)-> # Initializer
 		show:()->
 			@trigger("show")
 			@onShow?()
-		render:(name="index")->
+		render:(name="index", argData)->
 			data = @model?.toJSON?() || @model || {}
 			if @collection
 				data.collection = @collection.toJSON?() || @collection
-			data = _.extend(data, @templateHelpers)
+			data = _.extend(data, @templateHelpers, argData)
 			tmpl = @template?[name] or @template
 			html = tmpl?() or @template.invoke?(tmpl, data) or tmpl
 			@$el.html(html)

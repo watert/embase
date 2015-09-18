@@ -1,8 +1,9 @@
 // out: base.css, sourcemap:true
 @import "flexbox.less";
 
-@brand-primary:         #10d066; //WeChat Color
+@green:                 #4caf50; //Material green 500
 
+@brand-primary:         @green;
 @link-color:            #4078c0;
 @brand-success:         #5cb85c;
 @brand-info:            #5bc0de;
@@ -50,10 +51,15 @@ small {font-size:12px; opacity:.75; font-weight:lighter;}
 p {margin:.4em 0;}
 input {outline: none; font-size:16px;}
 .text-center {text-align: center;}
+.text-left {text-align: left;}
+.text-right {text-align: right;}
 .text-danger {color:@brand-danger;}
 .text-primary {color:@brand-primary;}
+.text-muted {opacity:.5;}
+.text-lighter { font-weight:lighter; }
+.text-small { font-size:13px; }
 .clearfix { .clearfix(); }
-
+.hide {display: none;}
 .app {
     a {color:@link-color;
         &:hover {color:#07f; }}
@@ -139,7 +145,7 @@ input {outline: none; font-size:16px;}
     .flexbox(); .justify-content(space-between);.align-items(center);
     border-top: 1px solid darken(@bg-light, 6.6%);
 
-    .btn { color:@brand-primary; }
+    .btn { color:@brand-primary; background: transparent;}
 }
 
 // Views
@@ -243,10 +249,14 @@ input {outline: none; font-size:16px;}
     .view-master {
         .tableview-cell.active {background: #666; color:#FFF;}
     }
+
+    // Detail
+    .tableview-cell .body { white-space: nowrap; text-overflow: ellipsis; flex-shrink: 4; overflow: hidden;}
     .CodeMirror pre { font-size:14px; }
     .doc-info { height: 34px; line-height: 34px; border: 1px solid #DDD; border-width: 1px 0;
         .flexbox(); .align-items(center); .justify-content(space-between);
         .btn {height:28px;font-size:14px;}
     }
     .actions {padding-top:5px; border-top: 1px solid #DDD; text-align: right;}
+    [name=query] {font-family: "monaco","consolas"; font-size:14px;}
 }

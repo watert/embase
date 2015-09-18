@@ -40,7 +40,9 @@ define(["libs/modelview", "libs/util", "tmpls/base"], function(ModelView, util, 
       });
       path = this.options.path;
       link = path + "?" + $.param(query);
-      return app.router.navigate(link, options);
+      this.query = query;
+      app.router.navigate(link, options);
+      return this;
     };
 
     BaseView.prototype.navigateWithQuery = function(link, query) {
@@ -60,6 +62,10 @@ define(["libs/modelview", "libs/util", "tmpls/base"], function(ModelView, util, 
         trigger: true
       });
     };
+
+    BaseView.prototype.template = baseTmpl.extend({
+      index: "Base View"
+    });
 
     return BaseView;
 

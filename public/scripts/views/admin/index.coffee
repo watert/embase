@@ -16,36 +16,103 @@ define ["views/_base/view"], (BaseView)->
     class Users extends BaseAPICollection
         url: "/users/api/restful/"
     stores =
-        users: "/users/api/restful/"
+        users: "/admin/api/users/"
         articles: "/admin/api/articles/"
         files: "/admin/api/files/"
-    class AdminView extends BaseView.SplitView
+    class DocEditView extends BaseView
         events:
-            "click .view-detail [data-id]":(e)->
-                id = $(e.target).closest("[data-id]").data("id")
-                query = _.extend({},@query, docId:id)
-                @setQuery(query, trigger:yes)
-
-            "click .view-master [data-id]":(e)->
-                id = $(e.target).closest("[data-id]").data("id")
-                @setQuery({store:id}, trigger:yes)
-        renderDocDetail:(store, id)->
+            "click .confirm-delete":()->
+                @doc.destroy().then =>
+                    @render("msg", {msg: "Document <code>#{@doc.id}</code> deleted"})
+                    @trigger("deleted", @doc.id)
+            "click .btn-delete":()->
+                @$(".btn-delete").hide()
+                @$(".confirm-delete").show()
+        render: (name="index")->
+            if name isnt "index" then return super(arguments...)
+            {store, id} = @options
             @loadCSS("bower_components/codemirror/lib/codemirror.css")
             if not storeURL = stores[store]
-                return @renderDetail("detailError", {code:-1, message:"Can't find store"})
-
+                return super("error", {code:-1, message:"Can't find store"})
             whenLoadDoc = do ()->
                 class ModelClass extends BaseAPIModel
                     urlRoot: storeURL
                 (doc = new ModelClass(_id: id)).fetch().then -> doc
             require ["codemirror"], (CM)=>
-                # console.log "load codemirror",CM
-                @renderDetail("jsonEditor", {store, id})
-                $editor = @$(".view-detail textarea")
+                super("index", {store, id, @query})
+                $editor = @$("textarea")
                 whenLoadDoc.then (doc)=>
+                    @doc = doc
                     editor = CM.fromTextArea($editor[0], { lineNumbers:yes })
                     json = JSON.stringify(doc.toJSON(),null,"\t")
                     editor.setValue(json)
+                .fail =>
+                    super("error", {code:-1, message:"Document <code>#{id}</code> not found"})
+        template: baseTmpl.extend
+            error:"""
+                <div class="text-center">
+                    <br />
+                    <strong> ERROR </strong>
+                    <br />
+                    <code> <%=message%> </code>
+                </div>
+            """
+            index: """
+                <div class="editor container">
+                    <h2>Edit Document</h2>
+                    <div class="doc-info">
+                        <code> doc: <%=store%> / <%=id%> </code>
+                        <div class="actions">
+
+                        </div>
+                    </div>
+                    <textarea name="" id="" cols="30" rows="10"></textarea>
+                    <div class="actions">
+                        <button class="btn">Save</button>
+                        <button class="btn btn-delete btn-danger">Delete</button>
+                        <button class="btn confirm-delete btn-danger hide">Confirm Delete</button>
+                    </div>
+                </div>
+            """
+    class AdminView extends BaseView.SplitView
+        events:
+            "click .view-detail .btn-query":(e)->
+                query = JSON.parse(@$(".view-detail [name=query]").val() or "{}")
+                query = _.extend({},@query, query:JSON.stringify(query))
+                @setQuery(query).render()
+
+            "click .view-detail [data-id]":(e)->
+                id = $(e.target).closest("[data-id]").data("id")
+                query = _.extend({},@query, docId:id)
+                @setQuery(query)
+                @render()
+
+            "click .view-master [data-id]":(e)->
+                id = $(e.target).closest("[data-id]").data("id")
+                @setQuery({store:id})
+                @render()
+        renderDocDetail:(store, id)->
+            detailView = new DocEditView({@query, store, id})
+            @$(".view-detail").empty().append(detailView.el)
+            detailView.render()
+
+            @once "remove render", ->
+                detailView.remove()
+            # @loadCSS("bower_components/codemirror/lib/codemirror.css")
+            # if not storeURL = stores[store]
+            #     return @renderDetail("detailError", {code:-1, message:"Can't find store"})
+            #
+            # whenLoadDoc = do ()->
+            #     class ModelClass extends BaseAPIModel
+            #         urlRoot: storeURL
+            #     (doc = new ModelClass(_id: id)).fetch().then -> doc
+            # require ["codemirror"], (CM)=>
+            #     @renderDetail("jsonEditor", {store, id, @query})
+            #     $editor = @$(".view-detail textarea")
+            #     whenLoadDoc.then (doc)=>
+            #         editor = CM.fromTextArea($editor[0], { lineNumbers:yes })
+            #         json = JSON.stringify(doc.toJSON(),null,"\t")
+            #         editor.setValue(json)
 
         renderList:(store)->
             if not storeURL = stores[store]
@@ -53,15 +120,17 @@ define ["views/_base/view"], (BaseView)->
             class ListClass extends BaseAPICollection
                 url: storeURL
             list = new ListClass()
-            list.fetch().then =>
-                @renderDetail("jsonList", list:list.toJSON())
+            where = @query.query or "{}"
+            where = JSON.parse(where)
+            list.fetch(data:where).then =>
+                @renderDetail("jsonList", {list:list.toJSON(), @query})
             .fail (err)=>
                 @renderDetail("detailError", {code:-1, message:"List Fetch Error"})
         render:()->
             super(arguments...)
             {store, docId} = @query ?= {}
+            @model = query:@query
             if store then @$(".view-master [data-id=#{store}]").addClass("active")
-
             if store and docId
                 @renderDocDetail(store, docId)
             else if store
@@ -96,7 +165,7 @@ define ["views/_base/view"], (BaseView)->
             """
             detail:"""
                 <div class="container">
-                    Detail
+
                 </div>
             """
             jsonEditor: """
@@ -111,7 +180,7 @@ define ["views/_base/view"], (BaseView)->
                     <textarea name="" id="" cols="30" rows="10"></textarea>
                     <div class="actions">
                         <button class="btn">Save</button>
-                        <button class="btn btn-danger">Delete</button>
+                        <button class="btn btn-delete btn-danger">Delete</button>
                     </div>
                 </div>
             """
@@ -119,13 +188,17 @@ define ["views/_base/view"], (BaseView)->
                 <div class="tableview">
                     <div class="tableview-header"> Query </div>
                     <div class="tableview-cell">
-                        <input type="text" placeholder="NeDB Query JSON"/>
-                        <button class="btn btn-primary"> Query </button>
+                        <input type="text" name="query" value="<%-query.query%>"
+                            placeholder="NeDB Query JSON"/>
+                        <button class="btn btn-primary btn-query"> Query </button>
                     </div>
                     <div class="tableview-header"> Data set </div>
                     <%_.each(list, function(item){ %>
                         <div class="list-item tableview-cell" data-id="<%=item._id%>">
-                            <div class="body"> <code><%=item._id%></code> <%=item.name||item.title%> </div>
+                            <div class="body">
+                                <code><%=item._id%></code>
+                                <%=JSON.stringify(_.omit(item, "_id"))%>
+                            </div>
                             <i class="fa fa-angle-right"></i>
                         </div>
                     <% }); %>

@@ -56,7 +56,6 @@ define(["jquery", "backbone", "libs/action-dispatcher", "libs/templer", "libs/ut
       if ((ref = this.view) != null) {
         ref.trigger("remove").remove();
       }
-      console.log("App loadViewPath", path);
       dfd = $.Deferred();
       if (path.slice(-1) === "/") {
         path = path.slice(0, -1);

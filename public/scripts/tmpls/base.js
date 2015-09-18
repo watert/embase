@@ -19,6 +19,7 @@ define(["libs/templer"], function(templer) {
       header: "",
       index: "<div class=\"tableview\">\n    <%if(header){ %>\n        <div class=\"tableview-header\">\n        <%=invoke(header)%></div>\n    <% }%>\n    <%_.each(cells, function(cell){\n        print(invoke(cellItem,{html:cell}));\n    })%>\n</div>"
     }),
+    msg: "<br />\n<div class=\"text-center\"><%=msg%></div>",
     toolbar: templer({
       items: ["Delete", "Mark"],
       itemTmpl: templer("<div class=\"toolbar-item\">\n    <div class=\"btn\"><%=name%></div>\n</div>"),

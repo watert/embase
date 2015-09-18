@@ -1,3 +1,9 @@
+
+/*
+apis = require("middleware/api")
+router.use "/api/restful/", restful(model:User)
+router.use "/api/", jsonrpc(model:User)
+ */
 var Dispatcher, _, apis, express, getRequesetData, q, retJSON;
 
 _ = require("underscore");

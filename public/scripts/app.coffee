@@ -1,4 +1,3 @@
-# console.debug "app.coffeech"
 # $ = require("../node_modules/zepto/zepto.min.js")
 # _ = require("underscore")
 # Backbone = require("backbone")
@@ -13,7 +12,6 @@ define [
                 @trigger("route-path",path)
 
             # "*path":(path="users")->
-            #     console.log path
             #     @trigger("route-path",path)
     class App extends Backbone.View
         util:util
@@ -26,8 +24,6 @@ define [
             @render()
             Backbone.history.start(pushState:true,root:"/")
         render: ->
-            # console.log "app render"
-            # console.log @$el
             @$el.html(@tmpl())
         tmpl: templer """
             <div class="app">
@@ -39,13 +35,10 @@ define [
         """
         loadViewPath:(path)->
             @view?.trigger("remove").remove()
-            console.log "App loadViewPath",path
             dfd = $.Deferred()
             path = path.slice(0,-1) if path.slice(-1) == "/"
-            # console.log "views/#{path}"
 
             require ["views/#{path}"],(View)=>
-                # console.log "View",View
                 $body = @$(".view-container").empty()
                     .removeClass().addClass("view-container view-#{path.replace("/","-")}")
                 query = util.deparamQuery()

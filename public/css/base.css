@@ -23,11 +23,26 @@ input {
 .text-center {
   text-align: center;
 }
+.text-left {
+  text-align: left;
+}
+.text-right {
+  text-align: right;
+}
 .text-danger {
   color: #d9534f;
 }
 .text-primary {
-  color: #10d066;
+  color: #4caf50;
+}
+.text-muted {
+  opacity: .5;
+}
+.text-lighter {
+  font-weight: lighter;
+}
+.text-small {
+  font-size: 13px;
 }
 .clearfix.after {
   content: " ";
@@ -36,6 +51,9 @@ input {
   display: block;
   height: 0;
   clear: both;
+}
+.hide {
+  display: none;
 }
 .app a {
   color: #4078c0;
@@ -66,14 +84,14 @@ input {
   padding: 2px 10px;
   box-sizing: border-box;
   border: 0;
-  background-color: #10d066;
+  background-color: #4caf50;
   color: #FFF;
   font-size: 17px;
   border-radius: 4px;
   cursor: pointer;
 }
 .btn:hover {
-  background: #0eb85a;
+  background: #449d48;
 }
 .btn.btn-danger {
   background: #d9534f;
@@ -343,7 +361,7 @@ input {
   font-size: 18px;
 }
 .navbar-inner .btn {
-  color: #10d066;
+  color: #4caf50;
 }
 .navbar-static .navbar-inner {
   position: static;
@@ -392,7 +410,8 @@ input {
   border-top: 1px solid #e2e5e8;
 }
 .toolbar-inner .btn {
-  color: #10d066;
+  color: #4caf50;
+  background: transparent;
 }
 .view-codes-index pre {
   font-size: 12px;
@@ -561,7 +580,7 @@ input {
   width: 8em;
   font-size: 17px;
   border: none;
-  background: #10d066;
+  background: #4caf50;
   color: #FFF;
   border-radius: 4px;
 }
@@ -701,6 +720,12 @@ input {
   background: #666;
   color: #FFF;
 }
+.view-admin-index .tableview-cell .body {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  flex-shrink: 4;
+  overflow: hidden;
+}
 .view-admin-index .CodeMirror pre {
   font-size: 14px;
 }
@@ -748,4 +773,8 @@ input {
   padding-top: 5px;
   border-top: 1px solid #DDD;
   text-align: right;
+}
+.view-admin-index [name=query] {
+  font-family: "monaco", "consolas";
+  font-size: 14px;
 }
