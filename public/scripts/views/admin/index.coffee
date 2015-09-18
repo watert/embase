@@ -130,7 +130,9 @@ define ["views/_base/view"], (BaseView)->
             super(arguments...)
             {store, docId} = @query ?= {}
             @model = query:@query
-            if store then @$(".view-master [data-id=#{store}]").addClass("active")
+            if store
+                @$(".view-master [data-id=#{store}]").addClass("active")
+                @showDetail()
             if store and docId
                 @renderDocDetail(store, docId)
             else if store

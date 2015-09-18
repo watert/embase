@@ -236,10 +236,15 @@ input {outline: none; font-size:16px;}
     }
     .view-master { background: darken(@bg-light,5%); }
     .view-detail { display: none; }
-    &.show-detail .view-detail { display: block; }
+    &.show-detail {
+        .whenMobile({
+            .view-master {.flex-basis(0); }
+        });
+        .view-detail { display: block; }
+    }
     .whenDesktop({
         .view-detail { display: block; .flex-grow(1); width:auto; }
-        .view-master {width:320px; border-right: 1px solid #DDD; }
+        .view-master {width:320px; border-right: 1px solid #DDD; .flex-basis(1); }
     });
 }
 .view-admin-index {

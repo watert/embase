@@ -687,6 +687,13 @@ input {
 .splitview .view-detail {
   display: none;
 }
+@media only screen and (max-width:414px) {
+  .splitview.show-detail .view-master {
+    -webkit-flex-basis: 0;
+    -ms-flex: 0 1 0;
+    flex-basis: 0;
+  }
+}
 .splitview.show-detail .view-detail {
   display: block;
 }
@@ -703,6 +710,9 @@ input {
   .splitview .view-master {
     width: 320px;
     border-right: 1px solid #DDD;
+    -webkit-flex-basis: 1;
+    -ms-flex: 0 1 1;
+    flex-basis: 1;
   }
 }
 .view-admin-index h2 {

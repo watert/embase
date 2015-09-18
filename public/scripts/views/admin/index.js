@@ -262,6 +262,7 @@ define(["views/_base/view"], function(BaseView) {
       };
       if (store) {
         this.$(".view-master [data-id=" + store + "]").addClass("active");
+        this.showDetail();
       }
       if (store && docId) {
         return this.renderDocDetail(store, docId);

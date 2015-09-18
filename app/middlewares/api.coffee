@@ -75,7 +75,7 @@ apis =
         Doc = options.model
         _.defaults options,
             # "model":Doc
-            "next":(req,res,next)-> next()
+            # "next":(req,res,next)-> next()
             "parseData":(data)-> data
             "parseReturn": (data)-> data
             "GET":(id, data)-> # get list or item with id
@@ -111,7 +111,11 @@ apis =
                 return res.retError(data)
             options[method].bind(ctx)(id,data).then (data)->
                 # res.data = data
-                data = options.parseReturn.bind(ctx)(data)
+                if _.isArray(data)
+                    data = _.map data, (item)->
+                        return options.parseReturn.bind(ctx)(item)
+                else
+                    data = options.parseReturn.bind(ctx)(data)
                 res.ret(data)
             .fail (err)->
                 console.log "restful error",method, Doc.name, arguments

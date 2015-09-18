@@ -139,9 +139,6 @@ apis = {
     router = express.Router();
     Doc = options.model;
     _.defaults(options, {
-      "next": function(req, res, next) {
-        return next();
-      },
       "parseData": function(data) {
         return data;
       },
@@ -219,7 +216,13 @@ apis = {
         return res.retError(data);
       }
       return options[method].bind(ctx)(id, data).then(function(data) {
-        data = options.parseReturn.bind(ctx)(data);
+        if (_.isArray(data)) {
+          data = _.map(data, function(item) {
+            return options.parseReturn.bind(ctx)(item);
+          });
+        } else {
+          data = options.parseReturn.bind(ctx)(data);
+        }
         return res.ret(data);
       }).fail(function(err) {
         console.log("restful error", method, Doc.name, arguments);

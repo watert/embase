@@ -93,9 +93,8 @@ define(["libs/modelview", "libs/util", "tmpls/base"], function(ModelView, util, 
       return this.renderDetail();
     };
 
-    SplitView.prototype.showDetail = function(tmplName) {
-      this.renderDetail(tmplName);
-      return this.$(".splitview:eq(0)").addClass("show-detail");
+    SplitView.prototype.showDetail = function() {
+      return this.$el.addClass("show-detail");
     };
 
     SplitView.prototype.renderDetail = function(tmplName, data) {
