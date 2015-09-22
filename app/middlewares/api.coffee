@@ -71,17 +71,12 @@ apis =
         return router
     restful: (options={})->
         router = express.Router()
-
         Doc = options.model
         _.defaults options,
-            # "model":Doc
-            # "next":(req,res,next)-> next()
             "parseData":(data)-> data
             "parseReturn": (data)-> data
             "GET":(id, data)-> # get list or item with id
-                if not id then return Doc.find(data).then (_data)->
-                    _data.result = _.toArray(_data)
-                    return _data
+                if not id then return Doc.find(data)
                 else return Doc.findOne(_id:id)
             "POST":(id, data)-> #create (id will be null)
                 (new Doc(data)).save()
@@ -92,40 +87,37 @@ apis =
                 Doc.findOne(_id:id).then (doc)->
                     doc.remove().then (num)-> {_id:id, deleted:yes}
         router.use(apis.retJSON())
-        router.get "/count", (req,res)->
+
+        parseRequest = (req)->
             data = apis.getRequesetData(req)
-            ctx = {req,res,data}
-            data = options.parseData.bind(ctx)(data)
-            Doc.find(data).then (data)->
+            params = options.parseData.bind({req})(data)
+            return {params, id:req.params.id, method:req.method}
+        parseReturn = (data)->
+            _parse = options.parseReturn.bind(ctx)
+            if _.isArray(data)
+                data = _.toArray(_.map(data, _parse))
+            else data = _parse(data)
+
+        router.get "/count", (req,res)->
+            {params} = parseRequest(req)
+            Doc.find(params).then (data)->
                 {result:{count:data.length}, id:-1}
             .then(res.ret)
             .fail(res.retError)
 
         router.all "/:id?", (req,res,next)->
-            method = req.method
-            id = req.params.id
-            data = apis.getRequesetData(req)
-            ctx = {req,res,method,id,data}
-            data = options.parseData.bind(ctx)(data)
-            if data.error
-                return res.retError(data)
-            options[method].bind(ctx)(id,data).then (data)->
-                # res.data = data
+            {method, id, params} = parseRequest(req)
+            ctx = {req,res,method,id,params}
+            if params.error
+                return res.retError(params)
+
+            options[method].bind(ctx)(id,params).then (data)->
                 data = data._data if data._data
-                if _.isArray(data)
-                    data = _.map data, (item)->
-                        return options.parseReturn.bind(ctx)(item)
-                else
-                    data = options.parseReturn.bind(ctx)(data)
-                console.log "rest action", method, id, data, options.parseReturn
-                res.ret(data)
+                res.ret(parseReturn(data))
             .fail (err)->
-                console.log "restful error",method, Doc.name, arguments
                 console.trace(err)
-                data = err
                 data = {error:{code:500,message:err.toString()}} if not err.error
                 res.retError(data)
-                # options.next.bind(ctx)(req,res,next)
         return router
 
 # [_jsonrpc, restful] = [require("./jsonrpc"), require("./restful")]

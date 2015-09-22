@@ -169,7 +169,6 @@ define ["views/_base/view","marked"], (BaseView, marked)->
                     <i class="fa fa-angle-right"></i>
                 </div>
             """
-            # markdown: (text)-> marked.parse(text)
             dbstatus: """
                 <div class="container">
                 <h2>Status:</h2>

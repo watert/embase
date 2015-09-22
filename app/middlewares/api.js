@@ -132,7 +132,7 @@ apis = {
     return router;
   },
   restful: function(options) {
-    var Doc, router;
+    var Doc, parseRequest, parseReturn, router;
     if (options == null) {
       options = {};
     }
@@ -147,10 +147,7 @@ apis = {
       },
       "GET": function(id, data) {
         if (!id) {
-          return Doc.find(data).then(function(_data) {
-            _data.result = _.toArray(_data);
-            return _data;
-          });
+          return Doc.find(data);
         } else {
           return Doc.findOne({
             _id: id
@@ -181,16 +178,31 @@ apis = {
       }
     });
     router.use(apis.retJSON());
-    router.get("/count", function(req, res) {
-      var ctx, data;
+    parseRequest = function(req) {
+      var data, params;
       data = apis.getRequesetData(req);
-      ctx = {
-        req: req,
-        res: res,
-        data: data
+      params = options.parseData.bind({
+        req: req
+      })(data);
+      return {
+        params: params,
+        id: req.params.id,
+        method: req.method
       };
-      data = options.parseData.bind(ctx)(data);
-      return Doc.find(data).then(function(data) {
+    };
+    parseReturn = function(data) {
+      var _parse;
+      _parse = options.parseReturn.bind(ctx);
+      if (_.isArray(data)) {
+        return data = _.toArray(_.map(data, _parse));
+      } else {
+        return data = _parse(data);
+      }
+    };
+    router.get("/count", function(req, res) {
+      var params;
+      params = parseRequest(req).params;
+      return Doc.find(params).then(function(data) {
         return {
           result: {
             count: data.length
@@ -200,38 +212,26 @@ apis = {
       }).then(res.ret).fail(res.retError);
     });
     router.all("/:id?", function(req, res, next) {
-      var ctx, data, id, method;
-      method = req.method;
-      id = req.params.id;
-      data = apis.getRequesetData(req);
+      var ctx, id, method, params, ref;
+      ref = parseRequest(req), method = ref.method, id = ref.id, params = ref.params;
       ctx = {
         req: req,
         res: res,
         method: method,
         id: id,
-        data: data
+        params: params
       };
-      data = options.parseData.bind(ctx)(data);
-      if (data.error) {
-        return res.retError(data);
+      if (params.error) {
+        return res.retError(params);
       }
-      return options[method].bind(ctx)(id, data).then(function(data) {
+      return options[method].bind(ctx)(id, params).then(function(data) {
         if (data._data) {
           data = data._data;
         }
-        if (_.isArray(data)) {
-          data = _.map(data, function(item) {
-            return options.parseReturn.bind(ctx)(item);
-          });
-        } else {
-          data = options.parseReturn.bind(ctx)(data);
-        }
-        console.log("rest action", method, id, data, options.parseReturn);
-        return res.ret(data);
+        return res.ret(parseReturn(data));
       }).fail(function(err) {
-        console.log("restful error", method, Doc.name, arguments);
+        var data;
         console.trace(err);
-        data = err;
         if (!err.error) {
           data = {
             error: {
