@@ -92,7 +92,7 @@ apis =
             data = apis.getRequesetData(req)
             params = options.parseData.bind({req})(data)
             return {params, id:req.params.id, method:req.method}
-        parseReturn = (data)->
+        parseReturn = (data, ctx)->
             _parse = options.parseReturn.bind(ctx)
             if _.isArray(data)
                 data = _.toArray(_.map(data, _parse))
@@ -113,7 +113,7 @@ apis =
 
             options[method].bind(ctx)(id,params).then (data)->
                 data = data._data if data._data
-                res.ret(parseReturn(data))
+                res.ret(parseReturn(data, ctx))
             .fail (err)->
                 console.trace(err)
                 data = {error:{code:500,message:err.toString()}} if not err.error

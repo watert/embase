@@ -190,7 +190,7 @@ apis = {
         method: req.method
       };
     };
-    parseReturn = function(data) {
+    parseReturn = function(data, ctx) {
       var _parse;
       _parse = options.parseReturn.bind(ctx);
       if (_.isArray(data)) {
@@ -228,7 +228,7 @@ apis = {
         if (data._data) {
           data = data._data;
         }
-        return res.ret(parseReturn(data));
+        return res.ret(parseReturn(data, ctx));
       }).fail(function(err) {
         var data;
         console.trace(err);
