@@ -36,9 +36,10 @@ RESTful with JSONRPC support:
 ## TODOs
 
 - ~~User Login / Register / Profile~~
-- User File Upload test
-- Responsive Split View
-    - Basic System Status Admin
-    - Editor for general doc and files
+- ~~User File Upload test~~
+- ~~Responsive Split View~~
+    - ~~Basic System Status Admin~~
+    - ~~Editor for general doc~~
+    - files admin
 - User Files Gallery and upload
 - Extract to basic middlewares and static files

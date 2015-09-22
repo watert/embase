@@ -721,6 +721,9 @@ input {
     -ms-flex: 1 1 auto;
     flex-grow: 1;
     width: auto;
+    -webkit-flex-shrink: 10;
+    -ms-flex: 0 10 auto;
+    flex-shrink: 10;
   }
   .splitview .view-master {
     width: 320px;

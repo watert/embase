@@ -1,7 +1,11 @@
-var BaseDoc, DBStore, _, config, q, wrapMethods,
+var BaseDoc, DBStore, _, config, fs, path, q, wrapMethods,
   slice = [].slice;
 
 _ = require("underscore");
+
+fs = require("fs");
+
+path = require("path");
 
 DBStore = require("nedb");
 
@@ -42,6 +46,28 @@ wrapMethods = function(obj, methods) {
     fn(obj[m].bind(obj));
   }
   return obj;
+};
+
+DBStore.dbStatus = function() {
+  var dbPath;
+  dbPath = config.appPath("db/");
+  return q.nfcall(fs.readdir, dbPath).then(function(data) {
+    var dbs, dfds;
+    dbs = _.filter(data, function(path) {
+      return (path != null ? path.indexOf(".db") : void 0) !== -1;
+    });
+    dfds = _.map(dbs, function(fname) {
+      var fpath;
+      fpath = path.join(dbPath, fname);
+      return q.nfcall(fs.stat, fpath).then(function(ret) {
+        data = _.pick(ret, "mtime,ctime,size".split(","));
+        data.path = fpath;
+        data._id = data.name = path.parse(fname).name;
+        return data;
+      });
+    });
+    return q.all(dfds);
+  });
 };
 
 DBStore.storePath = function(name) {

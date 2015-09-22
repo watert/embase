@@ -160,6 +160,8 @@ define ["views/_base/view"], (BaseView)->
                 <div class="container">
                     <h2>Admin</h2>
                     <div class="tableview">
+                        <div class="tableview-cell cell-status">Status</div>
+                        <div class="tableview-header">Tables</div>
                         <%=invoke(cell, {id:"users", title:"users"})%>
                         <%=invoke(cell, {id:"articles", title:"articles"})%>
                         <%=invoke(cell, {id:"files", title:"files"})%>

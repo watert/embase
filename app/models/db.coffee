@@ -1,4 +1,6 @@
 _ = require("underscore")
+fs = require("fs")
+path = require("path")
 DBStore = require("nedb")
 config = require("../config")
 q = require("q")
@@ -16,6 +18,18 @@ wrapMethods = (obj,methods)->
             obj[m] = generateNewMethod(oldMethod)
     return obj
 
+DBStore.dbStatus = ()->
+    dbPath = config.appPath("db/")
+    q.nfcall(fs.readdir, dbPath).then (data)->
+        dbs =_.filter(data, (path)-> path?.indexOf(".db") isnt -1)
+        dfds = _.map dbs, (fname)->
+            fpath = path.join(dbPath,fname)
+            q.nfcall(fs.stat, fpath).then (ret)->
+                data = _.pick(ret,"mtime,ctime,size".split(","))
+                data.path = fpath
+                data._id = data.name = path.parse(fname).name
+                return data
+        q.all(dfds)
 DBStore.storePath = (name)->
     config.appPath("db/#{name}.db")
 DBStore.storeConfig = (name)->

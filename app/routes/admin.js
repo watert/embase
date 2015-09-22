@@ -1,4 +1,4 @@
-var AdminDocModel, Dispatcher, User, UserArticle, UserFile, _, app, config, express, jsonrpc, ref, restful, router,
+var AdminDocModel, DBStore, Dispatcher, User, UserArticle, UserFile, _, app, config, express, fs, jsonrpc, q, ref, restful, retJSON, router,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
@@ -6,11 +6,17 @@ express = require('express');
 
 _ = require('underscore');
 
+fs = require('fs');
+
+q = require('q');
+
 User = require("../models/user");
 
 Dispatcher = require("../../public/scripts/libs/action-dispatcher");
 
 config = require("../config");
+
+DBStore = require("../models/db").DBStore;
 
 app = require("../app");
 
@@ -53,7 +59,7 @@ UserFile = (function(superClass) {
 
 })(AdminDocModel);
 
-ref = require("../middlewares/api"), restful = ref.restful, jsonrpc = ref.jsonrpc;
+ref = require("../middlewares/api"), restful = ref.restful, jsonrpc = ref.jsonrpc, retJSON = ref.retJSON;
 
 router.use("/api/users/", restful({
   model: User,
@@ -69,6 +75,19 @@ router.use("/api/users/", jsonrpc({
 router.use("/api/articles/", restful({
   model: UserArticle
 }));
+
+router.use("/api/files/", restful({
+  model: UserFile
+}));
+
+router.get("/api/status/", retJSON(), function(req, res) {
+  return DBStore.dbStatus().then(function(data) {
+    data = data.map(function(row) {
+      return _.omit(row, "path");
+    });
+    return res.ret(data);
+  });
+});
 
 router.get('/*', function(req, res, next) {
   return res.render('index', {
