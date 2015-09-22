@@ -1,4 +1,4 @@
-var BaseDoc, DBStore, _, config, fs, path, q, wrapMethods,
+var BaseDoc, DBStore, _, _stores, config, fs, path, q, wrapMethods,
   slice = [].slice;
 
 _ = require("underscore");
@@ -77,25 +77,31 @@ DBStore.storePath = function(name) {
 DBStore.storeConfig = function(name) {
   var conf;
   conf = {
-    filename: DBStore.storePath(name),
-    autoload: true
+    filename: DBStore.storePath(name)
   };
   return conf;
 };
 
+_stores = {};
+
 DBStore.getStore = function(name) {
-  var dbconfig, store;
+  var cache, dbconfig, store;
+  if (cache = _stores[name]) {
+    return q.when(cache);
+  }
+  console.log("getStore", name);
   dbconfig = DBStore.storeConfig(name);
   store = new DBStore(dbconfig);
   return new Promise(function(res, rej) {
-    return store.loadDatabase(function(err) {
-      wrapMethods(store, ["find", "findOne", "insert", "update", "remove", "count"]);
+    store.loadDatabase(function(err) {
+      wrapMethods(store, ["findOne", "insert", "update", "remove", "count"]);
       if (!err) {
         return res(store);
       } else {
         return rej(err);
       }
     });
+    return _stores[name] = store;
   });
 };
 
@@ -182,7 +188,6 @@ BaseDoc = (function() {
   };
 
   BaseDoc.count = function(data) {
-    console.log("db @count");
     return this.getStore().then(function(store) {
       return store.count(data).then(function(num) {
         return {
@@ -196,12 +201,10 @@ BaseDoc = (function() {
   BaseDoc.findByID = function(id) {
     var DocClass;
     DocClass = this;
-    return this.getStore().then(function(store) {
-      return store.find({
-        _id: id
-      }).then(function(data) {
-        return new DocClass(data[0]);
-      });
+    return this.find({
+      _id: id
+    }).then(function(data) {
+      return new DocClass(data[0]);
     });
   };
 
@@ -243,7 +246,9 @@ BaseDoc = (function() {
       where = {};
     }
     return this.getStore().then(function(store) {
-      return store.find.apply(store, [where].concat(slice.call(args)));
+      var act;
+      act = store.find.apply(store, [where].concat(slice.call(args)));
+      return q.ninvoke(act, "exec");
     });
   };
 

@@ -35,16 +35,20 @@ DBStore.storePath = (name)->
 DBStore.storeConfig = (name)->
     conf =
         filename: DBStore.storePath(name)
-        autoload:yes
+        # autoload:yes
     return conf
 
+_stores = {}
 DBStore.getStore = (name)->
+    if cache = _stores[name] then return q.when(cache)
+    console.log "getStore",name
     dbconfig = DBStore.storeConfig(name)
     store = new DBStore(dbconfig)
     new Promise (res,rej)->
         store.loadDatabase (err)->
-            wrapMethods(store, ["find","findOne","insert","update","remove","count"])
+            wrapMethods(store, ["findOne","insert","update","remove","count"])
             if not err then res(store) else rej(err)
+        _stores[name] = store
 
 class BaseDoc
     @store: "test"
@@ -58,6 +62,7 @@ class BaseDoc
         @changed = yes
         return @
     get:(key=null)->
+        # console.log "basedoc get", key, @_data
         if not key then return @_data
         else return @_data[key]
     omit:(args...)->
@@ -68,6 +73,7 @@ class BaseDoc
         where = _.pick(data, "_id")
         # @beforeSave?(data)
         @getStore().then (store)=>
+            # console.log "save", where, data
             if data._id
                 return store.update(where, data, {}).then =>
                     @constructor.findOne(_id:data._id)
@@ -88,13 +94,12 @@ class BaseDoc
             @isDeleted = yes
             return num
     @count:(data)->
-        console.log "db @count"
+        # console.log "db @count"
         @getStore().then (store)->
             store.count(data).then (num)-> {count:num, id:-1}
     @findByID:(id)->
         DocClass = this
-        @getStore().then (store)->
-            store.find({_id:id}).then (data)->
+        @find({_id:id}).then (data)->
                 new DocClass(data[0])
     @remove: (where)->
         @getStore().then (store)->
@@ -110,6 +115,7 @@ class BaseDoc
             store.findOne(args...).then (data)-> new DocClass(data)
     @find:(where={}, args...)->
         @getStore().then (store)->
-            store.find(where, args...)
+            act = store.find(where, args...)
+            return q.ninvoke(act, "exec")
 
 module.exports = {BaseDoc, DBStore}

@@ -13,6 +13,11 @@ describe "Other Doc with User", ->
         User.remove({}, multi:yes).then ->
             User.register(user_data).then (_user)->
                 user = _user
+    after "Remove Articles", ->
+        UserDoc.find(user_id:user.id).then (data)->
+            q.all _.map data,(row)->
+                console.log "delete userdoc",row
+                (new UserDoc(row)).remove()
 
     describe "User Doc Base", ->
         it "should fail create a doc without user", ->
@@ -37,6 +42,11 @@ describe "Other Doc with User", ->
                 doc.set({"title":"helloxx"}).save()
             .then ->
                 assert.equal(doc.get("title"),"helloxx","check update userdoc")
+        it "should remove", ->
+
+            doc = new UserDoc(user:user, title:"hello")
+            doc.save().then ->
+                doc.remove()
 
     describe "User Files ", ->
         createFile = (ext="txt")->
@@ -66,12 +76,14 @@ describe "Other Doc with User", ->
         it "should delete file", ->
             ufile = new UserFile(file: createFile("md"),user:user)
             ufile.save().then ()->
+                # console.log "saved file",ufile
                 ufile.remove()
         after "Remove User", ->
+            console.log user.id
             UserFile.find(user_id:user.id).then (data)->
-                # return yes
                 dfd = q.when()
                 q.when _.map data, (item)->
+                    # console.log "when remove item",item,new UserFile(item)
                     dfd = dfd.then -> (new UserFile(item)).remove()
                 return dfd
             .then ->

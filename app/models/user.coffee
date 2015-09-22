@@ -33,6 +33,7 @@ class UserDoc extends BaseDoc
 class UserFile extends UserDoc
     @store: "userfiles"
     remove:()->
+        # console.log "delete", @get('path'), @id
         q.nfcall(fs.unlink, @get("path")).then =>
             super()
     save:(data=null)->
@@ -59,6 +60,7 @@ class UserFile extends UserDoc
             target = getTarget(id)
             url = getUrl(id)
             @set(path:target, url:url)
+            # console.log "@set", doc._data
             super()
         .then (doc)->
             q.nfcall(fs.rename, source, getTarget(doc.id)).then ->

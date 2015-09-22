@@ -29,6 +29,16 @@ describe("Other Doc with User", function() {
       });
     });
   });
+  after("Remove Articles", function() {
+    return UserDoc.find({
+      user_id: user.id
+    }).then(function(data) {
+      return q.all(_.map(data, function(row) {
+        console.log("delete userdoc", row);
+        return (new UserDoc(row)).remove();
+      }));
+    });
+  });
   describe("User Doc Base", function() {
     it("should fail create a doc without user", function() {
       var doc;
@@ -63,7 +73,7 @@ describe("Other Doc with User", function() {
         return assert(ret.count, "check has count");
       });
     });
-    return it("should update", function() {
+    it("should update", function() {
       var doc;
       doc = new UserDoc({
         user: user,
@@ -75,6 +85,16 @@ describe("Other Doc with User", function() {
         }).save();
       }).then(function() {
         return assert.equal(doc.get("title"), "helloxx", "check update userdoc");
+      });
+    });
+    return it("should remove", function() {
+      var doc;
+      doc = new UserDoc({
+        user: user,
+        title: "hello"
+      });
+      return doc.save().then(function() {
+        return doc.remove();
       });
     });
   });
@@ -147,6 +167,7 @@ describe("Other Doc with User", function() {
       });
     });
     return after("Remove User", function() {
+      console.log(user.id);
       return UserFile.find({
         user_id: user.id
       }).then(function(data) {

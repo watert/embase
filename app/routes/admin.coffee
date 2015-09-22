@@ -17,6 +17,9 @@ class UserFile extends AdminDocModel
     @store: "userfiles"
 {restful, jsonrpc, retJSON} = require("../middlewares/api")
 # router.use('/api/*', utilRouter())
+router.get "api/*", (req,res,next)->
+    req.query ?= {}
+
 router.use "/api/users/", restful(model:User, parseReturn:(data)-> _.omit(data,"password"))
 router.use "/api/users/", jsonrpc(model:User)
 router.use "/api/articles/", restful(model:UserArticle)

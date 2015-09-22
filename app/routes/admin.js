@@ -61,6 +61,10 @@ UserFile = (function(superClass) {
 
 ref = require("../middlewares/api"), restful = ref.restful, jsonrpc = ref.jsonrpc, retJSON = ref.retJSON;
 
+router.get("api/*", function(req, res, next) {
+  return req.query != null ? req.query : req.query = {};
+});
+
 router.use("/api/users/", restful({
   model: User,
   parseReturn: function(data) {
