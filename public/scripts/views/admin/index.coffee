@@ -33,6 +33,9 @@ define ["views/_base/view"], (BaseView)->
         events:
             "click .btn-back":()->
                 history.back()
+            "click .btn-save":()->
+                $btn = @$(".btn-save").css({opacity:.5,transition:"all .5s"}).attr("disabled",yes)
+                @doc.save().then -> $btn.css(opacity:1).attr("disabled",no)
             "click .confirm-delete":()->
                 @doc.destroy().then =>
                     @render("msg", {msg: "Document <code>#{@doc.id}</code> deleted"})
@@ -85,7 +88,7 @@ define ["views/_base/view"], (BaseView)->
                     </div>
                     <textarea name="" id="" cols="30" rows="10"></textarea>
                     <div class="actions">
-                        <button class="btn">Save</button>
+                        <button class="btn btn-save">Save</button>
                         <button class="btn btn-delete btn-danger">Delete</button>
                         <button class="btn confirm-delete btn-danger hide">Confirm Delete</button>
                     </div>

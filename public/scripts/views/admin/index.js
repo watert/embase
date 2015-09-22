@@ -82,6 +82,18 @@ define(["views/_base/view"], function(BaseView) {
       "click .btn-back": function() {
         return history.back();
       },
+      "click .btn-save": function() {
+        var $btn;
+        $btn = this.$(".btn-save").css({
+          opacity: .5,
+          transition: "all .5s"
+        }).attr("disabled", true);
+        return this.doc.save().then(function() {
+          return $btn.css({
+            opacity: 1
+          }).attr("disabled", false);
+        });
+      },
       "click .confirm-delete": function() {
         return this.doc.destroy().then((function(_this) {
           return function() {
@@ -165,7 +177,7 @@ define(["views/_base/view"], function(BaseView) {
       navbarBack: navbarBack,
       edgeNavbarBack: "<div class=\"edge when-mobile\">\n    <%=navbarBack({backTitle:backTitle})%>\n</div>",
       error: "<%=invoke(edgeNavbarBack, {backTitle:\"List\"})%>\n<div class=\"text-center\">\n    <br /> <strong> ERROR </strong>\n    <br /> <code> <%=message%> </code>\n</div>",
-      index: " <div class=\"editor container\">\n    <%=invoke(edgeNavbarBack, {backTitle:\"List\"})%>\n    <h2>Edit Document</h2>\n    <div class=\"doc-info\">\n        <code> doc: <%=store%> / <%=id%> </code>\n        <div class=\"actions\">\n\n        </div>\n    </div>\n    <textarea name=\"\" id=\"\" cols=\"30\" rows=\"10\"></textarea>\n    <div class=\"actions\">\n        <button class=\"btn\">Save</button>\n        <button class=\"btn btn-delete btn-danger\">Delete</button>\n        <button class=\"btn confirm-delete btn-danger hide\">Confirm Delete</button>\n    </div>\n</div>"
+      index: " <div class=\"editor container\">\n    <%=invoke(edgeNavbarBack, {backTitle:\"List\"})%>\n    <h2>Edit Document</h2>\n    <div class=\"doc-info\">\n        <code> doc: <%=store%> / <%=id%> </code>\n        <div class=\"actions\">\n\n        </div>\n    </div>\n    <textarea name=\"\" id=\"\" cols=\"30\" rows=\"10\"></textarea>\n    <div class=\"actions\">\n        <button class=\"btn btn-save\">Save</button>\n        <button class=\"btn btn-delete btn-danger\">Delete</button>\n        <button class=\"btn confirm-delete btn-danger hide\">Confirm Delete</button>\n    </div>\n</div>"
     });
 
     return DocEditView;
