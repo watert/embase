@@ -50,6 +50,10 @@ body { font-family: "Helvetica"; margin:0; font-size:16px;background: @bg-light;
 small {font-size:12px; opacity:.75; font-weight:lighter;}
 p {margin:.4em 0;}
 input {outline: none; font-size:16px;}
+table {
+    th, td { border-bottom: 1px solid #EEE; padding:.2em 8px; text-align: left;}
+    th {border-color: #DDD;}
+}
 .text-center {text-align: center;}
 .text-left {text-align: left;}
 .text-right {text-align: right;}
@@ -123,7 +127,7 @@ input {outline: none; font-size:16px;}
 .tableview {
     // background: @bg-light;
     margin: 10px 0;
-    .tableview-header { color:@gray; padding:0 10px; line-height:22px;
+    .tableview-header { color:@gray; padding:0 10px; line-height:22px; margin-top: 5px;
         font-weight: bold; font-size:14px;
     }
     .tableview-cell {
@@ -263,7 +267,6 @@ input {outline: none; font-size:16px;}
     .view-master {
         .tableview-cell.active {background: #666; color:#FFF;}
     }
-
     // Detail
     .tableview-cell .body { white-space: nowrap; text-overflow: ellipsis; flex-shrink: 4; overflow: hidden;}
     .CodeMirror pre { font-size:14px; }

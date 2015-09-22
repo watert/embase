@@ -38,7 +38,7 @@ RESTful with JSONRPC support:
 - ~~User Login / Register / Profile~~
 - ~~User File Upload test~~
 - ~~Responsive Split View~~
-    - ~~Basic System Status Admin~~
+    - Basic System Status Admin
     - ~~Editor for general doc~~
     - files admin
 - User Files Gallery and upload

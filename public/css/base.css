@@ -20,6 +20,15 @@ input {
   outline: none;
   font-size: 16px;
 }
+table th,
+table td {
+  border-bottom: 1px solid #EEE;
+  padding: .2em 8px;
+  text-align: left;
+}
+table th {
+  border-color: #DDD;
+}
 .text-center {
   text-align: center;
 }
@@ -264,6 +273,7 @@ input {
   color: #999999;
   padding: 0 10px;
   line-height: 22px;
+  margin-top: 5px;
   font-weight: bold;
   font-size: 14px;
 }

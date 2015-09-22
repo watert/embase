@@ -21,7 +21,7 @@ router.use "/api/users/", restful(model:User, parseReturn:(data)-> _.omit(data,"
 router.use "/api/users/", jsonrpc(model:User)
 router.use "/api/articles/", restful(model:UserArticle)
 router.use "/api/files/", restful(model:UserFile)
-router.get "/api/status/",retJSON(), (req,res)->
+router.post "/api/status/",retJSON(), (req,res)->
     DBStore.dbStatus().then (data)->
         data = data.map (row)-> _.omit(row, "path")
         res.ret(data)

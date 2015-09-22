@@ -1,7 +1,7 @@
 var extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
-define(["views/_base/view"], function(BaseView) {
+define(["views/_base/view", "marked"], function(BaseView, marked) {
   var AdminView, BaseAPICollection, BaseAPIModel, DocEditView, Users, baseTmpl, navbarBack, parseData, rpcCall, splitViewTmpl, stores;
   baseTmpl = BaseView.baseTmpl, splitViewTmpl = BaseView.splitViewTmpl;
   parseData = function(data) {
@@ -191,6 +191,9 @@ define(["views/_base/view"], function(BaseView) {
     }
 
     AdminView.prototype.events = {
+      "click .cell-status": function() {
+        return this.renderStatus();
+      },
       "click .btn-back": function() {
         this.hideDetail();
         return this.setQuery({}).render();
@@ -278,6 +281,20 @@ define(["views/_base/view"], function(BaseView) {
       })(this));
     };
 
+    AdminView.prototype.renderStatus = function() {
+      this.$(".view-master .cell-status").addClass("active").siblings().removeClass("active");
+      return $.post("/admin/api/status/").then((function(_this) {
+        return function(data) {
+          var $markdown, text;
+          console.log(data.result);
+          _this.renderDetail("dbstatus", data);
+          $markdown = _this.$(".view-detail .markdown");
+          text = $markdown.text();
+          return $markdown.html(marked.parse(text));
+        };
+      })(this));
+    };
+
     AdminView.prototype.render = function() {
       var docId, ref, store;
       AdminView.__super__.render.apply(this, arguments);
@@ -293,6 +310,8 @@ define(["views/_base/view"], function(BaseView) {
         return this.renderDocDetail(store, docId);
       } else if (store) {
         return this.renderList(store);
+      } else {
+        return this.renderStatus();
       }
     };
 
@@ -302,8 +321,9 @@ define(["views/_base/view"], function(BaseView) {
         right: ""
       }),
       cell: "<div class=\"tableview-cell\" data-id=\"<%=id%>\">\n    <span class=\"body\"><%=title%></span>\n    <i class=\"fa fa-angle-right\"></i>\n</div>",
+      dbstatus: "<div class=\"container\">\n<h2>Status:</h2>\n<div class=\"markdown\">\n|name|size|\n|----|----|<% _.each(result, function(row){ %>\n|<%-row.name%>|<%-(row.size/1000).toFixed(2)%>K| <%}) %>\n</pre>\n</div>\n</div>",
       navbarBack: navbarBack,
-      master: "<div class=\"container\">\n    <h2>Admin</h2>\n    <div class=\"tableview\">\n        <div class=\"tableview-cell cell-status\">Status</div>\n        <div class=\"tableview-header\">Tables</div>\n        <%=invoke(cell, {id:\"users\", title:\"users\"})%>\n        <%=invoke(cell, {id:\"articles\", title:\"articles\"})%>\n        <%=invoke(cell, {id:\"files\", title:\"files\"})%>\n    </div>\n</div>",
+      master: "<div class=\"container\">\n    <h2>Admin</h2>\n    <div class=\"tableview\">\n        <div class=\"tableview-cell cell-status\">\n            <span>Status</span><i class=\"fa fa-angle-right\"></i>\n        </div>\n        <div class=\"tableview-header\">Tables</div>\n        <%=invoke(cell, {id:\"users\", title:\"users\"})%>\n        <%=invoke(cell, {id:\"articles\", title:\"articles\"})%>\n        <%=invoke(cell, {id:\"files\", title:\"files\"})%>\n    </div>\n</div>",
       detailError: "<div class=\"text-center\">\n<br />\n<code> <%=code%> <%=message%> </code>\n</div>",
       detail: "<div class=\"container\">\n\n</div>",
       jsonList: "<div class=\"edge when-mobile\">\n    <%=navbarBack({backTitle:\"Admin\"})%>\n</div>\n<div class=\"tableview\">\n    <div class=\"tableview-header\"> Query </div>\n    <div class=\"tableview-cell\">\n        <input type=\"text\" name=\"query\" value=\"<%-query.query%>\"\n            placeholder=\"NeDB Query JSON\"/>\n        <button class=\"btn btn-primary btn-query\"> Query </button>\n    </div>\n    <div class=\"tableview-header\"> Data set </div>\n    <%_.each(list, function(item){ %>\n        <div class=\"list-item tableview-cell\" data-id=\"<%=item._id%>\">\n            <div class=\"body\">\n                <code><%=item._id%></code>\n                <%=JSON.stringify(_.omit(item, \"_id\"))%>\n            </div>\n            <i class=\"fa fa-angle-right\"></i>\n        </div>\n    <% }); %>\n</div>"

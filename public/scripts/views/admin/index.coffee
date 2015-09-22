@@ -1,4 +1,4 @@
-define ["views/_base/view"], (BaseView)->
+define ["views/_base/view","marked"], (BaseView, marked)->
     {baseTmpl, splitViewTmpl} = BaseView
 
     parseData = (data)-> data.result or data
@@ -96,6 +96,8 @@ define ["views/_base/view"], (BaseView)->
             """
     class AdminView extends BaseView.SplitView
         events:
+            "click .cell-status":()->
+                @renderStatus()
             "click .btn-back":()->
                 @hideDetail()
                 @setQuery({}).render()
@@ -133,6 +135,17 @@ define ["views/_base/view"], (BaseView)->
                 @renderDetail("jsonList", {list:list.toJSON(), @query})
             .fail (err)=>
                 @renderDetail("detailError", {code:-1, message:"List Fetch Error"})
+        renderStatus:()->
+            @$(".view-master .cell-status").addClass("active")
+                .siblings().removeClass("active")
+            $.post("/admin/api/status/").then (data)=>
+                console.log data.result
+                @renderDetail("dbstatus",data)
+                $markdown = @$(".view-detail .markdown")
+                text = $markdown.text()
+
+                $markdown.html(marked.parse(text))
+
         render:()->
             super(arguments...)
             {store, docId} = @query ?= {}
@@ -144,6 +157,7 @@ define ["views/_base/view"], (BaseView)->
                 @renderDocDetail(store, docId)
             else if store
                 @renderList(store)
+            else @renderStatus()
 
         template: BaseView.splitViewTmpl.extend
             navbar: baseTmpl.navbar.extend
@@ -155,12 +169,26 @@ define ["views/_base/view"], (BaseView)->
                     <i class="fa fa-angle-right"></i>
                 </div>
             """
+            # markdown: (text)-> marked.parse(text)
+            dbstatus: """
+                <div class="container">
+                <h2>Status:</h2>
+                <div class="markdown">
+                |name|size|
+                |----|----|<% _.each(result, function(row){ %>
+                |<%-row.name%>|<%-(row.size/1000).toFixed(2)%>K| <%}) %>
+                </pre>
+                </div>
+                </div>
+            """
             navbarBack: navbarBack
             master:"""
                 <div class="container">
                     <h2>Admin</h2>
                     <div class="tableview">
-                        <div class="tableview-cell cell-status">Status</div>
+                        <div class="tableview-cell cell-status">
+                            <span>Status</span><i class="fa fa-angle-right"></i>
+                        </div>
                         <div class="tableview-header">Tables</div>
                         <%=invoke(cell, {id:"users", title:"users"})%>
                         <%=invoke(cell, {id:"articles", title:"articles"})%>

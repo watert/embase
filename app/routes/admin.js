@@ -80,7 +80,7 @@ router.use("/api/files/", restful({
   model: UserFile
 }));
 
-router.get("/api/status/", retJSON(), function(req, res) {
+router.post("/api/status/", retJSON(), function(req, res) {
   return DBStore.dbStatus().then(function(data) {
     data = data.map(function(row) {
       return _.omit(row, "path");
