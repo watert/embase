@@ -28,7 +28,7 @@ renderTemplate = function(filename, data) {
 renderPage = function(req, res) {
   var html;
   html = renderTemplate("indexview.ejs", {
-    title: "Hello World"
+    title: "Common Auth"
   });
   return res.type("html").send(html);
 };
@@ -50,9 +50,11 @@ Auth = function(options) {
 
 if (require.main === module) {
   app = express();
-  app.use(Auth());
   server = app.listen(3000);
   module.exports = server;
+  app.use(require('body-parser').json());
+  app.use(require('compression')());
+  app.use(Auth());
 } else {
   module.exports = Auth;
 }

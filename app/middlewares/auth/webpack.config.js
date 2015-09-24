@@ -1,19 +1,20 @@
 var webpack = require('webpack')
 module.exports = {
     // configuration
-    context: __dirname + "/static/src",
+    context: __dirname + "/public/src",
     entry: "./entry",
     output: {
-        path: __dirname + "/static/",
+        path: __dirname + "/public/",
         filename: "bundle.js"
     },
-    loaders:[
-        {
-          test: /\.jsx?$/,
-          exclude: /(node_modules|bower_components)/,
-          loader: 'babel'
-        }
-    ],
+    module:{
+        loaders:[
+            {
+              test: /\.js$/,
+              exclude: /(node_modules|bower_components)/,
+              loader: 'babel'
+            }
+        ]},
     plugins: [
         // new webpack.optimize.UglifyJsPlugin({
         //     compress: {

@@ -12,7 +12,7 @@ renderTemplate = (filename, data)->
     tmpl = ejs.compile(file, cache:yes, filename:"indexview")
     return tmpl(data)
 renderPage = (req,res)->
-    html = renderTemplate("indexview.ejs",{title:"Hello World"})
+    html = renderTemplate("indexview.ejs",{title:"Common Auth"})
     res.type("html").send(html)
 
 Auth = (options)->
@@ -28,8 +28,12 @@ Auth = (options)->
 ### run directly, run as root router ###
 if require.main is module
     app = express()
-    app.use(Auth())
     server = app.listen(3000)
     module.exports = server
+    app.use(require('body-parser').json())
+    app.use(require('compression')());
+
+    app.use(Auth())
+
 else
     module.exports = Auth
