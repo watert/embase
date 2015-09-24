@@ -56,6 +56,19 @@ Templer = (function() {
 
   Templer.prototype.extend = function(tmplMethod, newTmpls) {
     newTmpls = _.extend({}, this.tmpls, newTmpls);
+    _.each(newTmpls, (function(_this) {
+      return function(tmpl, k) {
+        var newTmpl, superTmpl;
+        newTmpl = newTmpls[k];
+        if (superTmpl = _this.tmpls[k]) {
+          return newTmpl._super = function() {
+            var args, ref1;
+            args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
+            return (ref1 = _this.tmpls).invoke.apply(ref1, [superTmpl].concat(slice.call(args)));
+          };
+        }
+      };
+    })(this));
     newTmpls._parent = this.tmpls;
     return new Templer(newTmpls);
   };
@@ -120,5 +133,13 @@ describe("Templer", function() {
     tmpl = templer("<%=args.join('')%>");
     return assert.equal(tmpl(1, 2, 3), "123", "check use args");
   });
-  return it("should use _super ");
+  return it("should use _super ", function() {
+    var tmpl;
+    tmpl = templer({
+      index: "hello <%=world%>"
+    }).extend({
+      index: "before <%=_super()%>"
+    });
+    return assert.equal(tmpl(), "before hello");
+  });
 });

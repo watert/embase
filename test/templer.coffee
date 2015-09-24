@@ -3,6 +3,7 @@
 class Templer
     constructor:(tmpls)->
         if _.isString(tmpls) then tmpls = {index:tmpls}
+        # if _.isObject(tmpls) then tmpls = {index:tmpls}
         @tmpls = tmpls
         return @makeMethod()
     makeInvoke:(tmpls)->
@@ -15,6 +16,8 @@ class Templer
         tmpls = _.extend({ invoke:@makeInvoke(tmpls) },@tmpls)
         mainTmpl = _.template(tmpls.index) if _.isString(tmpls.index)
         tmplMethod = (args...)=>
+            # if tmplMethod._super
+            #     console.log "has super", mainTmpl
             data = _.extend({args:args or []},tmpls,args...)
             mainTmpl(data)
         _.extend tmplMethod, tmpls,
@@ -22,6 +25,13 @@ class Templer
                 @extend(tmplMethod, newTmpls)
     extend:(tmplMethod, newTmpls)->
         newTmpls = _.extend({}, @tmpls, newTmpls)
+
+        # make super
+        _.each newTmpls, (tmpl, k)=>
+            # console.log "extending",k, tmpl
+            newTmpl = newTmpls[k]
+            if superTmpl = @tmpls[k]
+                newTmpl._super = (args...)=> @tmpls.invoke(superTmpl, args...)
         newTmpls._parent = @tmpls
         return new Templer(newTmpls)
 templer = (tmpls)->
@@ -52,7 +62,11 @@ describe "Templer", ->
     it "should use args", ->
         tmpl = templer("<%=args.join('')%>")
         assert.equal(tmpl(1,2,3),"123","check use args")
-    it "should use _super "
+    it "should use _super ", ->
+        tmpl = templer({index: "hello <%=world%>"}).extend({index:"before <%=_super()%>"})
+        assert.equal(tmpl(), "before hello")
+
+
 
 
 # Templer("hello")
