@@ -83,16 +83,34 @@ define(["views/_base/view", "marked"], function(BaseView, marked) {
         return history.back();
       },
       "click .btn-save": function() {
-        var $btn;
+        var $btn, err, val;
         $btn = this.$(".btn-save").css({
           opacity: .5,
           transition: "all .5s"
         }).attr("disabled", true);
-        return this.doc.save().then(function() {
-          return $btn.css({
-            opacity: 1
-          }).attr("disabled", false);
-        });
+        try {
+          val = JSON.parse(this.editor.getValue());
+          return this.doc.save(val).then((function(_this) {
+            return function() {
+              var id, query;
+              $btn.css({
+                opacity: 1
+              }).attr("disabled", false);
+              if (id = _this.doc.id && !_this.options.id) {
+                query = _.extend({
+                  docId: _this.doc.id
+                }, {
+                  store: _this.options.store
+                });
+                _this.setQuery(query);
+                return _this.updateEditor();
+              }
+            };
+          })(this));
+        } catch (_error) {
+          err = _error;
+          return alert("JSON parse err" + err);
+        }
       },
       "click .confirm-delete": function() {
         return this.doc.destroy().then((function(_this) {
@@ -108,6 +126,22 @@ define(["views/_base/view", "marked"], function(BaseView, marked) {
         this.$(".btn-delete").hide();
         return this.$(".confirm-delete").show();
       }
+    };
+
+    DocEditView.prototype.updateEditor = function() {
+      return require(["codemirror"], (function(_this) {
+        return function(CM) {
+          var $editor, json;
+          if (!_this.editor) {
+            $editor = _this.$("textarea");
+            _this.editor = CM.fromTextArea($editor[0], {
+              lineNumbers: true
+            });
+          }
+          json = JSON.stringify(_this.doc.toJSON(), null, "\t");
+          return _this.editor.setValue(json);
+        };
+      })(this));
     };
 
     DocEditView.prototype.render = function(name) {
@@ -140,34 +174,33 @@ define(["views/_base/view", "marked"], function(BaseView, marked) {
           return ModelClass;
 
         })(BaseAPIModel);
-        return (doc = new ModelClass({
-          _id: id
-        })).fetch().then(function() {
-          return doc;
-        });
-      })();
-      return require(["codemirror"], (function(_this) {
-        return function(CM) {
-          var $editor;
-          DocEditView.__super__.render.call(_this, "index", {
-            store: store,
-            id: id,
-            query: _this.query
+        if (id) {
+          return (doc = new ModelClass({
+            _id: id
+          })).fetch().then(function() {
+            return doc;
           });
-          $editor = _this.$("textarea");
-          return whenLoadDoc.then(function(doc) {
-            var editor, json;
-            _this.doc = doc;
-            editor = CM.fromTextArea($editor[0], {
-              lineNumbers: true
-            });
-            json = JSON.stringify(doc.toJSON(), null, "\t");
-            return editor.setValue(json);
-          }).fail(function() {
-            return DocEditView.__super__.render.call(_this, "error", {
-              code: -1,
-              message: "Document <code>" + id + "</code> not found"
-            });
+        } else {
+          return $.when(new ModelClass({
+            _id: id
+          }));
+        }
+      })();
+      DocEditView.__super__.render.call(this, "index", {
+        store: store,
+        id: id,
+        query: this.query
+      });
+      return whenLoadDoc.then((function(_this) {
+        return function(doc) {
+          _this.doc = doc;
+          return _this.updateEditor();
+        };
+      })(this)).fail((function(_this) {
+        return function() {
+          return DocEditView.__super__.render.call(_this, "error", {
+            code: -1,
+            message: "Document <code>" + id + "</code> not found"
           });
         };
       })(this));
@@ -193,6 +226,9 @@ define(["views/_base/view", "marked"], function(BaseView, marked) {
     AdminView.prototype.events = {
       "click .cell-status": function() {
         return this.renderStatus();
+      },
+      "click .btn-add-record": function() {
+        return this.renderDocDetail(this.query.store);
       },
       "click .btn-back": function() {
         this.hideDetail();
@@ -326,7 +362,7 @@ define(["views/_base/view", "marked"], function(BaseView, marked) {
       master: "<div class=\"container\">\n    <h2>Admin</h2>\n    <div class=\"tableview\">\n        <div class=\"tableview-cell cell-status\">\n            <span>Status</span><i class=\"fa fa-angle-right\"></i>\n        </div>\n        <div class=\"tableview-header\">Tables</div>\n        <%=invoke(cell, {id:\"users\", title:\"users\"})%>\n        <%=invoke(cell, {id:\"articles\", title:\"articles\"})%>\n        <%=invoke(cell, {id:\"files\", title:\"files\"})%>\n    </div>\n</div>",
       detailError: "<div class=\"text-center\">\n<br />\n<code> <%=code%> <%=message%> </code>\n</div>",
       detail: "<div class=\"container\">\n\n</div>",
-      jsonList: "<div class=\"edge when-mobile\">\n    <%=navbarBack({backTitle:\"Admin\"})%>\n</div>\n<div class=\"tableview\">\n    <div class=\"tableview-header\"> Query </div>\n    <div class=\"tableview-cell\">\n        <input type=\"text\" name=\"query\" value=\"<%-query.query%>\"\n            placeholder=\"NeDB Query JSON\"/>\n        <button class=\"btn btn-primary btn-query\"> Query </button>\n    </div>\n    <div class=\"tableview-header\"> Data set </div>\n    <%_.each(list, function(item){ %>\n        <div class=\"list-item tableview-cell\" data-id=\"<%=item._id%>\">\n            <div class=\"body\">\n                <code><%=item._id%></code>\n                <%=JSON.stringify(_.omit(item, \"_id\"))%>\n            </div>\n            <i class=\"fa fa-angle-right\"></i>\n        </div>\n    <% }); %>\n</div>"
+      jsonList: "<div class=\"edge when-mobile\">\n    <%=navbarBack({backTitle:\"Admin\"})%>\n</div>\n<div class=\"tableview\">\n    <div class=\"tableview-header \">\n        <span>Query</span>\n    </div>\n    <div class=\"tableview-cell\">\n        <input type=\"text\" name=\"query\" value=\"<%-query.query%>\"\n            placeholder=\"NeDB Query JSON\"/>\n        <button class=\"btn btn-primary btn-query\"> Query </button>\n    </div>\n    <div class=\"tableview-header flex-row\">\n        <span>Data set</span>\n\n        <span class=\"btn btn-link btn-add-record\">\n            <i class=\"fa fa-plus\"></i> Add\n        </span>\n    </div>\n    <%_.each(list, function(item){ %>\n        <div class=\"list-item tableview-cell\" data-id=\"<%=item._id%>\">\n            <div class=\"body\">\n                <code><%=item._id%></code>\n                <%=JSON.stringify(_.omit(item, \"_id\"))%>\n            </div>\n            <i class=\"fa fa-angle-right\"></i>\n        </div>\n    <% }); %>\n</div>"
     });
 
     return AdminView;

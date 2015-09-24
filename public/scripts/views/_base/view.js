@@ -31,15 +31,14 @@ define(["libs/modelview", "libs/util", "tmpls/base"], function(ModelView, util, 
     };
 
     BaseView.prototype.setQuery = function(query, options) {
-      var link, path;
+      var link;
       if (options == null) {
         options = {};
       }
       _.defaults(options, {
         trigger: false
       });
-      path = this.options.path;
-      link = path + "?" + $.param(query);
+      link = app.router.currentPath + "?" + $.param(query);
       this.query = query;
       app.router.navigate(link, options);
       return this;

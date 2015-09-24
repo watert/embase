@@ -74,7 +74,9 @@ Factory = function($, Backbone) {
       }
       data = _.extend(data, this.templateHelpers, argData);
       tmpl = ((ref1 = this.template) != null ? ref1[name] : void 0) || this.template;
-      html = (typeof tmpl === "function" ? tmpl() : void 0) || (typeof (base1 = this.template).invoke === "function" ? base1.invoke(tmpl, data) : void 0) || tmpl;
+      console.warn(name, data, tmpl, typeof tmpl);
+      console.error(typeof tmpl === "function" ? tmpl(data) : void 0);
+      html = (typeof tmpl === "function" ? tmpl(data) : void 0) || (typeof (base1 = this.template).invoke === "function" ? base1.invoke(tmpl, data) : void 0) || tmpl;
       this.$el.html(html);
       if (tmplRenderer = (ref2 = this.template._context) != null ? ref2.onRender : void 0) {
         tmplRenderer.bind(this)();

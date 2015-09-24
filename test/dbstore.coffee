@@ -22,15 +22,7 @@ describe "nedb bug?", ->
         DB = require("nedb")
         _ = require("underscore")
         q = require("q")
-        db = new DB(filename:"./testremove.db", autoload:yes)
-        q.when().then ->
-            records = _.map(_.range(1000), -> {title:"hello"+(new Date).getTime()})
-            q.ninvoke(db, "insert", records)
-        .then ->
-            act = db.find()
-            q.ninvoke(act, "exec")
-        .then (data)->
-            dfds = _.map data, (row)->
-                console.log "remove", row
-                q.ninvoke(db,"remove",row)
-            q.when(dfds)
+        db = new DB(filename:"./testremove.db")
+        q.ninvoke(db,"loadDatabase").then ->
+            q.ninvoke(db,"loadDatabase")
+        .then -> q.ninvoke(db,"loadDatabase")

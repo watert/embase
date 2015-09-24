@@ -35,7 +35,19 @@ define ["views/_base/view","marked"], (BaseView, marked)->
                 history.back()
             "click .btn-save":()->
                 $btn = @$(".btn-save").css({opacity:.5,transition:"all .5s"}).attr("disabled",yes)
-                @doc.save().then -> $btn.css(opacity:1).attr("disabled",no)
+                try
+                    val = JSON.parse(@editor.getValue())
+                    @doc.save(val).then =>
+                        $btn.css(opacity:1).attr("disabled",no)
+                        if id = @doc.id and not @options.id
+                            query = _.extend({docId:@doc.id}, {store:@options.store})
+                            @setQuery(query)
+                            @updateEditor()
+
+
+                catch err
+                    alert("JSON parse err"+err)
+                # @doc.save().then -> $btn.css(opacity:1).attr("disabled",no)
             "click .confirm-delete":()->
                 @doc.destroy().then =>
                     @render("msg", {msg: "Document <code>#{@doc.id}</code> deleted"})
@@ -43,7 +55,16 @@ define ["views/_base/view","marked"], (BaseView, marked)->
             "click .btn-delete":()->
                 @$(".btn-delete").hide()
                 @$(".confirm-delete").show()
+        updateEditor:()->
+            require ["codemirror"], (CM)=>
+                if not @editor
+                    $editor = @$("textarea")
+                    @editor = CM.fromTextArea($editor[0], { lineNumbers:yes })
+                json = JSON.stringify(@doc.toJSON(),null,"\t")
+                @editor.setValue(json)
+
         render: (name="index")->
+            # return super("msg",{msg:"MSG"})
             if name isnt "index" then return super(arguments...)
             {store, id} = @options
             @loadCSS("bower_components/codemirror/lib/codemirror.css")
@@ -52,17 +73,17 @@ define ["views/_base/view","marked"], (BaseView, marked)->
             whenLoadDoc = do ()->
                 class ModelClass extends BaseAPIModel
                     urlRoot: storeURL
-                (doc = new ModelClass(_id: id)).fetch().then -> doc
-            require ["codemirror"], (CM)=>
-                super("index", {store, id, @query})
-                $editor = @$("textarea")
-                whenLoadDoc.then (doc)=>
-                    @doc = doc
-                    editor = CM.fromTextArea($editor[0], { lineNumbers:yes })
-                    json = JSON.stringify(doc.toJSON(),null,"\t")
-                    editor.setValue(json)
-                .fail =>
-                    super("error", {code:-1, message:"Document <code>#{id}</code> not found"})
+                if id
+                    return (doc = new ModelClass(_id: id)).fetch().then -> doc
+                else
+                    return $.when(new ModelClass(_id: id))
+            super("index", {store, id, @query})
+            # $editor = @$("textarea")
+            whenLoadDoc.then (doc)=>
+                @doc = doc
+                @updateEditor()
+            .fail =>
+                super("error", {code:-1, message:"Document <code>#{id}</code> not found"})
         template: baseTmpl.extend
             navbarBack: navbarBack
             edgeNavbarBack: """
@@ -98,6 +119,8 @@ define ["views/_base/view","marked"], (BaseView, marked)->
         events:
             "click .cell-status":()->
                 @renderStatus()
+            "click .btn-add-record":()->
+                @renderDocDetail(@query.store)
             "click .btn-back":()->
                 @hideDetail()
                 @setQuery({}).render()
@@ -211,13 +234,21 @@ define ["views/_base/view","marked"], (BaseView, marked)->
                     <%=navbarBack({backTitle:"Admin"})%>
                 </div>
                 <div class="tableview">
-                    <div class="tableview-header"> Query </div>
+                    <div class="tableview-header ">
+                        <span>Query</span>
+                    </div>
                     <div class="tableview-cell">
                         <input type="text" name="query" value="<%-query.query%>"
                             placeholder="NeDB Query JSON"/>
                         <button class="btn btn-primary btn-query"> Query </button>
                     </div>
-                    <div class="tableview-header"> Data set </div>
+                    <div class="tableview-header flex-row">
+                        <span>Data set</span>
+
+                        <span class="btn btn-link btn-add-record">
+                            <i class="fa fa-plus"></i> Add
+                        </span>
+                    </div>
                     <%_.each(list, function(item){ %>
                         <div class="list-item tableview-cell" data-id="<%=item._id%>">
                             <div class="body">

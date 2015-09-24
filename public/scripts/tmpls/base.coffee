@@ -36,7 +36,7 @@ define ["libs/templer"],(templer)->
                     })%>
                 </div>
             """
-        msg: templer """
+        msg: """
             <br />
             <div class="text-center"><%=msg%></div>
         """

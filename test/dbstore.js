@@ -39,28 +39,12 @@ describe("nedb bug?", function() {
     _ = require("underscore");
     q = require("q");
     db = new DB({
-      filename: "./testremove.db",
-      autoload: true
+      filename: "./testremove.db"
     });
-    return q.when().then(function() {
-      var records;
-      records = _.map(_.range(1000), function() {
-        return {
-          title: "hello" + (new Date).getTime()
-        };
-      });
-      return q.ninvoke(db, "insert", records);
+    return q.ninvoke(db, "loadDatabase").then(function() {
+      return q.ninvoke(db, "loadDatabase");
     }).then(function() {
-      var act;
-      act = db.find();
-      return q.ninvoke(act, "exec");
-    }).then(function(data) {
-      var dfds;
-      dfds = _.map(data, function(row) {
-        console.log("remove", row);
-        return q.ninvoke(db, "remove", row);
-      });
-      return q.when(dfds);
+      return q.ninvoke(db, "loadDatabase");
     });
   });
 });

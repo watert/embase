@@ -9,6 +9,7 @@ define [
             ":section/*path":(section, path)->
                 path ?= "index"
                 path = section+"/"+path
+                @currentPath = path
                 @trigger("route-path",path)
 
             # "*path":(path="users")->

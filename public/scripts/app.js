@@ -16,6 +16,7 @@ define(["jquery", "backbone", "libs/action-dispatcher", "libs/templer", "libs/ut
           path = "index";
         }
         path = section + "/" + path;
+        this.currentPath = path;
         return this.trigger("route-path", path);
       }
     };

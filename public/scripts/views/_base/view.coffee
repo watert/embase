@@ -9,8 +9,7 @@ define ["libs/modelview","libs/util","tmpls/base"],(ModelView, util, baseTmpl)->
 			super(arguments...)
 		setQuery:(query, options={})->
 			_.defaults(options, trigger:no)
-			path = @options.path
-			link = path+"?"+$.param(query)
+			link = app.router.currentPath+"?"+$.param(query)
 			@query = query
 			app.router.navigate(link, options)
 			return @

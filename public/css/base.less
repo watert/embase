@@ -54,6 +54,8 @@ table {
     th, td { border-bottom: 1px solid #EEE; padding:.2em 8px; text-align: left;}
     th {border-color: #DDD;}
 }
+.flex-column {.flexbox(); .flex-direction(column); .justify-content(space-between);}
+.flex-row {.flexbox(); .flex-direction(row); .justify-content(space-between);}
 .text-center {text-align: center;}
 .text-left {text-align: left;}
 .text-right {text-align: right;}
@@ -129,6 +131,7 @@ table {
     margin: 10px 0;
     .tableview-header { color:@gray; padding:0 10px; line-height:22px; margin-top: 5px;
         font-weight: bold; font-size:14px;
+        .btn { margin: 0; padding: 0;  font-size: 14px; line-height: 22px; height: 1em; font-weight: normal;}
     }
     .tableview-cell {
         .flexbox(); .justify-content(space-between); .align-items(center); background: #FFF;
