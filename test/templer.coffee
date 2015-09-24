@@ -28,7 +28,6 @@ class Templer
 
         # make super
         _.each newTmpls, (tmpl, k)=>
-            # console.log "extending",k, tmpl
             newTmpl = newTmpls[k]
             if superTmpl = @tmpls[k]
                 newTmpl._super = (args...)=> @tmpls.invoke(superTmpl, args...)
@@ -65,8 +64,3 @@ describe "Templer", ->
     it "should use _super ", ->
         tmpl = templer({index: "hello <%=world%>"}).extend({index:"before <%=_super()%>"})
         assert.equal(tmpl(), "before hello")
-
-
-
-
-# Templer("hello")
