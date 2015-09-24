@@ -20,4 +20,6 @@ userRouter = require("../middlewares/user");
 
 router.use('/user/', userRouter);
 
+router.use('/auth/', require("../middlewares/auth")());
+
 module.exports = router;

@@ -55,8 +55,8 @@ Factory = ($, Backbone)-> # Initializer
 			data = _.extend(data, @templateHelpers, argData)
 
 			tmpl = @template?[name] or @template
-			console.warn name, data, tmpl, typeof tmpl
-			console.error tmpl?(data)
+			# console.warn name, data, tmpl, typeof tmpl
+			# console.error tmpl?(data)
 			html = tmpl?(data) or @template.invoke?(tmpl, data) or tmpl
 			@$el.html(html)
 			if tmplRenderer = @template._context?.onRender
