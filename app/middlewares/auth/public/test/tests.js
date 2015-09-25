@@ -2,7 +2,7 @@ var User, assert;
 
 assert = function(val, msg) {
   if (!val) {
-    throw msg;
+    throw "Err:" + msg;
   }
 };
 
@@ -29,10 +29,15 @@ describe("User Actions", function() {
       return assert(user.id, "login fail");
     });
   });
+  it("should logout", function() {
+    return User.post("logout");
+  });
   it("should get profile", function() {
-    return User.profile().then(function(user) {
-      assert(user.id, "login fail");
-      return assert(user.get("emailHash"), "has email hash");
+    return User.login(userData).then(function() {
+      return User.profile().then(function(user) {
+        assert(user.id, "login fail");
+        return assert(user.get("emailHash"), "has email hash");
+      });
     });
   });
   it("should update profile", function() {

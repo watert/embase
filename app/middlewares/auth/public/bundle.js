@@ -73,9 +73,9 @@
 	        }
 	    },
 	    viewClasses: {
-	        login: __webpack_require__(6),
-	        profile: __webpack_require__(14),
-	        register: __webpack_require__(16)
+	        login: __webpack_require__(5),
+	        profile: __webpack_require__(9),
+	        register: __webpack_require__(10)
 	    },
 	    loadView: function loadView(viewName) {
 	        var View = this.viewClasses[viewName];
@@ -98,7 +98,7 @@
 	
 	_.extend(window, { Backbone: Backbone, $: $ });
 	_.extend(window.App, {
-	    init: init, $: $, User: __webpack_require__(7)
+	    init: init, $: $, User: __webpack_require__(11)
 	});
 
 /***/ },
@@ -14327,8 +14327,7 @@
 
 
 /***/ },
-/* 5 */,
-/* 6 */
+/* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Backbone, LoginView, User, _, deparam,
@@ -14339,9 +14338,9 @@
 	
 	Backbone = __webpack_require__(2);
 	
-	deparam = __webpack_require__(17);
+	deparam = __webpack_require__(6);
 	
-	User = __webpack_require__(11);
+	User = __webpack_require__(7);
 	
 	LoginView = (function(superClass) {
 	  extend(LoginView, superClass);
@@ -14393,284 +14392,7 @@
 
 
 /***/ },
-/* 7 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	
-	var Model,
-	    User,
-	    extend = function extend(child, parent) {
-	  for (var key in parent) {
-	    if (hasProp.call(parent, key)) child[key] = parent[key];
-	  }function ctor() {
-	    this.constructor = child;
-	  }ctor.prototype = parent.prototype;child.prototype = new ctor();child.__super__ = parent.prototype;return child;
-	},
-	    hasProp = ({}).hasOwnProperty;
-	
-	Model = __webpack_require__(8);
-	
-	User = (function (superClass) {
-	  extend(User, superClass);
-	
-	  function User() {
-	    return User.__super__.constructor.apply(this, arguments);
-	  }
-	
-	  User.prototype.idAttribute = "_id";
-	
-	  User.prototype.url = "api/";
-	
-	  User.prototype.rootUrl = "api/";
-	
-	  User.profile = function (data) {
-	    var user;
-	    return (user = new this(data)).fetch().then(function () {
-	      return user;
-	    });
-	  };
-	
-	  User.register = function (data) {
-	    return this.post("register", data).then(function (res) {
-	      return new User(res.data);
-	    });
-	  };
-	
-	  User.login = function (data) {
-	    return this.post("login", data).then(function (res) {
-	      return new User(res.data);
-	    });
-	  };
-	
-	  return User;
-	})(Model);
-	
-	module.exports = User;
-
-/***/ },
-/* 8 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	
-	var Backbone,
-	    BaseModel,
-	    extend = function extend(child, parent) {
-	  for (var key in parent) {
-	    if (hasProp.call(parent, key)) child[key] = parent[key];
-	  }function ctor() {
-	    this.constructor = child;
-	  }ctor.prototype = parent.prototype;child.prototype = new ctor();child.__super__ = parent.prototype;return child;
-	},
-	    hasProp = ({}).hasOwnProperty;
-	
-	Backbone = __webpack_require__(2);
-	
-	BaseModel = (function (superClass) {
-	  extend(BaseModel, superClass);
-	
-	  function BaseModel() {
-	    return BaseModel.__super__.constructor.apply(this, arguments);
-	  }
-	
-	  BaseModel.prototype.parse = function (ret) {
-	    if (ret == null) {
-	      ret = {};
-	    }
-	    this.links = ret.links;
-	    return ret.data || ret;
-	  };
-	
-	  BaseModel.post = function (url, data) {
-	    console.log("posturl", this.prototype.rootUrl + url);
-	    return $.post(this.prototype.rootUrl + url, data);
-	  };
-	
-	  BaseModel.get = function (url, data) {
-	    return $.get(this.prototype.rootUrl + url, data);
-	  };
-	
-	  return BaseModel;
-	})(Backbone.Model);
-	
-	module.exports = BaseModel;
-
-/***/ },
-/* 9 */,
-/* 10 */,
-/* 11 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Model, User,
-	  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-	  hasProp = {}.hasOwnProperty;
-	
-	Model = __webpack_require__(8);
-	
-	User = (function(superClass) {
-	  extend(User, superClass);
-	
-	  function User() {
-	    return User.__super__.constructor.apply(this, arguments);
-	  }
-	
-	  User.prototype.idAttribute = "_id";
-	
-	  User.prototype.url = "api/";
-	
-	  User.prototype.rootUrl = "api/";
-	
-	  User.profile = function(data) {
-	    var user;
-	    return (user = new this(data)).fetch().then(function() {
-	      return user;
-	    });
-	  };
-	
-	  User.register = function(data) {
-	    return this.post("register", data).then(function(res) {
-	      return new User(res.data);
-	    });
-	  };
-	
-	  User.login = function(data) {
-	    return this.post("login", data).then(function(res) {
-	      return new User(res.data);
-	    });
-	  };
-	
-	  return User;
-	
-	})(Model);
-	
-	module.exports = User;
-
-
-/***/ },
-/* 12 */,
-/* 13 */,
-/* 14 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Backbone, ProfileView, User, _,
-	  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-	  hasProp = {}.hasOwnProperty;
-	
-	_ = __webpack_require__(4);
-	
-	Backbone = __webpack_require__(2);
-	
-	User = __webpack_require__(11);
-	
-	ProfileView = (function(superClass) {
-	  extend(ProfileView, superClass);
-	
-	  function ProfileView() {
-	    return ProfileView.__super__.constructor.apply(this, arguments);
-	  }
-	
-	  ProfileView.prototype.tmpl = _.template("<div class=\"profile\">\n    <div class=\"avatar\">\n        <img src=\"http://www.gravatar.com/avatar/<%=emailHash%>?s=200\" alt=\"\" />\n        <h3> <%=name%> </h3>\n    </div>\n    <div class=\"info\">\n        <div class=\"small\"> Email </div>\n        <p><%=email%></p>\n    </div>\n    <div class=\"actions\">\n        <button class=\"btn btn-logout\">Logout</button>\n    </div>\n</div>");
-	
-	  ProfileView.prototype.className = "view-user-index";
-	
-	  ProfileView.prototype.render = function() {
-	    var user;
-	    return (user = new User).fetch().then((function(_this) {
-	      return function() {
-	        var html;
-	        html = _this.tmpl(user.toJSON());
-	        return _this.$el.html(html);
-	      };
-	    })(this)).fail(function() {
-	      return App.router.navigate("login", {
-	        trigger: true
-	      });
-	    });
-	  };
-	
-	  return ProfileView;
-	
-	})(Backbone.View);
-	
-	module.exports = ProfileView;
-
-
-/***/ },
-/* 15 */,
-/* 16 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var $, Backbone, RegisterView, User, _, deparam,
-	  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-	  hasProp = {}.hasOwnProperty;
-	
-	_ = __webpack_require__(4);
-	
-	Backbone = __webpack_require__(2);
-	
-	$ = __webpack_require__(1);
-	
-	User = __webpack_require__(11);
-	
-	deparam = __webpack_require__(17);
-	
-	RegisterView = (function(superClass) {
-	  extend(RegisterView, superClass);
-	
-	  function RegisterView() {
-	    return RegisterView.__super__.constructor.apply(this, arguments);
-	  }
-	
-	  RegisterView.prototype.events = {
-	    "submit": function(e) {
-	      var data;
-	      e.preventDefault();
-	      data = deparam(this.$("form").serialize());
-	      return User.register(data).then(function(user) {
-	        alert("Register Successfully");
-	        return User.login(data);
-	      }).fail(function(xhr) {
-	        return alert(xhr.responseJSON.error.message);
-	      }).then(function() {
-	        return App.router.navigate("profile", {
-	          trigger: true
-	        });
-	      });
-	    },
-	    "click .btn-login": function() {
-	      return App.router.navigate("login", {
-	        trigger: true
-	      });
-	    }
-	  };
-	
-	  RegisterView.prototype.initialize = function() {
-	    return this.name = "title";
-	  };
-	
-	  RegisterView.prototype.tmpl = _.template("<form method=\"post\" data-action=\"register\" class=\"form form-register\">\n    <h2> User Register </h2>\n    <input type=\"text\" name=\"name\" placeholder=\"Name\"/>\n    <input type=\"email\" name=\"email\" placeholder=\"Email\"/>\n    <input type=\"password\" name=\"password\" placeholder=\"Password\"/>\n    <div class=\"actions\">\n        <button class=\"btn btn-submit\" type=\"submit\">Register</button>\n        <a class=\"btn btn-login btn-link\" href=\"javascript:void(0)\"> Already has account </a>\n    </div>\n</form>");
-	
-	  RegisterView.prototype.className = "view-user-index";
-	
-	  RegisterView.prototype.render = function(data) {
-	    var html;
-	    if (data == null) {
-	      data = {};
-	    }
-	    html = this.tmpl(data);
-	    return this.$el.html(html);
-	  };
-	
-	  return RegisterView;
-	
-	})(Backbone.View);
-	
-	module.exports = RegisterView;
-
-
-/***/ },
-/* 17 */
+/* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
 	(function(deparam){
@@ -14786,6 +14508,278 @@
 	    return deparam;
 	});
 
+
+/***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Model, User,
+	  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+	  hasProp = {}.hasOwnProperty;
+	
+	Model = __webpack_require__(8);
+	
+	User = (function(superClass) {
+	  extend(User, superClass);
+	
+	  function User() {
+	    return User.__super__.constructor.apply(this, arguments);
+	  }
+	
+	  User.prototype.idAttribute = "_id";
+	
+	  User.prototype.url = "api/";
+	
+	  User.prototype.rootUrl = "api/";
+	
+	  User.profile = function(data) {
+	    var user;
+	    return (user = new this(data)).fetch().then(function() {
+	      return user;
+	    });
+	  };
+	
+	  User.register = function(data) {
+	    return this.post("register", data).then(function(res) {
+	      return new User(res.data);
+	    });
+	  };
+	
+	  User.login = function(data) {
+	    return this.post("login", data).then(function(res) {
+	      return new User(res.data);
+	    });
+	  };
+	
+	  return User;
+	
+	})(Model);
+	
+	module.exports = User;
+
+
+/***/ },
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	var Backbone,
+	    BaseModel,
+	    extend = function extend(child, parent) {
+	  for (var key in parent) {
+	    if (hasProp.call(parent, key)) child[key] = parent[key];
+	  }function ctor() {
+	    this.constructor = child;
+	  }ctor.prototype = parent.prototype;child.prototype = new ctor();child.__super__ = parent.prototype;return child;
+	},
+	    hasProp = ({}).hasOwnProperty;
+	
+	Backbone = __webpack_require__(2);
+	
+	BaseModel = (function (superClass) {
+	  extend(BaseModel, superClass);
+	
+	  function BaseModel() {
+	    return BaseModel.__super__.constructor.apply(this, arguments);
+	  }
+	
+	  BaseModel.prototype.parse = function (ret) {
+	    if (ret == null) {
+	      ret = {};
+	    }
+	    this.links = ret.links;
+	    return ret.data || ret;
+	  };
+	
+	  BaseModel.post = function (url, data) {
+	    console.log("posturl", this.prototype.rootUrl + url);
+	    return $.post(this.prototype.rootUrl + url, data);
+	  };
+	
+	  BaseModel.get = function (url, data) {
+	    return $.get(this.prototype.rootUrl + url, data);
+	  };
+	
+	  return BaseModel;
+	})(Backbone.Model);
+	
+	module.exports = BaseModel;
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Backbone, ProfileView, User, _,
+	  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+	  hasProp = {}.hasOwnProperty;
+	
+	_ = __webpack_require__(4);
+	
+	Backbone = __webpack_require__(2);
+	
+	User = __webpack_require__(7);
+	
+	ProfileView = (function(superClass) {
+	  extend(ProfileView, superClass);
+	
+	  function ProfileView() {
+	    return ProfileView.__super__.constructor.apply(this, arguments);
+	  }
+	
+	  ProfileView.prototype.tmpl = _.template("<div class=\"profile\">\n    <div class=\"avatar\">\n        <img src=\"http://www.gravatar.com/avatar/<%=emailHash%>?s=200\" alt=\"\" />\n        <h3> <%=name%> </h3>\n    </div>\n    <div class=\"info\">\n        <div class=\"small\"> Email </div>\n        <p><%=email%></p>\n    </div>\n    <div class=\"actions\">\n        <button class=\"btn btn-logout\">Logout</button>\n    </div>\n</div>");
+	
+	  ProfileView.prototype.className = "view-user-index";
+	
+	  ProfileView.prototype.render = function() {
+	    var user;
+	    return (user = new User).fetch().then((function(_this) {
+	      return function() {
+	        var html;
+	        html = _this.tmpl(user.toJSON());
+	        return _this.$el.html(html);
+	      };
+	    })(this)).fail(function() {
+	      return App.router.navigate("login", {
+	        trigger: true
+	      });
+	    });
+	  };
+	
+	  return ProfileView;
+	
+	})(Backbone.View);
+	
+	module.exports = ProfileView;
+
+
+/***/ },
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var $, Backbone, RegisterView, User, _, deparam,
+	  extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+	  hasProp = {}.hasOwnProperty;
+	
+	_ = __webpack_require__(4);
+	
+	Backbone = __webpack_require__(2);
+	
+	$ = __webpack_require__(1);
+	
+	User = __webpack_require__(7);
+	
+	deparam = __webpack_require__(6);
+	
+	RegisterView = (function(superClass) {
+	  extend(RegisterView, superClass);
+	
+	  function RegisterView() {
+	    return RegisterView.__super__.constructor.apply(this, arguments);
+	  }
+	
+	  RegisterView.prototype.events = {
+	    "submit": function(e) {
+	      var data;
+	      e.preventDefault();
+	      data = deparam(this.$("form").serialize());
+	      return User.register(data).then(function(user) {
+	        alert("Register Successfully");
+	        return User.login(data);
+	      }).fail(function(xhr) {
+	        return alert(xhr.responseJSON.error.message);
+	      }).then(function() {
+	        return App.router.navigate("profile", {
+	          trigger: true
+	        });
+	      });
+	    },
+	    "click .btn-login": function() {
+	      return App.router.navigate("login", {
+	        trigger: true
+	      });
+	    }
+	  };
+	
+	  RegisterView.prototype.initialize = function() {
+	    return this.name = "title";
+	  };
+	
+	  RegisterView.prototype.tmpl = _.template("<form method=\"post\" data-action=\"register\" class=\"form form-register\">\n    <h2> User Register </h2>\n    <input type=\"text\" name=\"name\" placeholder=\"Name\"/>\n    <input type=\"email\" name=\"email\" placeholder=\"Email\"/>\n    <input type=\"password\" name=\"password\" placeholder=\"Password\"/>\n    <div class=\"actions\">\n        <button class=\"btn btn-submit\" type=\"submit\">Register</button>\n        <a class=\"btn btn-login btn-link\" href=\"javascript:void(0)\"> Already has account </a>\n    </div>\n</form>");
+	
+	  RegisterView.prototype.className = "view-user-index";
+	
+	  RegisterView.prototype.render = function(data) {
+	    var html;
+	    if (data == null) {
+	      data = {};
+	    }
+	    html = this.tmpl(data);
+	    return this.$el.html(html);
+	  };
+	
+	  return RegisterView;
+	
+	})(Backbone.View);
+	
+	module.exports = RegisterView;
+
+
+/***/ },
+/* 11 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	var Model,
+	    User,
+	    extend = function extend(child, parent) {
+	  for (var key in parent) {
+	    if (hasProp.call(parent, key)) child[key] = parent[key];
+	  }function ctor() {
+	    this.constructor = child;
+	  }ctor.prototype = parent.prototype;child.prototype = new ctor();child.__super__ = parent.prototype;return child;
+	},
+	    hasProp = ({}).hasOwnProperty;
+	
+	Model = __webpack_require__(8);
+	
+	User = (function (superClass) {
+	  extend(User, superClass);
+	
+	  function User() {
+	    return User.__super__.constructor.apply(this, arguments);
+	  }
+	
+	  User.prototype.idAttribute = "_id";
+	
+	  User.prototype.url = "api/";
+	
+	  User.prototype.rootUrl = "api/";
+	
+	  User.profile = function (data) {
+	    var user;
+	    return (user = new this(data)).fetch().then(function () {
+	      return user;
+	    });
+	  };
+	
+	  User.register = function (data) {
+	    return this.post("register", data).then(function (res) {
+	      return new User(res.data);
+	    });
+	  };
+	
+	  User.login = function (data) {
+	    return this.post("login", data).then(function (res) {
+	      return new User(res.data);
+	    });
+	  };
+	
+	  return User;
+	})(Model);
+	
+	module.exports = User;
 
 /***/ }
 /******/ ]);

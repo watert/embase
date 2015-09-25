@@ -12,12 +12,11 @@ DBStore = require("nedb");
 path = require("path");
 
 config = {
-  appPath: function(path) {
-    path = path || "";
-    if (path.indexOf("/") !== 0) {
-      path = "/" + path;
+  appPath: function(_path) {
+    if (_path == null) {
+      _path = "";
     }
-    return __dirname + path;
+    return path.join(__dirname, "../", _path);
   }
 };
 
@@ -218,6 +217,11 @@ BaseDoc = (function() {
     return this.find({
       _id: id
     }).then(function(data) {
+      if (!data.length) {
+        return q.reject({
+          message: "not found by id " + id
+        });
+      }
       return new DocClass(data[0]);
     });
   };

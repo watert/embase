@@ -1,4 +1,6 @@
-{BaseDoc, DBStore} = require("./db")
+require 'coffee-script/register'
+
+{BaseDoc, DBStore} = require("./db.coffee")
 crypto = require('crypto')
 _ = require('underscore')
 q = require("q")
@@ -6,7 +8,6 @@ q.longStackSupport = yes
 fs = require("fs")
 path = require("path")
 # Dispatcher = require("../../public/scripts/libs/action-dispatcher")
-
 _hasKeys = (obj, keys)->
     for k in keys
         if not obj[k] then return no

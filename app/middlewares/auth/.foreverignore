@@ -1,1 +1,4 @@
-models/db
+models/db/*
+db/*
+db/
+db

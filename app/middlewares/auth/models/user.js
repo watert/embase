@@ -2,7 +2,9 @@ var BaseDoc, DBStore, User, UserDoc, UserFile, _, _hasKeys, crypto, fs, path, q,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
-ref = require("./db"), BaseDoc = ref.BaseDoc, DBStore = ref.DBStore;
+require('coffee-script/register');
+
+ref = require("./db.coffee"), BaseDoc = ref.BaseDoc, DBStore = ref.DBStore;
 
 crypto = require('crypto');
 

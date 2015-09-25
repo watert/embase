@@ -1,12 +1,14 @@
 var Auth, User, _, app, crypto, ejs, express, fs, md5, path, q, renderPage, renderTemplate, server, session;
 
+require('coffee-script/register');
+
 _ = require("underscore");
 
 express = require("express");
 
 q = require("q");
 
-User = require("./models/user");
+User = require("./models/user.coffee");
 
 ejs = require("ejs");
 
@@ -42,7 +44,7 @@ renderPage = function(req, res) {
 };
 
 Auth = function(options) {
-  var LocalStrategy, passport, router, sessionAuth;
+  var LocalStrategy, checkAuth, passport, router, sessionAuth;
   router = express.Router();
   router.get("/user", function(req, res) {
     return res.json("/user");
@@ -57,23 +59,6 @@ Auth = function(options) {
   });
   router.get("/page", renderPage);
   router.get("/", renderPage);
-  passport = require("passport");
-  LocalStrategy = require("passport-local");
-  passport.use(new LocalStrategy(function(name, password, done) {
-    console.log("LocalStrategy", name, password);
-    User.login({
-      name: name,
-      password: password
-    }).then(function() {
-      return done(null, user);
-    });
-    return fail(done);
-  }));
-  router.use(passport.initialize());
-  router.use(passport.session());
-  router.post("/api/login", passport.authenticate('local'), function(req, res) {
-    return res.json("success");
-  });
   router.use("/api", function(req, res, next) {
     res.retFail = function(err) {
       return res.status(err.error.code).json(err);
@@ -89,31 +74,63 @@ Auth = function(options) {
     };
     return next();
   });
-  sessionAuth = function(req, res, next) {
-    var ref, uid;
-    uid = (ref = req.session.user) != null ? ref.id : void 0;
-    if (!uid) {
-      return res.retFail({
+  passport = require("passport");
+  LocalStrategy = require("passport-local").Strategy;
+  router.use(passport.initialize());
+  router.use(passport.session());
+  passport.serializeUser(function(user, done) {
+    console.log("serializeUser", user.id);
+    return done(null, user.id);
+  });
+  passport.deserializeUser(function(id, done) {
+    return User.findByID(id).then(function(user) {
+      return done(null, user);
+    }).fail(function(err) {
+      console.log("serializerfail", err);
+      return done(err.message);
+    });
+  });
+  User.findByID("q8XA2aXBjevYvwbe").then(function(user) {
+    return console.log(user);
+  }).fail(function(err) {
+    return console.log("get err", err);
+  });
+  passport.use(new LocalStrategy({
+    usernameField: "name"
+  }, function(name, password, done) {
+    return User.login({
+      name: name,
+      password: password
+    }).then(function(user) {
+      return done(null, user);
+    }).fail(done);
+  }));
+  router.post("/api/login", passport.authenticate('local'), function(req, res) {
+    return res.ret(req.user);
+  });
+  sessionAuth = passport.authenticate('local');
+  checkAuth = function(req, res, next) {
+    if (!req.user) {
+      res.retFail({
         error: {
-          code: 401,
-          msg: "unauthorized"
+          message: "not authorized",
+          code: "406"
         }
       });
-    } else {
-      return User.findByID(uid).then(function(user) {
-        req.user = user;
-        return next();
-      });
     }
+    return next();
   };
-  router["delete"]("/api/", sessionAuth, function(req, res) {
+  router["delete"]("/api/", checkAuth, function(req, res) {
     return req.user.remove().then(function(ret) {
       return {
         _data: ret
       };
-    }).then(res.ret);
+    }).then(function(ret) {
+      req.logOut();
+      return res.ret(ret);
+    });
   });
-  router.get("/api/", sessionAuth, function(req, res) {
+  router.get("/api/", checkAuth, function(req, res) {
     var hash;
     hash = md5(req.user.get("email"));
     req.user.set({
@@ -121,10 +138,14 @@ Auth = function(options) {
     });
     return res.ret(req.user);
   });
-  router.put("/api/", sessionAuth, function(req, res) {
+  router.put("/api/", checkAuth, function(req, res) {
     return res.retPromise(req.user.set(_.omit(req.body, "_id")).save());
   });
-  router.post("/api/profile", sessionAuth, function(req, res) {
+  router.post("/api/logout", function(req, res) {
+    req.logOut();
+    return res.json("logout");
+  });
+  router.post("/api/profile", checkAuth, function(req, res) {
     return res.ret(req.user);
   });
   router.post("/api/register", function(req, res) {
@@ -138,8 +159,6 @@ Auth = function(options) {
 
 if (require.main === module) {
   app = express();
-  server = app.listen(3000);
-  console.log("listen 3000");
   module.exports = server;
   app.use(require('body-parser').json());
   app.use(require('body-parser').urlencoded({
@@ -154,6 +173,8 @@ if (require.main === module) {
   }));
   app.use(require('morgan')('dev'));
   app.use("/", Auth());
+  server = app.listen(3000);
+  console.log("listen 3000");
 } else {
   module.exports = Auth;
 }

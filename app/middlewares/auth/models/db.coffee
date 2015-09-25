@@ -4,10 +4,8 @@ path = require("path")
 DBStore = require("nedb")
 path = require("path")
 config =
-    appPath: (path)->
-        path = path||""
-        if path.indexOf("/")!=0 then path = "/"+path
-        return __dirname+path
+    appPath: (_path="")->
+        return path.join(__dirname,"../",_path)
 q = require("q")
 
 wrapMethods = (obj,methods)->
@@ -102,7 +100,9 @@ class BaseDoc
     @findByID:(id)->
         DocClass = this
         @find({_id:id}).then (data)->
-                new DocClass(data[0])
+            if not data.length
+                return q.reject(message:"not found by id #{id}")
+            new DocClass(data[0])
     @remove: (where)->
         @getStore().then (store)->
             store.remove(where, {multi:yes})
