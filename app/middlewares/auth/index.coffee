@@ -7,6 +7,7 @@ path = require("path")
 fs = require('fs')
 crypto = require("crypto")
 
+
 md5 = (_str)->
     crypto.createHash('md5').update(_str).digest('hex')
 renderTemplate = (filename, data)->
@@ -34,6 +35,21 @@ Auth = (options)->
     router.get("/page", renderPage)
     router.get("/", renderPage)
 
+    # Auth
+    passport = require("passport")
+    LocalStrategy = require("passport-local")
+    passport.use(new LocalStrategy((name, password, done)->
+        console.log "LocalStrategy",name, password
+        User.login({name, password}).then ->
+            done(null, user)
+        fail(done)
+    ))
+    router.use(passport.initialize());
+    router.use(passport.session());
+    router.post "/api/login",
+        passport.authenticate('local'),
+        (req,res)->
+            res.json("success")
     # APIs
     router.use "/api", (req,res,next)->
         res.retFail = (err)->
@@ -64,10 +80,10 @@ Auth = (options)->
     # Actions
     router.post "/api/profile", sessionAuth, (req,res)->
         res.ret(req.user)
-    router.post "/api/login", (req,res)->
-        res.retPromise User.login(req.body).then (ret)->
-            req.session.user = ret
-            return ret
+    # router.post "/api/login", (req,res)->
+    #     res.retPromise User.login(req.body).then (ret)->
+    #         req.session.user = ret
+    #         return ret
     router.post "/api/register", (req,res)->
         res.retPromise User.register(req.body)
     return router

@@ -42,7 +42,7 @@ renderPage = function(req, res) {
 };
 
 Auth = function(options) {
-  var router, sessionAuth;
+  var LocalStrategy, passport, router, sessionAuth;
   router = express.Router();
   router.get("/user", function(req, res) {
     return res.json("/user");
@@ -57,6 +57,23 @@ Auth = function(options) {
   });
   router.get("/page", renderPage);
   router.get("/", renderPage);
+  passport = require("passport");
+  LocalStrategy = require("passport-local");
+  passport.use(new LocalStrategy(function(name, password, done) {
+    console.log("LocalStrategy", name, password);
+    User.login({
+      name: name,
+      password: password
+    }).then(function() {
+      return done(null, user);
+    });
+    return fail(done);
+  }));
+  router.use(passport.initialize());
+  router.use(passport.session());
+  router.post("/api/login", passport.authenticate('local'), function(req, res) {
+    return res.json("success");
+  });
   router.use("/api", function(req, res, next) {
     res.retFail = function(err) {
       return res.status(err.error.code).json(err);
@@ -109,12 +126,6 @@ Auth = function(options) {
   });
   router.post("/api/profile", sessionAuth, function(req, res) {
     return res.ret(req.user);
-  });
-  router.post("/api/login", function(req, res) {
-    return res.retPromise(User.login(req.body).then(function(ret) {
-      req.session.user = ret;
-      return ret;
-    }));
   });
   router.post("/api/register", function(req, res) {
     return res.retPromise(User.register(req.body));
