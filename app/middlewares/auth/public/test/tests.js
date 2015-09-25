@@ -1,6 +1,10 @@
 var User, assert;
 
-assert = console.assert.bind(console);
+assert = function(val, msg) {
+  if (!val) {
+    throw msg;
+  }
+};
 
 User = App.User;
 
@@ -27,7 +31,8 @@ describe("User Actions", function() {
   });
   it("should get profile", function() {
     return User.profile().then(function(user) {
-      return assert(user.id, "login fail");
+      assert(user.id, "login fail");
+      return assert(user.get("emailHash"), "has email hash");
     });
   });
   it("should update profile", function() {
@@ -41,7 +46,6 @@ describe("User Actions", function() {
   });
   return it("should remove user", function() {
     return User.profile().then(function(user) {
-      console.log(user);
       return user.destroy();
     });
   });

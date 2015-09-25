@@ -11,5 +11,5 @@ class User extends Model
     @login:(data)->
         @post("login", data).then (res)->
             new User(res.data)
-# console.log Model.post
+
 module.exports = User

@@ -5,7 +5,10 @@ User = require("./models/user")
 ejs = require("ejs")
 path = require("path")
 fs = require('fs')
+crypto = require("crypto")
 
+md5 = (_str)->
+    crypto.createHash('md5').update(_str).digest('hex')
 renderTemplate = (filename, data)->
     filePath = path.join(__dirname,filename)
     file = fs.readFileSync(filePath, 'utf8')
@@ -15,7 +18,7 @@ renderPage = (req,res)->
     # return res.json(req.url)
     data = _.pick(req,"baseUrl")
     _.extend(data, {title:"Common Auth"})
-    html = renderTemplate("indexview.ejs",data)
+    html = renderTemplate("views/indexview.ejs",data)
     res.type("html").send(html)
 
 Auth = (options)->
@@ -29,6 +32,7 @@ Auth = (options)->
         html = renderTemplate("views/index.ejs",{baseUrl:req.baseUrl})
         res.type("html").send(html)
     router.get("/page", renderPage)
+    router.get("/", renderPage)
 
     # APIs
     router.use "/api", (req,res,next)->
@@ -42,7 +46,6 @@ Auth = (options)->
         next()
     sessionAuth = (req,res,next)->
         uid = req.session.user?.id
-        console.log "sessionAuth", uid
         if not uid
             res.retFail(error:{code:401, msg:"unauthorized"})
         else
@@ -53,10 +56,11 @@ Auth = (options)->
         req.user.remove().then((ret)-> {_data:ret})
             .then(res.ret)
     router.get "/api/", sessionAuth, (req,res)->
+        hash = md5(req.user.get("email"))
+        req.user.set({"emailHash": hash})
         res.ret(req.user)
     router.put "/api/", sessionAuth, (req,res)->
         res.retPromise req.user.set(_.omit(req.body, "_id")).save()
-
     # Actions
     router.post "/api/profile", sessionAuth, (req,res)->
         res.ret(req.user)
@@ -77,13 +81,11 @@ if require.main is module
     module.exports = server
     app.use(require('body-parser').json())
     app.use(require('body-parser').urlencoded({ extended: false }))
-    app.use(require('cookie-parser')());
     app.use(require('compression')());
     session = require('express-session')
-    app.use(session({secret:"embase",resave:true, saveUninitialized:false}));
-    logger = require('morgan')
-    app.use(logger('dev'));
-    app.use("/auth",Auth())
+    app.use(session({secret:"auth",resave:true, saveUninitialized:false}));
+    app.use(require('morgan')('dev'));
+    app.use("/",Auth())
 
 else
     module.exports = Auth

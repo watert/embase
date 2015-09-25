@@ -1,4 +1,4 @@
-var Auth, User, _, app, ejs, express, fs, logger, path, q, renderPage, renderTemplate, server, session;
+var Auth, User, _, app, crypto, ejs, express, fs, md5, path, q, renderPage, renderTemplate, server, session;
 
 _ = require("underscore");
 
@@ -13,6 +13,12 @@ ejs = require("ejs");
 path = require("path");
 
 fs = require('fs');
+
+crypto = require("crypto");
+
+md5 = function(_str) {
+  return crypto.createHash('md5').update(_str).digest('hex');
+};
 
 renderTemplate = function(filename, data) {
   var file, filePath, tmpl;
@@ -31,7 +37,7 @@ renderPage = function(req, res) {
   _.extend(data, {
     title: "Common Auth"
   });
-  html = renderTemplate("indexview.ejs", data);
+  html = renderTemplate("views/indexview.ejs", data);
   return res.type("html").send(html);
 };
 
@@ -50,6 +56,7 @@ Auth = function(options) {
     return res.type("html").send(html);
   });
   router.get("/page", renderPage);
+  router.get("/", renderPage);
   router.use("/api", function(req, res, next) {
     res.retFail = function(err) {
       return res.status(err.error.code).json(err);
@@ -68,7 +75,6 @@ Auth = function(options) {
   sessionAuth = function(req, res, next) {
     var ref, uid;
     uid = (ref = req.session.user) != null ? ref.id : void 0;
-    console.log("sessionAuth", uid);
     if (!uid) {
       return res.retFail({
         error: {
@@ -91,6 +97,11 @@ Auth = function(options) {
     }).then(res.ret);
   });
   router.get("/api/", sessionAuth, function(req, res) {
+    var hash;
+    hash = md5(req.user.get("email"));
+    req.user.set({
+      "emailHash": hash
+    });
     return res.ret(req.user);
   });
   router.put("/api/", sessionAuth, function(req, res) {
@@ -123,17 +134,15 @@ if (require.main === module) {
   app.use(require('body-parser').urlencoded({
     extended: false
   }));
-  app.use(require('cookie-parser')());
   app.use(require('compression')());
   session = require('express-session');
   app.use(session({
-    secret: "embase",
+    secret: "auth",
     resave: true,
     saveUninitialized: false
   }));
-  logger = require('morgan');
-  app.use(logger('dev'));
-  app.use("/auth", Auth());
+  app.use(require('morgan')('dev'));
+  app.use("/", Auth());
 } else {
   module.exports = Auth;
 }

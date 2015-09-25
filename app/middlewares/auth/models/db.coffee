@@ -46,7 +46,6 @@ DBStore.storeConfig = (name)->
 _stores = {}
 DBStore.getStore = (name)->
     if cache = _stores[name] then return q.when(cache)
-    console.log "getStore",name
     dbconfig = DBStore.storeConfig(name)
     store = new DBStore(dbconfig)
     new Promise (res,rej)->
@@ -57,7 +56,8 @@ DBStore.getStore = (name)->
 
 class BaseDoc
     @store: "test"
-    constructor: (data)->
+    constructor: (data,val)->
+        if val then data = {data:val}
         @_data = _.extend({},data)
         @changed = yes
         @id = data._id
@@ -67,7 +67,6 @@ class BaseDoc
         @changed = yes
         return @
     get:(key=null)->
-        # console.log "basedoc get", key, @_data
         if not key then return @_data
         else return @_data[key]
     omit:(args...)->
@@ -78,13 +77,10 @@ class BaseDoc
         where = _.pick(data, "_id")
         # @beforeSave?(data)
         @getStore().then (store)=>
-            # console.log "save", where, data
             if data._id
-                console.log "about to update doc", data
                 return store.update(where, data, {}).then =>
                     @constructor.findOne(_id:data._id)
             else store.insert(data).then (data)=>
-                console.log "about to insert doc", data
                 @_data = data
                 @id = data._id
                 return new @constructor(data)
@@ -101,7 +97,6 @@ class BaseDoc
             @isDeleted = yes
             return num
     @count:(data)->
-        # console.log "db @count"
         @getStore().then (store)->
             store.count(data).then (num)-> {count:num, id:-1}
     @findByID:(id)->

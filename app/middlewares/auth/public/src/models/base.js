@@ -32,6 +32,4 @@ BaseModel = (function(superClass) {
 
 })(Backbone.Model);
 
-console.log(BaseModel.post);
-
 module.exports = BaseModel;

@@ -187,7 +187,8 @@ User = (function(superClass) {
     return this.find({
       $or: [
         {
-          email: data.email,
+          email: data.email
+        }, {
           name: data.name
         }
       ]

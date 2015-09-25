@@ -99,7 +99,6 @@ DBStore.getStore = function(name) {
   if (cache = _stores[name]) {
     return q.when(cache);
   }
-  console.log("getStore", name);
   dbconfig = DBStore.storeConfig(name);
   store = new DBStore(dbconfig);
   return new Promise(function(res, rej) {
@@ -118,7 +117,12 @@ DBStore.getStore = function(name) {
 BaseDoc = (function() {
   BaseDoc.store = "test";
 
-  function BaseDoc(data) {
+  function BaseDoc(data, val) {
+    if (val) {
+      data = {
+        data: val
+      };
+    }
     this._data = _.extend({}, data);
     this.changed = true;
     this.id = data._id;
@@ -158,7 +162,6 @@ BaseDoc = (function() {
     return this.getStore().then((function(_this) {
       return function(store) {
         if (data._id) {
-          console.log("about to update doc", data);
           return store.update(where, data, {}).then(function() {
             return _this.constructor.findOne({
               _id: data._id
@@ -166,7 +169,6 @@ BaseDoc = (function() {
           });
         } else {
           return store.insert(data).then(function(data) {
-            console.log("about to insert doc", data);
             _this._data = data;
             _this.id = data._id;
             return new _this.constructor(data);
