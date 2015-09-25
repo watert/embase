@@ -33,7 +33,6 @@ class UserDoc extends BaseDoc
 class UserFile extends UserDoc
     @store: "userfiles"
     remove:()->
-        # console.log "delete", @get('path'), @id
         q.nfcall(fs.unlink, @get("path")).then =>
             super()
     save:(data=null)->
@@ -78,7 +77,7 @@ class User extends BaseDoc
             return Promise.reject({error:{code:406, message: "needed more info to register"},data:data})
         return @find({$or: [email:data.email, name:data.name]}).then (ret)=>
             if ret.length
-                return q.reject({error:{code:406, message:"name or email already exists"}})
+                return q.reject({error:{code:409, message:"name or email already exists"}})
             else
                 data = _.extend({}, data, password: @hash(data.password))
                 user = new this(data)
@@ -89,6 +88,7 @@ class User extends BaseDoc
     @login:(data)->
         if not data.password
             Promise.reject({error:{code:406, message: "no password"},data:data})
+        # console.log "@login",data
         data.password = @hash(data.password)
         @findOne(data).then (user)-> user
     # @api: ()-> new Dispatcher

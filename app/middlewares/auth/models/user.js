@@ -197,7 +197,7 @@ User = (function(superClass) {
         if (ret.length) {
           return q.reject({
             error: {
-              code: 406,
+              code: 409,
               message: "name or email already exists"
             }
           });

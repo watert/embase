@@ -95,11 +95,18 @@
 	    return AuthView;
 	})(Backbone.View);
 
-	$(function () {
-	    var view = new AuthView();
-	    view.render();
-	    console.log("classname", view.className);
-	    $("body").empty().append(view.el);
+	var init = function init(options) {
+	    $(function () {
+	        var view = new AuthView();
+	        view.render();
+	        console.log("classname", view.className);
+	        $("body").empty().append(view.el);
+	    });
+	};
+	window.App = {};
+	_.extend(window, { Backbone: Backbone, $: $ });
+	_.extend(window.App, {
+	    AuthView: AuthView, init: init, $: $, User: __webpack_require__(6)
 	});
 
 /***/ },
@@ -14338,6 +14345,112 @@
 	    register: "\n        <form data-action=\"register\" class=\"form form-register\">\n            <h2> User Register </h2>\n            <input type=\"text\" name=\"name\" placeholder=\"Name\"/>\n            <input type=\"email\" name=\"email\" placeholder=\"Email\"/>\n            <input type=\"password\" name=\"password\" placeholder=\"Password\"/>\n            <div class=\"actions\">\n                <button class=\"btn btn-submit\" type=\"submit\">Register</button>\n                <a class=\"btn btn-login btn-link\" href=\"javascript:void(0)\"> Already has account </a>\n            </div>\n        </form>\n    ",
 	    login: "\n        <form method=\"post\" data-action=\"login\" class=\"form form-login\">\n            <h2> User Login </h2>\n            <input type=\"email\" name=\"email\" placeholder=\"Email\"/>\n            <input type=\"password\" name=\"password\" placeholder=\"Password\"/>\n            <div class=\"actions\">\n                <button class=\"btn btn-submit\" type=\"submit\">Login</button>\n                <button class=\"btn btn-register\" type=\"button\">Register</button>\n            </div>\n        </form>"
 	};
+
+/***/ },
+/* 6 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var Model,
+	    User,
+	    extend = function extend(child, parent) {
+	  for (var key in parent) {
+	    if (hasProp.call(parent, key)) child[key] = parent[key];
+	  }function ctor() {
+	    this.constructor = child;
+	  }ctor.prototype = parent.prototype;child.prototype = new ctor();child.__super__ = parent.prototype;return child;
+	},
+	    hasProp = ({}).hasOwnProperty;
+
+	Model = __webpack_require__(7);
+
+	User = (function (superClass) {
+	  extend(User, superClass);
+
+	  function User() {
+	    return User.__super__.constructor.apply(this, arguments);
+	  }
+
+	  User.prototype.idAttribute = "_id";
+
+	  User.prototype.url = "api/";
+
+	  User.prototype.rootUrl = "api/";
+
+	  User.profile = function (data) {
+	    var user;
+	    return (user = new this(data)).fetch().then(function () {
+	      return user;
+	    });
+	  };
+
+	  User.register = function (data) {
+	    return this.post("register", data).then(function (res) {
+	      return new User(res.data);
+	    });
+	  };
+
+	  User.login = function (data) {
+	    return this.post("login", data).then(function (res) {
+	      return new User(res.data);
+	    });
+	  };
+
+	  return User;
+	})(Model);
+
+	module.exports = User;
+
+/***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+
+	var Backbone,
+	    BaseModel,
+	    extend = function extend(child, parent) {
+	  for (var key in parent) {
+	    if (hasProp.call(parent, key)) child[key] = parent[key];
+	  }function ctor() {
+	    this.constructor = child;
+	  }ctor.prototype = parent.prototype;child.prototype = new ctor();child.__super__ = parent.prototype;return child;
+	},
+	    hasProp = ({}).hasOwnProperty;
+
+	Backbone = __webpack_require__(2);
+
+	BaseModel = (function (superClass) {
+	  extend(BaseModel, superClass);
+
+	  function BaseModel() {
+	    return BaseModel.__super__.constructor.apply(this, arguments);
+	  }
+
+	  BaseModel.prototype.parse = function (ret) {
+	    if (ret == null) {
+	      ret = {};
+	    }
+	    this.links = ret.links;
+	    return ret.data || ret;
+	  };
+
+	  BaseModel.post = function (url, data) {
+	    console.log("posturl", this.prototype.rootUrl + url);
+	    return $.post(this.prototype.rootUrl + url, data);
+	  };
+
+	  BaseModel.get = function (url, data) {
+	    return $.get(this.prototype.rootUrl + url, data);
+	  };
+
+	  return BaseModel;
+	})(Backbone.Model);
+
+	console.log(BaseModel.post);
+
+	module.exports = BaseModel;
 
 /***/ }
 /******/ ]);

@@ -1,4 +1,4 @@
-var BaseDoc, DBStore, _, _stores, fs, path, q, wrapMethods,
+var BaseDoc, DBStore, _, _stores, config, fs, path, q, wrapMethods,
   slice = [].slice;
 
 _ = require("underscore");
@@ -8,6 +8,18 @@ fs = require("fs");
 path = require("path");
 
 DBStore = require("nedb");
+
+path = require("path");
+
+config = {
+  appPath: function(path) {
+    path = path || "";
+    if (path.indexOf("/") !== 0) {
+      path = "/" + path;
+    }
+    return __dirname + path;
+  }
+};
 
 q = require("q");
 
@@ -146,6 +158,7 @@ BaseDoc = (function() {
     return this.getStore().then((function(_this) {
       return function(store) {
         if (data._id) {
+          console.log("about to update doc", data);
           return store.update(where, data, {}).then(function() {
             return _this.constructor.findOne({
               _id: data._id
@@ -153,6 +166,7 @@ BaseDoc = (function() {
           });
         } else {
           return store.insert(data).then(function(data) {
+            console.log("about to insert doc", data);
             _this._data = data;
             _this.id = data._id;
             return new _this.constructor(data);

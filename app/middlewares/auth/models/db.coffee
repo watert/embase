@@ -5,9 +5,9 @@ DBStore = require("nedb")
 path = require("path")
 config =
     appPath: (path)->
-        path = path||"";
-        if(path.indexOf("/")!=0){ path = "/"+path; }
-        return __dirname+path;
+        path = path||""
+        if path.indexOf("/")!=0 then path = "/"+path
+        return __dirname+path
 q = require("q")
 
 wrapMethods = (obj,methods)->
@@ -80,9 +80,11 @@ class BaseDoc
         @getStore().then (store)=>
             # console.log "save", where, data
             if data._id
+                console.log "about to update doc", data
                 return store.update(where, data, {}).then =>
                     @constructor.findOne(_id:data._id)
             else store.insert(data).then (data)=>
+                console.log "about to insert doc", data
                 @_data = data
                 @id = data._id
                 return new @constructor(data)

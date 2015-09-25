@@ -17,13 +17,19 @@ class AuthView extends Backbone.View {
     get className() { return "view-user-index"}
     render(name="login", data={}) {
         let html = _.template(tmpls[name])(data)
-        this.$el.html(html)
+        this.$el.html(html);
     }
 }
-
-$(()=> {
-    let view = new AuthView()
-    view.render()
-    console.log("classname",view.className)
-    $("body").empty().append(view.el)
-})
+let init = (options)=> {
+    $(()=>{
+        let view = new AuthView()
+        view.render();
+        console.log("classname",view.className)
+        $("body").empty().append(view.el);
+    });
+}
+window.App = {};
+_.extend(window, {Backbone, $});
+_.extend(window.App, {
+    AuthView, init, $, User:require("./models/user.js")
+});
