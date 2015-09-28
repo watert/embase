@@ -1,4 +1,4 @@
-var Auth, User, _, app, crypto, ejs, express, fs, md5, path, q, renderPage, renderTemplate, server, session;
+var Auth, User, _, app, bodyParser, crypto, ejs, express, fs, md5, oauth2orize, path, q, renderPage, renderTemplate, server, session;
 
 require('coffee-script/register');
 
@@ -17,6 +17,8 @@ path = require("path");
 fs = require('fs');
 
 crypto = require("crypto");
+
+oauth2orize = require("oauth2orize");
 
 md5 = function(_str) {
   return crypto.createHash('md5').update(_str).digest('hex');
@@ -79,21 +81,14 @@ Auth = function(options) {
   router.use(passport.initialize());
   router.use(passport.session());
   passport.serializeUser(function(user, done) {
-    console.log("serializeUser", user.id);
     return done(null, user.id);
   });
   passport.deserializeUser(function(id, done) {
     return User.findByID(id).then(function(user) {
       return done(null, user);
     }).fail(function(err) {
-      console.log("serializerfail", err);
       return done(err.message);
     });
-  });
-  User.findByID("q8XA2aXBjevYvwbe").then(function(user) {
-    return console.log(user);
-  }).fail(function(err) {
-    return console.log("get err", err);
   });
   passport.use(new LocalStrategy({
     usernameField: "name"
@@ -158,14 +153,15 @@ Auth = function(options) {
 /* run directly, run as root router */
 
 if (require.main === module) {
+  bodyParser = require('body-parser');
+  session = require('express-session');
   app = express();
   module.exports = server;
-  app.use(require('body-parser').json());
-  app.use(require('body-parser').urlencoded({
+  app.use(bodyParser.json());
+  app.use(bodyParser.urlencoded({
     extended: false
   }));
   app.use(require('compression')());
-  session = require('express-session');
   app.use(session({
     secret: "auth",
     resave: true,

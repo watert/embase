@@ -7,7 +7,7 @@ ejs = require("ejs")
 path = require("path")
 fs = require('fs')
 crypto = require("crypto")
-
+oauth2orize = require("oauth2orize")
 
 md5 = (_str)->
     crypto.createHash('md5').update(_str).digest('hex')
@@ -53,25 +53,16 @@ Auth = (options)->
     router.use(passport.initialize());
     router.use(passport.session());
     passport.serializeUser (user, done)->
-        console.log "serializeUser", user.id
         done(null, user.id)
     passport.deserializeUser (id, done)->
-        # console.log "deserializeUser", id
         User.findByID(id).then (user)->
             done(null, user)
         .fail (err)->
-            console.log "serializerfail",err
             done(err.message)
-
-    User.findByID("q8XA2aXBjevYvwbe").then (user)->
-        console.log user
-    .fail (err)->
-        console.log "get err",err
 
     passport.use(new LocalStrategy({
         usernameField:"name"
     },(name, password, done)->
-        # console.log "LocalStrategy",name, password
         User.login({name, password}).then (user)->
             done(null, user)
         .fail(done)
@@ -80,14 +71,13 @@ Auth = (options)->
         passport.authenticate('local'),
         (req,res)->
             res.ret(req.user)
-            # res.json("success")
-    # APIs
+
+    # APIs with session auth
     sessionAuth = passport.authenticate('local')
     checkAuth = (req,res,next)->
         if not req.user
             res.retFail({error:{message:"not authorized",code:"406"}})
         next()
-
     router.delete "/api/", checkAuth, (req,res)->
         req.user.remove().then((ret)-> {_data:ret})
             .then (ret)->
@@ -113,12 +103,13 @@ Auth = (options)->
 
 ### run directly, run as root router ###
 if require.main is module
+    bodyParser = require('body-parser')
+    session = require('express-session')
     app = express()
     module.exports = server
-    app.use(require('body-parser').json())
-    app.use(require('body-parser').urlencoded({ extended: false }))
+    app.use(bodyParser.json())
+    app.use(bodyParser.urlencoded({ extended: false }))
     app.use(require('compression')());
-    session = require('express-session')
     app.use(session({secret:"auth",resave:true, saveUninitialized:false}));
     app.use(require('morgan')('dev'));
     app.use("/",Auth())
