@@ -4,28 +4,36 @@ _ = require('underscore')
 router = express.Router()
 
 
+User = require("../models/user")
+{restful, jsonrpc, retJSON} = require("../middlewares/api")
+class UserCodes extends User.UserDoc
+    @store: "usercodes"
+restfulCodes = restful
+    model:UserCodes
+    # parseReturn: (data)-> _.omit(data,"password")
+router.use("/api/usercodes/", restfulCodes)
 
-# Front ends
-# router.get '/codes/*', (req,res)->
-#     res.render("index")
 
 
-
-passport = require("passport")
-
-
-
-# router.get '/user/', (req, res, next)->
-#     res.render("index")
-# userRouter = require("../middlewares/user")
-# router.use('/user/', require("../middlewares/user"))
-router.use '/user/',(req,res)->
-    console.log req.oauth2, req.user, req.session.user
-    res.json("shit")
-router.use '/auth/',require("../middlewares/auth")()
+crypto = require("crypto")
+md5 = (_str)->
+    crypto.createHash('md5').update(_str).digest('hex')
+getPageData = (req)->
+    user = req.user?._data or null
+    if email = user?.email then user.emailHash = md5(email)
+    data = user: req.user?._data or null
+    return data
+router.use (req,res,next)-> # for user info in pageData
+    user = req.user?._data or null
+    if email = user?.email
+        user.emailHash = md5(email)
+        user.avatar = "http://www.gravatar.com/avatar/#{user.emailHash}?s=80"
+    data = user: req.user?._data or null
+    req.pageData = data
+    next()
 router.get '/*', (req, res)->
+    res.render('index', { title: 'Express', data:req.pageData})
 
-    console.log "render index with user",req.user,req.session
-    res.render('index', { title: 'Express', user: req.user?._data or null})
+_.extend router, {getPageData}
 
 module.exports = router

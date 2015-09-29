@@ -6,5 +6,5 @@ define ["views/_base/view","views/codes/tmpls"
                 app.router.navigate("codes/edit",trigger:yes)
         template: tmpls.extend
             index: """
-                <%=invoke(pageTopbar)%>
+                <%=invoke(pageTopbar,{title:"Edit"})%>
             """

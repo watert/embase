@@ -19,7 +19,7 @@ define(["views/_base/view", "views/codes/tmpls"], function(BaseView, tmpls) {
     };
 
     MyCodesView.prototype.template = tmpls.extend({
-      index: "<%=invoke(pageTopbar)%>"
+      index: "<%=invoke(pageTopbar,{title:\"Edit\"})%>"
     });
 
     return MyCodesView;

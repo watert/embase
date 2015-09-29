@@ -2,7 +2,7 @@ extends layout
 block append head
     base(href="/")
     link(rel='stylesheet', href='/bower_components/font-awesome/css/font-awesome.min.css')
-    script window.DATA = {user:!{JSON.stringify(user)}}
+    script window.DATA = !{JSON.stringify(data)}
     script(src="bower_components/requirejs/require.js")
     script(src="scripts/require-config.js")
     script(src="scripts/main.js")
