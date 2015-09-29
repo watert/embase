@@ -54,6 +54,8 @@ table {
     th, td { border-bottom: 1px solid #EEE; padding:.2em 8px; text-align: left;}
     th {border-color: #DDD;}
 }
+.flexbox {.flexbox(); }
+.space-between {.justify-content(space-between); }
 .flex-column {.flexbox(); .flex-direction(column); .justify-content(space-between);}
 .flex-row {.flexbox(); .flex-direction(row); .justify-content(space-between);}
 .text-center {text-align: center;}
@@ -167,12 +169,16 @@ table {
 // Views
 .view-codes-index {
     pre {font-size:12px; margin:5px 0 0;}
+    .topbar {
+        font-size:13px; .align-self(flex-start); padding:0 10px;
+        a {margin: 0 2px;}
+    }
     .cards-title {
         .ffs(); text-align: center;border-bottom: 1px solid #CCC;
         font-size:20px; line-height:1.4em;
         h1,h2,h3 {margin-bottom: .5em;}
         h1 { .ffs(); font-weight:normal; margin-bottom: .25em;}
-        .flexbox(); .flex-flow(column); .justify-content(center); background: #FFF;
+        .flexbox(); .flex-flow(column); .align-items(center); background: #FFF;
         .title-body {max-width:46em; ;}
         .actions {font-size:14px; .ffss(); color:#999;
             & > * { cursor:pointer;

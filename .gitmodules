@@ -1,0 +1,3 @@
+[submodule "libs/usercenter"]
+	path = libs/usercenter
+	url = https://github.com/watert/usercenter.git

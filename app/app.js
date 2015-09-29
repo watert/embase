@@ -1,3 +1,4 @@
+require("coffee-script/register")
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -17,6 +18,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 // express.appPath = __dirname
 app.set("appPath",__dirname);
+
 // console.log("apppath",app.appPath);
 
 // uncomment after placing your favicon in /public
@@ -28,13 +30,16 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(session({secret:"embase"}));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../public')));
+// var passport = require("passport");
+// app.use(passport.initialize())
+// app.use(passport.session())
+
 
 /* Routers */
-app.use('/', require('./routes/index'));
+UserCenter = require("../libs/usercenter")
+app.use('/usercenter', UserCenter({app}))
 app.use('/admin', require('./routes/admin'));
-app.get('/*', function(req, res, next){
-    res.render('index', { title: 'Express' });
-});
+app.use('/', require('./routes/index.coffee'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

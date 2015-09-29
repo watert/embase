@@ -74,8 +74,6 @@ define ["views/_base/view","tmpls/base","marked","highlightjs"
                 <'flex-basis'> ]; /* short hand for above */
             align-self: auto | flex-start | flex-end |
                 center | baseline | stretch;
-
-
             ```
         """
         template: tmpls.extend
@@ -88,6 +86,10 @@ define ["views/_base/view","tmpls/base","marked","highlightjs"
             index: " <%=invoke(indexBody)%> "
             indexBody: """
                 <div class="cards-title">
+                    <div class="topbar">
+                        <a href="codes/my/">My Codes</a>
+                        <a href="codes/">Explore</a>
+                    </div>
                     <div class="title-body"></div>
                     <div class="actions">
                         <div class="btn-expand-all"> Expand all <i class="fa fa-angle-down"></i> </div>

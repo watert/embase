@@ -29,6 +29,29 @@ table td {
 table th {
   border-color: #DDD;
 }
+.flexbox {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-box;
+  display: -o-box;
+  display: box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flex;
+  display: -o-flex;
+  display: flex;
+}
+.space-between {
+  -webkit-box-pack: justify;
+  -moz-box-pack: justify;
+  -ms-flex-pack: justify;
+  -webkit-justify-content: space-between;
+  -moz-justify-content: space-between;
+  -ms-justify-content: space-between;
+  -o-justify-content: space-between;
+  justify-content: space-between;
+}
 .flex-column {
   display: -webkit-box;
   display: -moz-box;
@@ -512,6 +535,20 @@ table th {
   font-size: 12px;
   margin: 5px 0 0;
 }
+.view-codes-index .topbar {
+  font-size: 13px;
+  -ms-flex-item-align: start;
+  flex-item-align: start;
+  -webkit-align-self: flex-start;
+  -moz-align-self: flex-start;
+  -ms-align-self: flex-start;
+  -o-align-self: flex-start;
+  align-self: flex-start;
+  padding: 0 10px;
+}
+.view-codes-index .topbar a {
+  margin: 0 2px;
+}
 .view-codes-index .cards-title {
   font-family: Georgia, Cambria, "Times New Roman", Times, serif;
   text-align: center;
@@ -532,14 +569,17 @@ table th {
   -webkit-flex-flow: column ;
   -ms-flex-flow: column ;
   flex-flow: column ;
-  -webkit-box-pack: center;
-  -moz-box-pack: center;
-  -ms-flex-pack: center;
-  -webkit-justify-content: center;
-  -moz-justify-content: center;
-  -ms-justify-content: center;
-  -o-justify-content: center;
-  justify-content: center;
+  -webkit-box-align: center;
+  -moz-box-align: center;
+  -ms-box-align: center;
+  -o-box-align: center;
+  box-align: center;
+  -ms-flex-align: center;
+  -webkit-align-items: center;
+  -moz-align-items: center;
+  -ms-align-items: center;
+  -o-align-items: center;
+  align-items: center;
   background: #FFF;
 }
 .view-codes-index .cards-title h1,

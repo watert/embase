@@ -1,4 +1,4 @@
-var _, express, q, router, userRouter;
+var _, express, passport, q, router;
 
 q = require('q');
 
@@ -8,18 +8,22 @@ _ = require('underscore');
 
 router = express.Router();
 
-router.get('/codes/*', function(req, res) {
-  return res.render("index");
+passport = require("passport");
+
+router.use('/user/', function(req, res) {
+  console.log(req.oauth2, req.user, req.session.user);
+  return res.json("shit");
 });
-
-router.get('/user/', function(req, res, next) {
-  return res.render("index");
-});
-
-userRouter = require("../middlewares/user");
-
-router.use('/user/', userRouter);
 
 router.use('/auth/', require("../middlewares/auth")());
+
+router.get('/*', function(req, res) {
+  var ref;
+  console.log("render index with user", req.user, req.session);
+  return res.render('index', {
+    title: 'Express',
+    user: ((ref = req.user) != null ? ref._data : void 0) || null
+  });
+});
 
 module.exports = router;
