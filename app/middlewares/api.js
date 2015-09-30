@@ -145,15 +145,32 @@ apis = {
       "parseReturn": function(data) {
         return data;
       },
+      "parseReturnRow": function(data) {
+        return data;
+      },
       "parseReturnArray": function(data) {
         return data;
       },
       "GET": function(id, data) {
+        var where;
         if (!id) {
           return Doc.find(data);
         } else {
-          return Doc.findOne({
+          where = _.extend({
             _id: id
+          }, data);
+          return Doc.findOne(where).then(function(doc) {
+            var err;
+            if (!doc.id) {
+              err = {
+                error: {
+                  message: "Not found",
+                  code: 400
+                }
+              };
+              return q.reject(err);
+            }
+            return doc;
           });
         }
       },
@@ -196,14 +213,15 @@ apis = {
       };
     };
     parseReturn = function(data, ctx) {
-      var _parse;
-      _parse = options.parseReturn.bind(ctx);
+      var _parseRow;
+      _parseRow = options.parseReturnRow.bind(ctx);
       if (_.isArray(data)) {
-        data = _.toArray(_.map(data, _parse));
-        return data = options.parseReturnArray.bind(ctx)(data);
+        data = _.toArray(_.map(data, _parseRow));
+        data = options.parseReturnArray.bind(ctx)(data);
       } else {
-        return data = _parse(data);
+        data = _parseRow(data);
       }
+      return options.parseReturn.bind(ctx)(data);
     };
     router.get("/count", function(req, res) {
       var params;
@@ -234,19 +252,18 @@ apis = {
         if (data._data) {
           data = data._data;
         }
-        return res.ret(parseReturn(data, ctx));
+        return q.when(parseReturn(data, ctx)).then(res.ret);
       }).fail(function(err) {
-        var data;
-        console.trace(err);
+        console.log(err.stack);
         if (!err.error) {
-          data = {
+          err = {
             error: {
               code: 500,
               message: err.toString()
             }
           };
         }
-        return res.retError(data);
+        return res.retError(err);
       });
     });
     return router;

@@ -75,11 +75,18 @@ apis =
         _.defaults options,
             "parseData":(data)-> data
             "parseReturn": (data)-> data
+            "parseReturnRow": (data)-> data
             "parseReturnArray": (data)-> data
 
             "GET":(id, data)-> # get list or item with id
                 if not id then return Doc.find(data)
-                else return Doc.findOne(_id:id)
+                else
+                    where = _.extend({_id:id},data)
+                    return Doc.findOne(where).then (doc)->
+                        if not doc.id
+                            err = error:{message:"Not found", code:400}
+                            return q.reject(err)
+                        return doc
             "POST":(id, data)-> #create (id will be null)
                 data.lastModify = data.createAt = (new Date)
                 (new Doc(data)).save()
@@ -97,12 +104,12 @@ apis =
             params = options.parseData.bind({req})(data)
             return {params, id:req.params.id, method:req.method}
         parseReturn = (data, ctx)->
-            _parse = options.parseReturn.bind(ctx)
+            _parseRow = options.parseReturnRow.bind(ctx)
             if _.isArray(data)
-                data = _.toArray(_.map(data, _parse))
+                data = _.toArray(_.map(data, _parseRow))
                 data = options.parseReturnArray.bind(ctx)(data)
-
-            else data = _parse(data)
+            else data = _parseRow(data)
+            return options.parseReturn.bind(ctx)(data)
 
         router.get "/count", (req,res)->
             {params} = parseRequest(req)
@@ -119,11 +126,11 @@ apis =
 
             options[method].bind(ctx)(id,params).then (data)->
                 data = data._data if data._data
-                res.ret(parseReturn(data, ctx))
+                q.when(parseReturn(data, ctx)).then(res.ret)
             .fail (err)->
-                console.trace(err)
-                data = {error:{code:500,message:err.toString()}} if not err.error
-                res.retError(data)
+                console.log(err.stack)
+                err = {error:{code:500,message:err.toString()}} if not err.error
+                res.retError(err)
         return router
 
 # [_jsonrpc, restful] = [require("./jsonrpc"), require("./restful")]

@@ -15,6 +15,7 @@ define [
             # "*path":(path="users")->
             #     @trigger("route-path",path)
     class App extends Backbone.View
+        user:DATA.user or {}
         util:util
         templer: templer
         initialize: ->

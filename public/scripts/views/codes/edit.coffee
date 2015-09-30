@@ -28,8 +28,12 @@ define ["views/_base/view","views/codes/tmpls", "models/base","codemirror"
         initialize:()->
             console.log "initialize"
             @loadCSS("bower_components/codemirror/lib/codemirror.css")
+            @loadCSS("//cdn.jsdelivr.net/font-hack/2.015/css/hack.min.css")
             super()
         events:
+            "click [data-href]":(e)->
+                href = $(e.currentTarget).data("href")
+                app.router.navigate(href,trigger:yes)
             "submit":(e)->
                 e.preventDefault()
                 formData = app.util.deparamQuery(@$("form").serialize())
@@ -45,27 +49,23 @@ define ["views/_base/view","views/codes/tmpls", "models/base","codemirror"
             query = app.util.deparamQuery(location.search.slice(1))
             $.when do ()=>
                 if query.id
-                    @model = title:"Edit"
+                    @model = title:"Edit", id: query.id, error:null
                     doc = new Model(_id:query.id)
                     return doc.fetch().then =>
                         @model.doc = doc.toJSON()
                 else return @model =
                     title: "Add Content"
+                    error:null
                     doc: defaultDoc
             .then =>
                 console.log "render",@model
                 super(arguments...)
                 CodeMirror.loadMode("markdown").then =>
                     CodeMirror.fromTextArea(@$("textarea")[0], mode:"markdown")
-            # if query.id
-            # else
-            #
-            # @model ?= {}
-            # if not @model.id
-            # else
-            #     @model.title = "Edit"
-            # console.log @model
-
+            .fail (err)=>
+                console.log "fail",err
+                @model = title:"Error", error:"not found"
+                super(arguments...)
         template: tmpls.extend
             editor: """
                 <form action="">
@@ -79,5 +79,10 @@ define ["views/_base/view","views/codes/tmpls", "models/base","codemirror"
             """
             index: """
                 <%=invoke(pageTopbar,{title:title})%>
-                <%=invoke(editor,{doc:doc})%>
+                <% if(error){%>
+                    <div class="container"><br /><%-error%></div>
+
+                <%}else {%>
+                    <%=invoke(editor,{doc:doc})%>
+                <%}%>
             """

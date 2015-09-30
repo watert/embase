@@ -37,10 +37,18 @@ define(["views/_base/view", "views/codes/tmpls", "models/base", "codemirror"], f
     MyCodesView.prototype.initialize = function() {
       console.log("initialize");
       this.loadCSS("bower_components/codemirror/lib/codemirror.css");
+      this.loadCSS("//cdn.jsdelivr.net/font-hack/2.015/css/hack.min.css");
       return MyCodesView.__super__.initialize.call(this);
     };
 
     MyCodesView.prototype.events = {
+      "click [data-href]": function(e) {
+        var href;
+        href = $(e.currentTarget).data("href");
+        return app.router.navigate(href, {
+          trigger: true
+        });
+      },
       "submit": function(e) {
         var formData, model;
         e.preventDefault();
@@ -62,7 +70,9 @@ define(["views/_base/view", "views/codes/tmpls", "models/base", "codemirror"], f
           var doc;
           if (query.id) {
             _this.model = {
-              title: "Edit"
+              title: "Edit",
+              id: query.id,
+              error: null
             };
             doc = new Model({
               _id: query.id
@@ -73,6 +83,7 @@ define(["views/_base/view", "views/codes/tmpls", "models/base", "codemirror"], f
           } else {
             return _this.model = {
               title: "Add Content",
+              error: null,
               doc: defaultDoc
             };
           }
@@ -87,12 +98,21 @@ define(["views/_base/view", "views/codes/tmpls", "models/base", "codemirror"], f
             });
           });
         };
+      })(this)).fail((function(_this) {
+        return function(err) {
+          console.log("fail", err);
+          _this.model = {
+            title: "Error",
+            error: "not found"
+          };
+          return MyCodesView.__super__.render.apply(_this, arguments);
+        };
       })(this));
     };
 
     MyCodesView.prototype.template = tmpls.extend({
       editor: "<form action=\"\">\n    <div data-id=\"<%-doc.id%>\">\n        <textarea name=\"content\" cols=\"30\" rows=\"10\"><%=doc.content%></textarea>\n        <div class=\"actions container\">\n            <button class=\"btn btn-save\">Save</button>\n        </div>\n    </div>\n</form>",
-      index: "<%=invoke(pageTopbar,{title:title})%>\n<%=invoke(editor,{doc:doc})%>"
+      index: "<%=invoke(pageTopbar,{title:title})%>\n<% if(error){%>\n    <div class=\"container\"><br /><%-error%></div>\n\n<%}else {%>\n    <%=invoke(editor,{doc:doc})%>\n<%}%>"
     });
 
     return MyCodesView;

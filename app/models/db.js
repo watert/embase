@@ -89,7 +89,6 @@ DBStore.getStore = function(name) {
   if (cache = _stores[name]) {
     return q.when(cache);
   }
-  console.log("getStore", name);
   dbconfig = DBStore.storeConfig(name);
   store = new DBStore(dbconfig);
   return new Promise(function(res, rej) {
@@ -109,6 +108,9 @@ BaseDoc = (function() {
   BaseDoc.store = "test";
 
   function BaseDoc(data) {
+    if (!data) {
+      return null;
+    }
     this._data = _.extend({}, data);
     this.changed = true;
     this.id = data._id;
@@ -233,6 +235,7 @@ BaseDoc = (function() {
     args = 1 <= arguments.length ? slice.call(arguments, 0) : [];
     DocClass = this;
     return this.getStore().then(function(store) {
+      console.log.apply(console, ["findOne"].concat(slice.call(args)));
       return store.findOne.apply(store, args).then(function(data) {
         return new DocClass(data);
       });

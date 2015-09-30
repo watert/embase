@@ -182,7 +182,7 @@ table {
 .view-codes {
     line-height:18px; padding-bottom:40px;
     .topbar {
-        font-size:13px; .align-self(flex-start); padding:0 10px;
+        font-size:13px; .align-self(flex-start); padding:0 10px; .ffss();
         a {margin: 0 2px;}
     }
     h1, h2 {line-height:36px;margin:5px 0 0;}
@@ -216,7 +216,10 @@ table {
         .flexbox(); .flex-flow(column); .align-items(center); background: #FFF;
         .title-body {max-width:46em; ;}
         .actions {font-size:14px; .ffss(); color:#999;
+            .flexbox(); .align-items(center); .justify-content(center);
             & > * { cursor:pointer;
+                height:34px; font-size:13px; color:#999;
+                cursor: pointer; box-sizing: border-box; line-height: 34px; padding: 2px 5px;
                 &:hover {color:#444;}
             }
         }

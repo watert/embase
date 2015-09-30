@@ -15,7 +15,7 @@
     <script>mocha.setup('bdd');</script>
     <script>
     require.config({baseUrl:"../scripts/"})
-    require(["./tests.js","./user-tests.js"],function(){
+    require(["./tests.js"],function(){
       mocha.run();
     })
     </script>

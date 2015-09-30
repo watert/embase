@@ -4,6 +4,7 @@ define ["tmpls/base"], (base)->
             <div class="topbar-user">
                 <% var user = DATA.user; %>
                 <%if(user){ console.log("hasuser", DATA.user)%>
+                    <span class="btn" data-href="codes/my"> My Codes </span>
                     <span class="btn btn-add"> Add </span>
                     <div class="avatar">
                         <img src="<%=user.avatar%>" alt="" title="<%-user.name%>"/>

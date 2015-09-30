@@ -1,4 +1,4 @@
-var User, UserCodes, _, crypto, express, getPageData, injectUser, jsonrpc, md5, q, ref, restful, restfulCodes, retJSON, router,
+var Init, _, express, q, router,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
@@ -10,82 +10,94 @@ _ = require('underscore');
 
 router = express.Router();
 
-User = require("../models/user");
+Init = function(options) {
+  var UserCodes, UserDoc, app, crypto, findUsers, getPageData, injectUser, jsonrpc, md5, ref, restful, restfulCodes, retJSON;
+  app = options.app;
+  UserDoc = require("../models/user.coffee").UserDoc;
+  findUsers = function(ids) {
+    return app.User.find({
+      _id: {
+        $in: ids
+      }
+    }).then(function(docs) {
+      return _.map(docs, function(user) {
+        return _.omit(user, "password");
+      });
+    });
+  };
+  ref = require("../middlewares/api.coffee"), restful = ref.restful, jsonrpc = ref.jsonrpc, retJSON = ref.retJSON;
+  UserCodes = (function(superClass) {
+    extend(UserCodes, superClass);
 
-ref = require("../middlewares/api"), restful = ref.restful, jsonrpc = ref.jsonrpc, retJSON = ref.retJSON;
-
-UserCodes = (function(superClass) {
-  extend(UserCodes, superClass);
-
-  function UserCodes() {
-    return UserCodes.__super__.constructor.apply(this, arguments);
-  }
-
-  UserCodes.store = "usercodes";
-
-  return UserCodes;
-
-})(User.UserDoc);
-
-restfulCodes = restful({
-  model: UserCodes
-});
-
-injectUser = function(req, res, next) {
-  var base, ref1, ref2;
-  if (req.method !== "GET") {
-    req.body.user_id = (ref1 = req.user) != null ? ref1.id : void 0;
-  } else {
-    if ((base = req.query).user_id == null) {
-      base.user_id = (ref2 = req.user) != null ? ref2.id : void 0;
+    function UserCodes() {
+      return UserCodes.__super__.constructor.apply(this, arguments);
     }
-  }
-  return next();
-};
 
-router.use("/api/usercodes/", injectUser, restfulCodes);
+    UserCodes.store = "usercodes";
 
-crypto = require("crypto");
+    return UserCodes;
 
-md5 = function(_str) {
-  return crypto.createHash('md5').update(_str).digest('hex');
-};
-
-getPageData = function(req) {
-  var data, email, ref1, ref2, user;
-  user = ((ref1 = req.user) != null ? ref1._data : void 0) || null;
-  if (email = user != null ? user.email : void 0) {
-    user.emailHash = md5(email);
-  }
-  data = {
-    user: ((ref2 = req.user) != null ? ref2._data : void 0) || null
-  };
-  return data;
-};
-
-router.use(function(req, res, next) {
-  var data, email, ref1, ref2, user;
-  user = ((ref1 = req.user) != null ? ref1._data : void 0) || null;
-  if (email = user != null ? user.email : void 0) {
-    user.emailHash = md5(email);
-    user.avatar = "http://www.gravatar.com/avatar/" + user.emailHash + "?s=80";
-  }
-  data = {
-    user: ((ref2 = req.user) != null ? ref2._data : void 0) || null
-  };
-  req.pageData = data;
-  return next();
-});
-
-router.get('/*', function(req, res) {
-  return res.render('index', {
-    title: 'Express',
-    data: req.pageData
+  })(UserDoc);
+  restfulCodes = restful({
+    model: UserCodes,
+    parseReturn: function(docs) {
+      var uid;
+      console.log("parseReturn", docs);
+      if (uid = docs.user_id) {
+        return findUsers([uid]).then(function(users) {
+          docs.user = users != null ? users[0] : void 0;
+          return docs;
+        });
+      }
+      return docs;
+    }
   });
-});
+  injectUser = function(req, res, next) {
+    var ref1;
+    if (req.method !== "GET") {
+      req.body.user_id = (ref1 = req.user) != null ? ref1.id : void 0;
+    }
+    return next();
+  };
+  router.use("/api/usercodes/", injectUser, restfulCodes);
+  crypto = require("crypto");
+  md5 = function(_str) {
+    return crypto.createHash('md5').update(_str).digest('hex');
+  };
+  getPageData = function(req) {
+    var data, email, ref1, ref2, user;
+    user = ((ref1 = req.user) != null ? ref1._data : void 0) || null;
+    if (email = user != null ? user.email : void 0) {
+      user.emailHash = md5(email);
+    }
+    data = {
+      user: ((ref2 = req.user) != null ? ref2._data : void 0) || null
+    };
+    return data;
+  };
+  router.use(function(req, res, next) {
+    var data, email, ref1, ref2, user;
+    user = ((ref1 = req.user) != null ? ref1._data : void 0) || null;
+    if (email = user != null ? user.email : void 0) {
+      user.emailHash = md5(email);
+      user.avatar = "http://www.gravatar.com/avatar/" + user.emailHash + "?s=80";
+    }
+    data = {
+      user: ((ref2 = req.user) != null ? ref2._data : void 0) || null
+    };
+    req.pageData = data;
+    return next();
+  });
+  router.get('/*', function(req, res) {
+    return res.render('index', {
+      title: 'Express',
+      data: req.pageData
+    });
+  });
+  _.extend(router, {
+    getPageData: getPageData
+  });
+  return router;
+};
 
-_.extend(router, {
-  getPageData: getPageData
-});
-
-module.exports = router;
+module.exports = Init;

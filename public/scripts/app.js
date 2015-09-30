@@ -31,6 +31,8 @@ define(["jquery", "backbone", "libs/action-dispatcher", "libs/templer", "libs/ut
       return App.__super__.constructor.apply(this, arguments);
     }
 
+    App.prototype.user = DATA.user || {};
+
     App.prototype.util = util;
 
     App.prototype.templer = templer;

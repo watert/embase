@@ -19,7 +19,18 @@ define(["views/_base/view", "models/base", "tmpls/base", "marked", "highlightjs"
       return this.loadCSS("../bower_components/highlightjs/styles/default.css");
     };
 
+    CodesIndexView.prototype.defaultModel = {
+      user: {}
+    };
+
     CodesIndexView.prototype.events = {
+      "click [data-href]": function(e) {
+        var href;
+        href = $(e.currentTarget).data("href");
+        return app.router.navigate(href, {
+          trigger: true
+        });
+      },
       "click .btn-expand-all": function(e) {
         return this.$(".needs-readmore .btn-readmore").click();
       },
@@ -39,7 +50,7 @@ define(["views/_base/view", "models/base", "tmpls/base", "marked", "highlightjs"
         return ret;
       },
       index: " <%=invoke(indexBody)%> ",
-      indexBody: "<div class=\"cards-title\">\n    <div class=\"topbar\">\n        <a href=\"codes/my/\">My Codes</a>\n        <a href=\"codes/\">Explore</a>\n    </div>\n    <div class=\"title-body\"></div>\n    <div class=\"actions\">\n        <div class=\"btn-expand-all\"> Expand all <i class=\"fa fa-angle-down\"></i> </div>\n    </div>\n</div>\n<div class=\"cards\">\n    <% _.each(parse(content),function(html){ %>\n        <div class=\"card\">\n            <div class=\"content\"><%=html%></div>\n            <div class=\"btn-readmore\"> Readmore </div>\n        </div>\n    <% });%>\n</div>",
+      indexBody: "<div class=\"cards-title\">\n    <div class=\"topbar\">\n        <a data-href=\"codes/my/\">My Codes</a>\n        <a data-href=\"codes/\">Explore</a>\n    </div>\n    <div class=\"title-body\"></div>\n    <div class=\"actions\">\n        <div> @<%-user.name%> </div>\n        <% if(user_id == app.user._id){%>\n            <div class=\"btn-link\" data-href=\"codes/edit/?id=<%-_id%>\">\n                <i class=\"fa fa-edit\"></i>Edit</div>\n        <%} %>\n        <div class=\"btn-expand-all\"> Expand all <i class=\"fa fa-angle-down\"></i> </div>\n    </div>\n</div>\n<div class=\"cards\">\n    <% _.each(parse(content),function(html){ %>\n        <div class=\"card\">\n            <div class=\"content\"><%=html%></div>\n            <div class=\"btn-readmore\"> Readmore </div>\n        </div>\n    <% });%>\n</div>",
       marked: marked
     });
 
@@ -52,6 +63,7 @@ define(["views/_base/view", "models/base", "tmpls/base", "marked", "highlightjs"
         });
         return this.model.fetch().then((function(_this) {
           return function() {
+            console.log("@model", _this.model);
             CodesIndexView.__super__.render.call(_this);
             return _this.renderContent();
           };
@@ -59,7 +71,10 @@ define(["views/_base/view", "models/base", "tmpls/base", "marked", "highlightjs"
       } else {
         if (this.model == null) {
           this.model = {
-            content: "Not found\n======="
+            content: "Not found\n=======",
+            user: {},
+            user_id: null,
+            _id: null
           };
         }
         CodesIndexView.__super__.render.call(this);

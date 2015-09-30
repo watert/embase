@@ -9,7 +9,12 @@ define ["views/_base/view","models/base", "tmpls/base","marked","highlightjs"
             # @setModel(markdown:@markdown)
             # # console.log "render markdown", @markdown
             # console.log "init", @model
+        defaultModel:
+            user:{}
         events:
+            "click [data-href]":(e)->
+                href = $(e.currentTarget).data("href")
+                app.router.navigate(href,trigger:yes)
             "click .btn-expand-all": (e)->
                 @$(".needs-readmore .btn-readmore").click()
             "click .btn-readmore": (e)->
@@ -25,11 +30,16 @@ define ["views/_base/view","models/base", "tmpls/base","marked","highlightjs"
             indexBody: """
                 <div class="cards-title">
                     <div class="topbar">
-                        <a href="codes/my/">My Codes</a>
-                        <a href="codes/">Explore</a>
+                        <a data-href="codes/my/">My Codes</a>
+                        <a data-href="codes/">Explore</a>
                     </div>
                     <div class="title-body"></div>
                     <div class="actions">
+                        <div> @<%-user.name%> </div>
+                        <% if(user_id == app.user._id){%>
+                            <div class="btn-link" data-href="codes/edit/?id=<%-_id%>">
+                                <i class="fa fa-edit"></i>Edit</div>
+                        <%} %>
                         <div class="btn-expand-all"> Expand all <i class="fa fa-angle-down"></i> </div>
                     </div>
                 </div>
@@ -48,10 +58,11 @@ define ["views/_base/view","models/base", "tmpls/base","marked","highlightjs"
             if query.id
                 @model = new Model(_id:query.id)
                 @model.fetch().then =>
+                    console.log "@model",@model
                     super()
                     @renderContent()
             else
-                @model ?= content:"Not found\n======="
+                @model ?= content:"Not found\n=======", user:{}, user_id:null, _id:null
                 super()
                 @renderContent()
         renderContent:()->

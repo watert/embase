@@ -1,4 +1,4 @@
-{BaseDoc, DBStore} = require("./db")
+{BaseDoc, DBStore} = require("./db.coffee")
 crypto = require('crypto')
 _ = require('underscore')
 q = require("q")
