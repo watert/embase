@@ -95,7 +95,8 @@ router.post("/api/status/", retJSON(), function(req, res) {
 
 router.get('/*', function(req, res, next) {
   return res.render('index', {
-    title: 'Express'
+    title: 'Express',
+    data: req.pageData || {}
   });
 });
 

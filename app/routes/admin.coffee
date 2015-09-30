@@ -30,6 +30,6 @@ router.post "/api/status/",retJSON(), (req,res)->
         res.ret(data)
 
 router.get '/*', (req, res, next)->
-    res.render('index', { title: 'Express' })
+    res.render('index', { title: 'Express', data:req.pageData or {}})
 
 module.exports = router
