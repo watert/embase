@@ -75,12 +75,16 @@ apis =
         _.defaults options,
             "parseData":(data)-> data
             "parseReturn": (data)-> data
+            "parseReturnArray": (data)-> data
+
             "GET":(id, data)-> # get list or item with id
                 if not id then return Doc.find(data)
                 else return Doc.findOne(_id:id)
             "POST":(id, data)-> #create (id will be null)
+                data.lastModify = data.createAt = (new Date)
                 (new Doc(data)).save()
             "PUT":(id,data)-> #update
+                data.lastModify = (new Date)
                 Doc.findOne(_id:id).then (doc)->
                     doc.save(data)
             "DELETE":(id)->
@@ -96,6 +100,8 @@ apis =
             _parse = options.parseReturn.bind(ctx)
             if _.isArray(data)
                 data = _.toArray(_.map(data, _parse))
+                data = options.parseReturnArray.bind(ctx)(data)
+
             else data = _parse(data)
 
         router.get "/count", (req,res)->

@@ -17,7 +17,7 @@ define(["jquery", "backbone", "libs/action-dispatcher", "libs/templer", "libs/ut
         }
         path = section + "/" + path;
         this.currentPath = path;
-        return this.trigger("route-path", path);
+        return this.trigger("route-path", path, section);
       }
     };
 
@@ -52,7 +52,7 @@ define(["jquery", "backbone", "libs/action-dispatcher", "libs/templer", "libs/ut
 
     App.prototype.tmpl = templer("<div class=\"app\">\n    <div class=\"app-body\">\n        <div class=\"view-container\">\n        </div>\n    </div>\n</div>");
 
-    App.prototype.loadViewPath = function(path) {
+    App.prototype.loadViewPath = function(path, section) {
       var dfd, ref;
       if ((ref = this.view) != null) {
         ref.trigger("remove").remove();
@@ -64,7 +64,7 @@ define(["jquery", "backbone", "libs/action-dispatcher", "libs/templer", "libs/ut
       require(["views/" + path], (function(_this) {
         return function(View) {
           var $body, query, view;
-          $body = _this.$(".view-container").empty().removeClass().addClass("view-container view-" + (path.replace("/", "-")));
+          $body = _this.$(".view-container").empty().removeClass().addClass("view-container view-" + section + " view-" + (path.replace("/", "-")));
           query = util.deparamQuery();
           _this.view = view = new View({
             query: query,

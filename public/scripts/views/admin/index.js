@@ -41,6 +41,8 @@ define(["views/_base/view", "marked"], function(BaseView, marked) {
 
     BaseAPICollection.prototype.parse = parseData;
 
+    BaseAPICollection.prototype.model = BaseAPIModel;
+
     BaseAPICollection.urlAPI = function(method) {
       return "" + this.prototype.url + method;
     };

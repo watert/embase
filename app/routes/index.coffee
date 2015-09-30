@@ -10,8 +10,13 @@ class UserCodes extends User.UserDoc
     @store: "usercodes"
 restfulCodes = restful
     model:UserCodes
-    # parseReturn: (data)-> _.omit(data,"password")
-router.use("/api/usercodes/", restfulCodes)
+    # parse: (data)-> _.omit(data,"password")
+injectUser = (req,res,next)->
+    if req.method isnt "GET"
+        req.body.user_id = req.user?.id
+    else req.query.user_id ?= req.user?.id
+    next()
+router.use("/api/usercodes/",injectUser, restfulCodes)
 
 
 

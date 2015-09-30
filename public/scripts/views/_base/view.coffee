@@ -25,10 +25,6 @@ define ["libs/modelview","libs/util","tmpls/base"],(ModelView, util, baseTmpl)->
 	splitViewTmpl = baseTmpl.extend
 		detail:"Empty"
 		master:""
-		# detailNavbar:baseTmpl.navbar.extend
-		# 	title:"Detail"
-		# masterNavbar:baseTmpl.navbar.extend
-		# 	title:"Master"
 		index:"""
 				<div class="view-master">
 					<div class="body"><%=invoke(master)%></div>

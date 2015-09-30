@@ -11,6 +11,7 @@ define ["views/_base/view","marked"], (BaseView, marked)->
     class BaseAPICollection extends Backbone.Collection
         idAttribute:"_id"
         parse: parseData
+        model: BaseAPIModel
         @urlAPI:(method)-> "#{@prototype.url}#{method}"
         @rpc:rpcCall
     class Users extends BaseAPICollection

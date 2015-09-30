@@ -185,6 +185,7 @@ table th {
   font-size: 17px;
   border-radius: 4px;
   cursor: pointer;
+  font-family: Helvetica, Arial;
 }
 .btn:hover {
   background: #449d48;
@@ -562,9 +563,8 @@ table th {
   -ms-justify-content: space-between;
   -o-justify-content: space-between;
   justify-content: space-between;
-  padding: 10px 10px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
-  background: rgba(255, 255, 255, 0.8);
+  padding: 5px 10px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 .page-topbar .btn {
   background: none;
@@ -572,7 +572,6 @@ table th {
   font-weight: lighter;
   font-size: 14px;
   border: 1px solid #999;
-  height: auto;
   border-radius: 20px;
   padding: 4px 10px;
   margin-right: 10px;
@@ -602,17 +601,41 @@ table th {
   -o-align-items: center;
   align-items: center;
 }
+.topbar-user > * {
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-box;
+  display: -o-box;
+  display: box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flex;
+  display: -o-flex;
+  display: flex;
+  -webkit-box-align: center;
+  -moz-box-align: center;
+  -ms-box-align: center;
+  -o-box-align: center;
+  box-align: center;
+  -ms-flex-align: center;
+  -webkit-align-items: center;
+  -moz-align-items: center;
+  -ms-align-items: center;
+  -o-align-items: center;
+  align-items: center;
+  height: 34px;
+}
 .topbar-user img {
-  height: 16px;
-  width: 16px;
-  border-radius: 4px;
+  width: 34px;
+  border-radius: 50%;
   margin-right: 4px;
 }
-.view-codes-index pre {
-  font-size: 12px;
-  margin: 5px 0 0;
+.view-codes {
+  line-height: 18px;
+  padding-bottom: 40px;
 }
-.view-codes-index .topbar {
+.view-codes .topbar {
   font-size: 13px;
   -ms-flex-item-align: start;
   flex-item-align: start;
@@ -623,8 +646,71 @@ table th {
   align-self: flex-start;
   padding: 0 10px;
 }
-.view-codes-index .topbar a {
+.view-codes .topbar a {
   margin: 0 2px;
+}
+.view-codes h1,
+.view-codes h2 {
+  line-height: 36px;
+  margin: 5px 0 0;
+}
+.view-codes h3,
+.view-codes h4 {
+  line-height: 24px;
+}
+.view-codes p {
+  line-height: 18px;
+  font-weight: lighter;
+  color: #444;
+}
+.view-codes .row {
+  margin-top: 20px;
+}
+.view-codes .actions {
+  margin-top: 10px;
+}
+.view-codes .btn {
+  height: 34px;
+  border: 1px solid #999;
+  color: #666;
+  background: transparent;
+  border-radius: 20px;
+  font-weight: lighter;
+  margin-right: 5px;
+}
+.view-codes .btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+.view-codes .btn-link {
+  font-size: 13px;
+  color: #888;
+  padding: 4px 5px;
+  height: 34px;
+  line-height: 34px;
+  cursor: pointer;
+}
+.view-codes .btn-link:hover {
+  color: #555;
+}
+.view-codes .CodeMirror {
+  height: auto;
+  font-family: monaco;
+  font-size: 12px;
+  line-height: 15px;
+}
+.view-codes [data-href] {
+  cursor: pointer;
+}
+.view-codes-my .row {
+  padding: 10px 10px;
+  margin: 0;
+}
+.view-codes-my .row:hover {
+  background: #FFF;
+}
+.view-codes-index pre {
+  font-size: 12px;
+  margin: 5px 0 0;
 }
 .view-codes-index .cards-title {
   font-family: Georgia, Cambria, "Times New Roman", Times, serif;
@@ -725,6 +811,9 @@ table th {
 .view-codes-index .card h5 {
   font-size: 15px;
 }
+.view-codes-index .card .btn-readmore {
+  display: none;
+}
 .view-codes-index .card.needs-readmore {
   position: relative;
 }
@@ -732,6 +821,7 @@ table th {
   height: 34px;
   line-height: 34px;
   cursor: pointer;
+  display: inline;
   position: absolute;
   bottom: 0;
   background-color: #FFF;

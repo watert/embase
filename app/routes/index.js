@@ -1,4 +1,4 @@
-var User, UserCodes, _, crypto, express, getPageData, jsonrpc, md5, q, ref, restful, restfulCodes, retJSON, router,
+var User, UserCodes, _, crypto, express, getPageData, injectUser, jsonrpc, md5, q, ref, restful, restfulCodes, retJSON, router,
   extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
   hasProp = {}.hasOwnProperty;
 
@@ -31,7 +31,19 @@ restfulCodes = restful({
   model: UserCodes
 });
 
-router.use("/api/usercodes/", restfulCodes);
+injectUser = function(req, res, next) {
+  var base, ref1, ref2;
+  if (req.method !== "GET") {
+    req.body.user_id = (ref1 = req.user) != null ? ref1.id : void 0;
+  } else {
+    if ((base = req.query).user_id == null) {
+      base.user_id = (ref2 = req.user) != null ? ref2.id : void 0;
+    }
+  }
+  return next();
+};
+
+router.use("/api/usercodes/", injectUser, restfulCodes);
 
 crypto = require("crypto");
 

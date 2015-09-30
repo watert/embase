@@ -145,6 +145,9 @@ apis = {
       "parseReturn": function(data) {
         return data;
       },
+      "parseReturnArray": function(data) {
+        return data;
+      },
       "GET": function(id, data) {
         if (!id) {
           return Doc.find(data);
@@ -155,9 +158,11 @@ apis = {
         }
       },
       "POST": function(id, data) {
+        data.lastModify = data.createAt = new Date;
         return (new Doc(data)).save();
       },
       "PUT": function(id, data) {
+        data.lastModify = new Date;
         return Doc.findOne({
           _id: id
         }).then(function(doc) {
@@ -194,7 +199,8 @@ apis = {
       var _parse;
       _parse = options.parseReturn.bind(ctx);
       if (_.isArray(data)) {
-        return data = _.toArray(_.map(data, _parse));
+        data = _.toArray(_.map(data, _parse));
+        return data = options.parseReturnArray.bind(ctx)(data);
       } else {
         return data = _parse(data);
       }

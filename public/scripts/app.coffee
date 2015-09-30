@@ -10,7 +10,7 @@ define [
                 path ?= "index"
                 path = section+"/"+path
                 @currentPath = path
-                @trigger("route-path",path)
+                @trigger("route-path",path, section)
 
             # "*path":(path="users")->
             #     @trigger("route-path",path)
@@ -34,14 +34,14 @@ define [
                 </div>
             </div>
         """
-        loadViewPath:(path)->
+        loadViewPath:(path, section)->
             @view?.trigger("remove").remove()
             dfd = $.Deferred()
             path = path.slice(0,-1) if path.slice(-1) == "/"
 
             require ["views/#{path}"],(View)=>
                 $body = @$(".view-container").empty()
-                    .removeClass().addClass("view-container view-#{path.replace("/","-")}")
+                    .removeClass().addClass("view-container view-#{section} view-#{path.replace("/","-")}")
                 query = util.deparamQuery()
                 @view = view = new View( query:query, path:path)
                 view.$el.appendTo($body)

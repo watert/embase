@@ -12,6 +12,13 @@ require.config({
         "marked":"../bower_components/marked/marked.min",
         "codemirror":"../bower_components/codemirror/lib/codemirror"
     },
+    map:{
+        '*': {
+            "../../lib/codemirror":"codemirror",
+            "../lib/codemirror":"codemirror"
+        }
+    },
+    waitSeconds:1,
     shim:{
         backbone: ["underscore","jquery"],
         iscroll:{
